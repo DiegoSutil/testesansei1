@@ -39,15 +39,15 @@
         <!-- Main Header: Logo, Search, Icons -->
         <div class="container mx-auto px-6">
             <div class="flex justify-between items-center py-4">
-                <a href="#" id="logo-link" class="block h-20 md:h-24 transition-all flex-shrink-0" aria-label="Voltar para a página inicial">
+                <a href="#" id="logo-link" class="block h-20 md:h-24 transition-all flex-shrink-0">
                     <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="SANSEI DECANTS Logo" class="h-full w-auto">
                 </a>
                 
                 <!-- Navigation Bar - Visible on larger screens -->
-                <nav class="hidden lg:flex flex-grow justify-center" role="navigation" aria-label="Navegação Principal">
+                <nav class="hidden lg:flex flex-grow justify-center">
                     <ul class="flex items-center space-x-6">
                         <li class="nav-item"><a href="#" id="nav-quiz" data-page="quiz" class="nav-link">QUIZ - SEU PERFUME IDEAL</a></li>
-                        <li class="nav-item"><a href="#" id="nav-inicio" data-page="inicio" class="nav-link active" aria-current="page">Início</a></li>
+                        <li class="nav-item"><a href="#" id="nav-inicio" data-page="inicio" class="nav-link active">Início</a></li>
                         <li class="nav-item"><a href="#" id="nav-fragrancias" data-page="fragrancias" class="nav-link">Fragrâncias</a></li>
                         <li class="nav-item"><a href="#" id="nav-decants" data-page="decants" class="nav-link">Decants</a></li>
                         <li class="nav-item"><a href="#" id="nav-sobre" data-page="sobre" class="nav-link">Sobre</a></li>
@@ -57,27 +57,27 @@
                 </nav>
 
                 <div class="flex items-center space-x-4">
-                    <button id="search-button-mobile" class="lg:hidden nav-icon" aria-label="Abrir busca"><i data-feather="search"></i></button>
+                    <button id="search-button-mobile" class="lg:hidden nav-icon"><i data-feather="search"></i></button>
                     <!-- Cart Button - Now visible on larger screens too -->
-                    <button id="cart-button" class="nav-icon relative" aria-label="Abrir carrinho de compras" aria-haspopup="dialog">
+                    <button id="cart-button" class="nav-icon relative">
                         <i data-feather="shopping-cart"></i>
                         <span id="cart-count" class="cart-count-badge">0</span>
                     </button>
-                    <button id="user-button" class="nav-icon hidden md:flex" aria-label="Acessar sua conta"><i data-feather="user"></i></button>
+                    <button id="user-button" class="nav-icon hidden md:flex"><i data-feather="user"></i></button>
                     <!-- Ajustado z-index para garantir que o botão do menu mobile seja clicável -->
-                    <button id="mobile-menu-button" class="lg:hidden nav-icon relative z-[51]" aria-label="Abrir menu mobile" aria-expanded="false"><i data-feather="menu"></i></button>
+                    <button id="mobile-menu-button" class="lg:hidden nav-icon relative z-[51]"><i data-feather="menu"></i></button>
                 </div>
             </div>
         </div>
 
         <!-- Mobile Menu Overlay - Ajustado z-index -->
-        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[55] hidden" aria-hidden="true"></div>
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[55] hidden"></div>
 
         <!-- Mobile Menu - Ajustado z-index -->
-        <div id="mobile-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
+        <div id="mobile-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out">
             <div class="flex justify-between items-center p-4 border-b border-slate-200">
-                <h3 id="mobile-menu-title" class="font-bold text-lg">Menu</h3>
-                <button id="close-mobile-menu" class="text-slate-500 hover:text-slate-800" aria-label="Fechar menu mobile"><i data-feather="x" class="w-6 h-6"></i></button>
+                <h3 class="font-bold text-lg">Menu</h3>
+                <button id="close-mobile-menu" class="text-slate-500 hover:text-slate-800"><i data-feather="x" class="w-6 h-6"></i></button>
             </div>
             <div class="px-4 py-4 space-y-2">
                  <a href="#" class="mobile-nav-link" data-page="quiz">QUIZ - SEU PERFUME IDEAL</a>
@@ -91,11 +91,10 @@
             </div>
         </div>
         <!-- Search Bar (for mobile that appears on click) -->
-        <div id="search-bar" class="hidden lg:hidden bg-white border-t border-slate-200" role="search">
+        <div id="search-bar" class="hidden lg:hidden bg-white border-t border-slate-200">
             <div class="container mx-auto p-4 flex items-center gap-4">
-                <label for="search-input" class="sr-only">O que você procura?</label>
                 <input type="text" id="search-input" placeholder="O que você procura?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button id="close-search-bar" class="text-slate-500 hover:text-slate-800" aria-label="Fechar barra de busca"><i data-feather="x"></i></button>
+                <button id="close-search-bar" class="text-slate-500 hover:text-slate-800"><i data-feather="x"></i></button>
             </div>
             <div id="search-results" class="container mx-auto px-4 pb-4 max-h-96 overflow-y-auto"></div>
         </div>
@@ -111,7 +110,7 @@
                 <div class="container mx-auto px-6 h-full flex flex-col justify-center items-center text-center relative z-10" data-aos="fade-up">
                     <h1 class="font-heading text-4xl md:text-6xl font-bold text-white leading-tight mb-4">A Arte de um Aroma Inesquecível</h1>
                     <p class="text-lg md:text-xl mb-10 max-w-2xl text-slate-200 leading-relaxed">Explore decants de perfumes de luxo e encontre a sua assinatura olfativa.</p>
-                    <a href="#" data-page="fragrancias" class="btn btn-primary nav-link-button" aria-label="Descobrir Fragrâncias">Descobrir Fragrâncias</a>
+                    <a href="#" data-page="fragrancias" class="btn btn-primary nav-link-button">Descobrir Fragrâncias</a>
                 </div>
             </section>
             
@@ -138,7 +137,7 @@
                         <!-- Cards de produto serão carregados aqui -->
                     </div>
                     <div class="text-center mt-12" data-aos="fade-up">
-                        <a href="#" data-page="fragrancias" class="btn btn-secondary nav-link-button" aria-label="Ver todos os produtos">Ver todos os produtos</a>
+                        <a href="#" data-page="fragrancias" class="btn btn-secondary nav-link-button">Ver todos os produtos</a>
                     </div>
                 </div>
             </section>
@@ -150,17 +149,17 @@
                         <h2 class="font-heading text-4xl font-bold">Navegue por Categorias</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up" data-aos-delay="200">
-                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="masculinos" style="background-image: url('https://images.unsplash.com/photo-1557180295-76eee20542e8?q=80&w=1887&auto=format&fit=crop');" aria-label="Ver perfumes masculinos">
+                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="masculinos" style="background-image: url('https://images.unsplash.com/photo-1557180295-76eee20542e8?q=80&w=1887&auto=format&fit=crop');">
                             <div class="category-card-overlay">
                                 <h3 class="category-card-title">Masculinos</h3>
                             </div>
                         </a>
-                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="femininos" style="background-image: url('https://images.unsplash.com/photo-1622635995292-350a3921644e?q=80&w=1887&auto=format&fit=crop');" aria-label="Ver perfumes femininos">
+                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="femininos" style="background-image: url('https://images.unsplash.com/photo-1622635995292-350a3921644e?q=80&w=1887&auto=format&fit=crop');">
                             <div class="category-card-overlay">
                                 <h3 class="category-card-title">Femininos</h3>
                             </div>
                         </a>
-                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="unissex" style="background-image: url('https://images.unsplash.com/photo-1617121542980-e383d8b4515a?q=80&w=1887&auto=format&fit=crop');" aria-label="Ver perfumes unissex">
+                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="unissex" style="background-image: url('https://images.unsplash.com/photo-1617121542980-e383d8b4515a?q=80&w=1887&auto=format&fit=crop');">
                             <div class="category-card-overlay">
                                 <h3 class="category-card-title">Unissex</h3>
                             </div>
@@ -178,7 +177,7 @@
                         <!-- Reels serão carregados aqui pelo JS -->
                     </div>
                     <div class="mt-12" data-aos="fade-up">
-                        <a href="https://www.instagram.com/sanseidecants/reels/" target="_blank" class="btn btn-primary" aria-label="Ver mais reels no Instagram">Ver mais no Instagram</a>
+                        <a href="https://www.instagram.com/sanseidecants/reels/" target="_blank" class="btn btn-primary">Ver mais no Instagram</a>
                     </div>
                 </div>
             </section>
@@ -210,10 +209,8 @@
                                         <div class="space-y-2">
                                             <!-- Price Range Slider -->
                                             <div class="relative pt-2">
-                                                <label for="price-min" class="sr-only">Preço Mínimo</label>
-                                                <input type="range" id="price-min" min="0" max="1000" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer range-slider filter-control" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0">
-                                                <label for="price-max" class="sr-only">Preço Máximo</label>
-                                                <input type="range" id="price-max" min="0" max="1000" value="1000" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer range-slider filter-control" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000">
+                                                <input type="range" id="price-min" min="0" max="1000" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer range-slider filter-control">
+                                                <input type="range" id="price-max" min="0" max="1000" value="1000" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer range-slider filter-control">
                                                 <div class="flex justify-between text-xs text-slate-500 mt-2">
                                                     <span id="price-min-display">R$ 0</span>
                                                     <span id="price-max-display">R$ 1000</span>
@@ -223,7 +220,6 @@
                                     </div>
                                     <div>
                                         <h4 class="font-semibold mb-3">Ordenar Por</h4>
-                                        <label for="sort-by" class="sr-only">Ordenar Produtos por</label>
                                         <select id="sort-by" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 filter-control">
                                             <option value="popularity">Popularidade</option>
                                             <option value="price-asc">Preço: Menor para Maior</option>
@@ -234,15 +230,8 @@
                             </div>
                         </aside>
                         <!-- Grelha de Produtos -->
-                        <div class="w-full lg:w-3/4">
-                            <div id="product-list-fragrancias" class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
-                                <!-- Cards de produto serão carregados aqui -->
-                            </div>
-                            <div class="flex justify-between items-center mt-8">
-                                <button id="prev-product-page-front" class="btn btn-secondary !py-2 !px-4 !rounded-md disabled:opacity-50" disabled aria-label="Página anterior de produtos">Anterior</button>
-                                <span id="product-page-info-front" class="text-gray-600">Página 1</span>
-                                <button id="next-product-page-front" class="btn btn-primary !py-2 !px-4 !rounded-md disabled:opacity-50" aria-label="Próxima página de produtos">Próxima</button>
-                            </div>
+                        <div id="product-list-fragrancias" class="w-full lg:w-3/4 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+                            <!-- Cards de produto serão carregados aqui -->
                         </div>
                     </div>
                 </div>
@@ -271,7 +260,7 @@
                     <h1 class="font-heading text-5xl font-bold mb-4 text-slate-800" data-aos="fade-up">Nossa História</h1>
                 </div>
                 <div class="flex flex-col md:flex-row items-center gap-12" data-aos="fade-up">
-                    <div class="md:w-1/2"><img src="https://placehold.co/800x600/e2e8f0/334155?text=SANSEI+DECANTS" alt="Imagem sobre a Sansei Decants" class="rounded-lg shadow-xl" loading="lazy"></div>
+                    <div class="md:w-1/2"><img src="https://placehold.co/800x600/e2e8f0/334155?text=SANSEI+DECANTS" alt="Imagem sobre a Sansei Decants" class="rounded-lg shadow-xl"></div>
                     <div class="md:w-1/2">
                         <p class="text-slate-600 mb-4 leading-relaxed">A SANSEI DECANTS nasceu da paixão por fragrâncias que transcendem o comum. Acreditamos que um perfume é mais do que um aroma; é uma forma de expressão, uma assinatura pessoal que conta uma história. Nossa missão é democratizar o acesso à alta perfumaria, permitindo que você explore um universo de aromas de nicho e de luxo sem o compromisso de um frasco completo.</p>
                         <p class="text-slate-600 leading-relaxed">Cada decant é cuidadosamente preparado, extraído diretamente do frasco original para garantir 100% de autenticidade e qualidade. Nosso processo de curadoria é rigoroso, selecionando apenas as fragrâncias mais cativantes e memoráveis para fazer parte da nossa coleção. Bem-vindo ao nosso mundo, onde cada gota é uma nova descoberta.</p>
@@ -290,12 +279,12 @@
                     <div class="max-w-3xl mx-auto" data-aos="fade-up">
                         <div class="space-y-4">
                             <div class="border-b border-gray-200 pb-4">
-                                <button class="faq-question w-full flex justify-between items-center text-left text-xl font-semibold text-gray-800" aria-expanded="false" aria-controls="faq-answer-1"><span>O que é um decant?</span><i data-feather="chevron-down" class="transition-transform duration-300"></i></button>
-                                <div id="faq-answer-1" class="faq-answer mt-2 text-gray-600" role="region" aria-hidden="true"><p class="leading-relaxed">Um decant é uma pequena quantidade de perfume original, transferida do frasco de fábrica para um frasco menor. É a forma ideal de experimentar diferentes fragrâncias de luxo.</p></div>
+                                <button class="faq-question w-full flex justify-between items-center text-left text-xl font-semibold text-gray-800"><span>O que é um decant?</span><i data-feather="chevron-down" class="transition-transform duration-300"></i></button>
+                                <div class="faq-answer mt-2 text-gray-600"><p class="leading-relaxed">Um decant é uma pequena quantidade de perfume original, transferida do frasco de fábrica para um frasco menor. É a forma ideal de experimentar diferentes fragrâncias de luxo.</p></div>
                             </div>
                             <div class="border-b border-gray-200 pb-4">
-                                <button class="faq-question w-full flex justify-between items-center text-left text-xl font-semibold text-gray-800" aria-expanded="false" aria-controls="faq-answer-2"><span>Os produtos são originais?</span><i data-feather="chevron-down" class="transition-transform duration-300"></i></button>
-                                <div id="faq-answer-2" class="faq-answer mt-2 text-gray-600" role="region" aria-hidden="true"><p class="leading-relaxed">Sim, garantimos 100% de autenticidade. Todos os nossos decants são retirados diretamente dos frascos originais.</p></div>
+                                <button class="faq-question w-full flex justify-between items-center text-left text-xl font-semibold text-gray-800"><span>Os produtos são originais?</span><i data-feather="chevron-down" class="transition-transform duration-300"></i></button>
+                                <div class="faq-answer mt-2 text-gray-600"><p class="leading-relaxed">Sim, garantimos 100% de autenticidade. Todos os nossos decants são retirados diretamente dos frascos originais.</p></div>
                             </div>
                         </div>
                     </div>
@@ -311,14 +300,14 @@
                         <h1 class="font-heading text-5xl font-bold mb-4 text-slate-800" data-aos="fade-up">Entre em Contato</h1>
                     </div>
                     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md" data-aos="fade-up">
-                        <div id="contact-form-message" class="hidden mb-6 p-4 rounded-md text-center" role="alert"></div>
+                        <div id="contact-form-message" class="hidden mb-6 p-4 rounded-md text-center"></div>
                         <form id="contact-form">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div><label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nome</label><input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></div>
-                                <div><label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label><input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></div>
+                                <div><label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nome</label><input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                                <div><label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label><input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
                             </div>
-                            <div class="mb-6"><label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Assunto</label><input type="text" id="subject" name="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></div>
-                            <div class="mb-6"><label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Mensagem</label><textarea id="message" name="message" rows="5" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></textarea></div>
+                            <div class="mb-6"><label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Assunto</label><input type="text" id="subject" name="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div class="mb-6"><label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Mensagem</label><textarea id="message" name="message" rows="5" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea></div>
                             <div class="text-center"><button type="submit" class="btn btn-primary">Enviar Mensagem</button></div>
                         </form>
                     </div>
@@ -344,7 +333,7 @@
                             <!-- Wishlist items will be rendered here -->
                         </div>
                         <div class="text-center mt-12">
-                            <button id="logout-button" class="btn btn-secondary" aria-label="Terminar Sessão">Terminar Sessão</button>
+                            <button id="logout-button" class="btn btn-secondary">Terminar Sessão</button>
                         </div>
                     </div>
                 </div>
@@ -359,8 +348,7 @@
                 <h3 class="font-heading text-3xl font-bold text-white">Junte-se ao Círculo SANSEI</h3>
                 <p class="mt-3 text-slate-300 max-w-xl mx-auto leading-relaxed">Seja o primeiro a saber sobre lançamentos, coleções limitadas e eventos exclusivos.</p>
                 <form id="newsletter-form" class="mt-8 flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto">
-                    <label for="newsletter-email" class="sr-only">Seu melhor e-mail</label>
-                    <input type="email" id="newsletter-email" placeholder="Seu melhor e-mail" required class="w-full flex-grow px-4 py-3 rounded-lg text-slate-800 bg-white border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true">
+                    <input type="email" id="newsletter-email" placeholder="Seu melhor e-mail" required class="w-full flex-grow px-4 py-3 rounded-lg text-slate-800 bg-white border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class="btn btn-primary flex-shrink-0">Inscrever</button>
                 </form>
             </div>
@@ -389,8 +377,8 @@
                 <div>
                     <h4 class="font-semibold mb-4">Siga-nos</h4>
                     <div class="flex space-x-4">
-                        <a href="https://www.instagram.com/sanseidecants/" target="_blank" class="footer-link" aria-label="Siga-nos no Instagram"><i data-feather="instagram"></i></a>
-                        <a href="#" class="footer-link" aria-label="Siga-nos no Facebook"><i data-feather="facebook"></i></a>
+                        <a href="https://www.instagram.com/sanseidecants/" target="_blank" class="footer-link"><i data-feather="instagram"></i></a>
+                        <a href="#" class="footer-link"><i data-feather="facebook"></i></a>
                     </div>
                 </div>
             </div>
@@ -402,34 +390,30 @@
 
     <!-- =========== Modais =========== -->
     <!-- Shopping Cart Modal -->
-    <div id="cart-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden" aria-hidden="true"></div>
-    <div id="cart-modal" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[70] transform translate-x-full transition-transform duration-300" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
+    <div id="cart-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden"></div>
+    <div id="cart-modal" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[70] transform translate-x-full transition-transform duration-300">
         <div class="flex flex-col h-full">
-            <div class="flex justify-between items-center p-6 border-b"><h2 id="cart-modal-title" class="font-heading text-2xl font-bold">Seu Carrinho</h2><button id="close-cart-button" class="text-slate-500 hover:text-slate-800" aria-label="Fechar carrinho"><i data-feather="x" class="w-6 h-6"></i></button></div>
+            <div class="flex justify-between items-center p-6 border-b"><h2 class="font-heading text-2xl font-bold">Seu Carrinho</h2><button id="close-cart-button" class="text-slate-500 hover:text-slate-800"><i data-feather="x" class="w-6 h-6"></i></button></div>
             <div class="flex-grow overflow-y-auto">
                 <div id="cart-items" class="p-6"></div>
                 <div class="p-6 border-t">
                     <h3 class="font-semibold mb-2 text-lg">Calcular Frete</h3>
                     <div id="shipping-calculator" class="flex gap-2 mb-4">
-                        <label for="cep-input" class="sr-only">Seu CEP</label>
-                        <input type="text" id="cep-input" placeholder="Seu CEP" class="w-full px-4 py-2 border rounded-md focus:ring-2 ring-indigo-500" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" title="Formato: 12345-678 ou 12345678" required aria-required="true">
-                        <button id="calculate-shipping-btn" class="bg-slate-800 text-white px-4 rounded-md hover:bg-black disabled:bg-slate-400" aria-label="Calcular Frete">
+                        <input type="text" id="cep-input" placeholder="Seu CEP" class="w-full px-4 py-2 border rounded-md focus:ring-2 ring-indigo-500" maxlength="9">
+                        <button id="calculate-shipping-btn" class="bg-slate-800 text-white px-4 rounded-md hover:bg-black disabled:bg-slate-400">
                             <span class="loader-sm hidden"></span>
                             <span class="btn-text">Calcular</span>
                         </button>
                     </div>
-                    <div id="shipping-options" class="space-y-2" role="radiogroup" aria-labelledby="shipping-options-label">
-                        <span id="shipping-options-label" class="sr-only">Opções de Frete</span>
-                    </div>
+                    <div id="shipping-options" class="space-y-2"></div>
                 </div>
             </div>
             <div class="p-6 border-t bg-slate-50">
                 <form id="coupon-form" class="flex gap-2 mb-4">
-                    <label for="coupon-input" class="sr-only">Código do cupom</label>
                     <input type="text" id="coupon-input" placeholder="Código do cupom" class="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button type="submit" class="btn btn-secondary !py-2 !px-4 !rounded-md !shadow-none">Aplicar</button>
                 </form>
-                <div id="discount-info" class="text-sm text-green-600 mb-2" role="status" aria-live="polite"></div>
+                <div id="discount-info" class="text-sm text-green-600 mb-2"></div>
                 <div class="space-y-1 text-lg">
                     <div class="flex justify-between"><span>Subtotal</span><span id="cart-subtotal">R$ 0,00</span></div>
                     <div id="shipping-cost-line" class="flex justify-between hidden"><span>Frete</span><span id="shipping-cost">R$ 0,00</span></div>
@@ -438,31 +422,31 @@
                     <span>Total</span>
                     <span id="cart-total">R$ 0,00</span>
                 </div>
-                <button id="checkout-button" class="mt-4 w-full btn btn-primary disabled:bg-slate-400 disabled:cursor-not-allowed" aria-label="Finalizar Compra">Finalizar Compra</button>
+                <button id="checkout-button" class="mt-4 w-full btn btn-primary disabled:bg-slate-400 disabled:cursor-not-allowed">Finalizar Compra</button>
             </div>
         </div>
     </div>
 
     <!-- Product Details Modal -->
-    <div id="product-details-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden" aria-hidden="true"></div>
-    <div id="product-details-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-4xl bg-white rounded-lg shadow-xl z-[70] hidden opacity-0 transform scale-95 transition-all duration-300" role="dialog" aria-modal="true" aria-labelledby="product-details-title">
+    <div id="product-details-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden"></div>
+    <div id="product-details-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-4xl bg-white rounded-lg shadow-xl z-[70] hidden opacity-0 transform scale-95 transition-all duration-300">
         <div id="product-details-content-wrapper" class="relative max-h-[90vh] overflow-y-auto">
-             <button id="close-product-details-modal" class="absolute top-4 right-4 text-slate-500 hover:text-black z-10 bg-white rounded-full p-1" aria-label="Fechar detalhes do produto"><i data-feather="x"></i></button>
+             <button id="close-product-details-modal" class="absolute top-4 right-4 text-slate-500 hover:text-black z-10 bg-white rounded-full p-1"><i data-feather="x"></i></button>
             <div id="product-details-main-content" class="flex flex-col md:flex-row"></div>
             <div id="product-details-extra-content" class="p-8 border-t"></div>
         </div>
     </div>
 
     <!-- Auth Modal -->
-    <div id="auth-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden" aria-hidden="true"></div>
-    <div id="auth-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-md bg-white rounded-lg shadow-xl z-[70] hidden p-8 opacity-0 transform scale-95 transition-all duration-300" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
-        <button id="close-auth-modal" class="absolute top-4 right-4 text-slate-500 hover:text-black" aria-label="Fechar modal de autenticação"><i data-feather="x"></i></button>
+    <div id="auth-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden"></div>
+    <div id="auth-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-md bg-white rounded-lg shadow-xl z-[70] hidden p-8 opacity-0 transform scale-95 transition-all duration-300">
+        <button id="close-auth-modal" class="absolute top-4 right-4 text-slate-500 hover:text-black"><i data-feather="x"></i></button>
         <div id="auth-content"></div>
     </div>
 
     <!-- Custom Confirmation Modal -->
-    <div id="confirmation-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[80] hidden" aria-hidden="true"></div>
-    <div id="confirmation-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-sm bg-white rounded-lg shadow-xl z-[90] hidden p-8 opacity-0 transform scale-95 transition-all duration-300" role="dialog" aria-modal="true" aria-labelledby="confirmation-modal-title" aria-describedby="confirmation-modal-message">
+    <div id="confirmation-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[80] hidden"></div>
+    <div id="confirmation-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-sm bg-white rounded-lg shadow-xl z-[90] hidden p-8 opacity-0 transform scale-95 transition-all duration-300">
         <h3 id="confirmation-modal-title" class="font-heading text-xl font-bold mb-4">Confirmação</h3>
         <p id="confirmation-modal-message" class="text-slate-700 mb-6 leading-relaxed"></p>
         <div class="flex justify-end gap-4">
@@ -472,22 +456,22 @@
     </div>
 
     <!-- Mobile Fixed Bottom Navigation Bar -->
-    <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden shadow-lg" role="navigation" aria-label="Navegação Inferior Mobile">
+    <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden shadow-lg">
         <div class="flex justify-around items-center h-16">
-            <a href="#" data-page="inicio" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 active" aria-label="Início" aria-current="page">
+            <a href="#" data-page="inicio" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 active">
                 <i data-feather="home" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Início</span>
             </a>
-            <button id="mobile-bottom-search-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300" aria-label="Buscar">
+            <button id="mobile-bottom-search-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300">
                 <i data-feather="search" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Buscar</span>
             </button>
-            <button id="mobile-bottom-cart-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 relative" aria-label="Carrinho de compras">
+            <button id="mobile-bottom-cart-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 relative">
                 <i data-feather="shopping-cart" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Carrinho</span>
                 <span id="mobile-cart-count" class="cart-count-badge">0</span>
             </button>
-            <a href="#" id="mobile-bottom-user-link" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300" aria-label="Minha Conta">
+            <a href="#" id="mobile-bottom-user-link" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300">
                 <i data-feather="user" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Conta</span>
             </a>
@@ -495,8 +479,8 @@
     </nav>
 
 
-    <div id="toast-notification" class="fixed top-5 right-5 z-[80]" role="status" aria-live="polite"></div>
-    <div id="loader" class="fixed inset-0 z-[90] flex items-center justify-center bg-white/70 backdrop-blur-sm hidden" role="status" aria-label="Carregando">
+    <div id="toast-notification" class="fixed top-5 right-5 z-[80]"></div>
+    <div id="loader" class="fixed inset-0 z-[90] flex items-center justify-center bg-white/70 backdrop-blur-sm hidden">
         <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16"></div>
     </div>
 
