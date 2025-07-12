@@ -22,6 +22,20 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Small loader for buttons */
+.loader-sm {
+    border: 2px solid #f3f3f3; /* Light grey */
+    border-top: 2px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+
 /* =================================================================
    HEADER E NAVEGAÇÃO
 ================================================================= */
@@ -46,102 +60,84 @@ body {
 }
 
 .nav-icon {
-    @apply text-slate-500 hover:text-indigo-600 transition-colors duration-300 p-2 rounded-full hover:bg-slate-100;
+    @apply text-slate-500 hover:text-indigo-600 transition-colors duration-300;
 }
 
 .cart-count-badge {
-    @apply absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-sans;
+    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center;
 }
 
-/* --- Novos estilos para o menu mobile (conforme a imagem) --- */
-.mobile-nav-item {
-    @apply block w-full text-left py-3 px-4 text-base font-medium text-slate-700 relative;
-    /* Removido: border-bottom: 1px solid #e2e8f0; */ /* A borda será aplicada ao LI pai */
-    transition: color 0.2s ease-in-out; /* Transição apenas para a cor */
+.mobile-nav-link {
+    @apply block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200;
 }
 
-.mobile-nav-item:hover {
-    @apply text-indigo-700; /* Apenas muda a cor do texto no hover */
-    background-color: transparent; /* Garante que não haja fundo no hover */
+.mobile-bottom-nav-link {
+    @apply relative flex-grow text-center py-2;
 }
 
-/* Adicionado: Borda inferior para os itens da lista do menu mobile */
-#mobile-menu nav ul li {
-    border-bottom: 1px solid #e2e8f0; /* Aplica a borda ao LI */
-}
-
-.mobile-nav-item.with-arrow {
-    @apply flex justify-between items-center;
-}
-.mobile-nav-item.with-arrow i {
-    @apply ml-auto; /* Empurra a seta para a direita */
-}
-
-/* Remove a borda inferior do último item da lista principal do menu */
-#mobile-menu nav ul li:last-child { /* Aplicar diretamente ao LI */
-    border-bottom: none;
+.mobile-bottom-nav-link.active {
+    @apply text-indigo-600;
 }
 
 /* =================================================================
-   BOTÕES
+   BOTÕES GLOBAIS
 ================================================================= */
 .btn {
-    @apply py-3 px-8 rounded-full font-bold text-sm tracking-wider uppercase transition-all duration-300 shadow-lg hover:shadow-xl;
+    @apply inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out;
 }
 
 .btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-700;
+    @apply bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl;
 }
 
 .btn-secondary {
-    @apply bg-white text-slate-800 border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400;
+    @apply bg-slate-200 text-slate-800 hover:bg-slate-300;
 }
-
 
 /* =================================================================
-   CARDS (Produto e Categoria)
+   SEÇÕES DA PÁGINA INICIAL
 ================================================================= */
-.product-card {
-    @apply bg-white rounded-lg overflow-hidden group transition-all duration-300;
-}
-
-.product-card-image-wrapper {
-    @apply bg-slate-100 overflow-hidden;
-}
-
-.product-card-image {
-    @apply w-full h-full object-cover group-hover:scale-105 transition-transform duration-500;
-}
-
 .category-card {
-    @apply relative h-80 rounded-lg overflow-hidden block bg-cover bg-center group;
+    @apply relative block h-64 rounded-lg overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl;
+    background-size: cover;
+    background-position: center;
 }
 
 .category-card-overlay {
-    @apply absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-all duration-300 flex items-center justify-center;
+    @apply absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center transition-all duration-300 hover:bg-opacity-60;
 }
 
 .category-card-title {
-    @apply text-white font-heading text-3xl font-bold transform group-hover:scale-105 transition-transform duration-300;
+    @apply text-white font-heading text-3xl font-bold;
 }
 
 /* =================================================================
-   COMPONENTES (FAQ, etc.)
+   CARDS DE PRODUTO
 ================================================================= */
-/* FIX: Added styles to control the FAQ accordion animation */
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
+.group:hover .quick-view-btn {
+    opacity: 1;
 }
 
-/* Styles for the "fly-to-cart" animation */
+.wishlist-heart {
+    @apply text-slate-400 hover:text-red-500 transition-colors duration-200;
+}
+
+.wishlist-heart.active {
+    @apply text-red-500 fill-current; /* Fill heart when active */
+}
+
+.feather-star.filled {
+    fill: #D4AF37; /* Gold color for filled stars */
+    color: #D4AF37;
+}
+
+/* Fly to cart animation */
 .fly-to-cart {
     position: fixed;
-    z-index: 100;
     transition: all 1s cubic-bezier(0.5, -0.5, 0.5, 1.5); /* Adjust cubic-bezier for desired effect */
     border-radius: 50%;
     object-fit: cover;
+    z-index: 100; /* Ensure it's above other elements */
 }
 
 /* Custom styles for price range slider */
@@ -180,13 +176,62 @@ input[type="range"].range-slider::-moz-range-thumb {
    FOOTER
 ================================================================= */
 .footer-link {
-    @apply text-slate-400 hover:text-white transition-colors duration-300;
+    @apply text-slate-400 hover:text-white transition-colors duration-200;
 }
 
-/* Mobile Fixed Bottom Navigation */
-#mobile-bottom-nav .mobile-bottom-nav-link.active {
-    @apply text-indigo-600;
+/* =================================================================
+   MODAIS
+================================================================= */
+/* General modal overlay transition */
+#cart-modal-overlay,
+#product-details-modal-overlay,
+#auth-modal-overlay,
+#confirmation-modal-overlay {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 1; /* Default to visible for transition, hidden by JS */
 }
-#mobile-bottom-nav .mobile-bottom-nav-link.active i {
-    @apply fill-current; /* Fills the icon when active */
+
+#cart-modal-overlay.hidden,
+#product-details-modal-overlay.hidden,
+#auth-modal-overlay.hidden,
+#confirmation-modal-overlay.hidden {
+    opacity: 0;
+}
+
+/* Modal specific transitions (for transform/scale) */
+#cart-modal,
+#product-details-modal,
+#auth-modal,
+#confirmation-modal {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+#product-details-modal.hidden,
+#auth-modal.hidden,
+#confirmation-modal.hidden {
+    transform: scale(0.95);
+    opacity: 0;
+    visibility: hidden;
+}
+
+#cart-modal.translate-x-full {
+    transform: translateX(100%);
+}
+
+#cart-modal.hidden {
+    visibility: hidden;
+}
+
+/* Ensure modals are visible when active */
+#product-details-modal:not(.hidden),
+#auth-modal:not(.hidden),
+#confirmation-modal:not(.hidden) {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+#cart-modal:not(.translate-x-full) {
+    transform: translateX(0);
+    visibility: visible;
 }
