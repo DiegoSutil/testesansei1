@@ -30,15 +30,15 @@
                 <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="Sansei Decants Logo" class="h-20">
             </div>
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Painel de Administração</h2>
-            <div id="auth-message" class="hidden mb-4 p-3 rounded-md text-center"></div>
+            <div id="auth-message" class="hidden mb-4 p-3 rounded-md text-center" role="alert" aria-live="assertive"></div>
             <form id="login-form">
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" aria-required="true">
                 </div>
                 <div class="mb-6">
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Senha</label>
-                    <input type="password" id="password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="password" id="password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" aria-required="true">
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Login
@@ -49,7 +49,7 @@
 
     <!-- Admin Panel -->
     <div id="admin-panel" class="min-h-screen bg-gray-100 hidden">
-        <aside class="w-64 bg-slate-800 text-white fixed top-0 left-0 h-full p-6 flex flex-col shadow-lg">
+        <aside class="w-64 bg-slate-800 text-white fixed top-0 left-0 h-full p-6 flex flex-col shadow-lg" role="navigation" aria-label="Navegação do Painel de Administração">
             <div class="flex items-center mb-8">
                 <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="Logo" class="h-10 w-10 mr-3 rounded-full">
                 <h1 class="text-2xl font-semibold">Admin Panel</h1>
@@ -57,37 +57,37 @@
             <nav class="flex-grow">
                 <ul>
                     <li class="mb-2">
-                        <a href="#" data-view="dashboard" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                        <a href="#" data-view="dashboard" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200" aria-label="Ver Dashboard">
                             <i data-feather="grid" class="w-5 h-5 mr-3"></i>
                             Dashboard
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" data-view="products" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                        <a href="#" data-view="products" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200" aria-label="Gerenciar Produtos">
                             <i data-feather="box" class="w-5 h-5 mr-3"></i>
                             Produtos
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" data-view="orders" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                        <a href="#" data-view="orders" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200" aria-label="Gerenciar Encomendas">
                             <i data-feather="shopping-cart" class="w-5 h-5 mr-3"></i>
                             Encomendas
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" data-view="reviews" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                        <a href="#" data-view="reviews" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200" aria-label="Gerenciar Avaliações">
                             <i data-feather="star" class="w-5 h-5 mr-3"></i>
                             Avaliações
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" data-view="coupons" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                        <a href="#" data-view="coupons" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200" aria-label="Gerenciar Cupons">
                             <i data-feather="tag" class="w-5 h-5 mr-3"></i>
                             Cupões
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" data-view="reels" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                        <a href="#" data-view="reels" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200" aria-label="Gerenciar Reels">
                             <i data-feather="film" class="w-5 h-5 mr-3"></i>
                             Reels
                         </a>
@@ -99,7 +99,7 @@
                     <i data-feather="user" class="w-4 h-4 mr-2"></i>
                     <span id="admin-email"></span>
                 </div>
-                <button id="logout-button" class="w-full flex items-center justify-center p-3 rounded-lg bg-red-600 hover:bg-red-700 transition-colors duration-200">
+                <button id="logout-button" class="w-full flex items-center justify-center p-3 rounded-lg bg-red-600 hover:bg-red-700 transition-colors duration-200" aria-label="Sair do Painel de Administração">
                     <i data-feather="log-out" class="w-5 h-5 mr-2"></i>
                     Logout
                 </button>
@@ -152,15 +152,15 @@
                     <input type="hidden" id="product-id">
                     <div>
                         <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
-                        <input type="text" id="product-name" name="product-name" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="text" id="product-name" name="product-name" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
                     </div>
                     <div>
                         <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
-                        <input type="number" id="product-price" name="product-price" step="0.01" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="number" id="product-price" name="product-price" step="0.01" min="0.01" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="0.01">
                     </div>
                     <div>
                         <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                        <select id="product-category" name="product-category" required class="w-full px-3 py-2 border rounded-md">
+                        <select id="product-category" name="product-category" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
                             <option value="">Selecione uma categoria</option>
                             <option value="perfume">Perfume</option>
                             <option value="decant">Decant</option>
@@ -171,11 +171,11 @@
                     </div>
                     <div>
                         <label for="product-stock" class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-                        <input type="number" id="product-stock" name="product-stock" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="number" id="product-stock" name="product-stock" min="0" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="0">
                     </div>
                     <div class="md:col-span-2">
                         <label for="product-image" class="block text-sm font-medium text-gray-700 mb-1">URL da Imagem</label>
-                        <input type="url" id="product-image" name="product-image" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="url" id="product-image" name="product-image" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
                     </div>
                     <div class="md:col-span-2">
                         <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
@@ -188,15 +188,15 @@
                 </form>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg" role="table" aria-label="Lista de Produtos">
                         <thead>
                             <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="py-3 px-2">Imagem</th>
-                                <th class="py-3 px-2">Nome</th>
-                                <th class="py-3 px-2">Categoria</th>
-                                <th class="py-3 px-2">Preço</th>
-                                <th class="py-3 px-2">Stock</th>
-                                <th class="py-3 px-2">Ações</th>
+                                <th class="py-3 px-2" scope="col">Imagem</th>
+                                <th class="py-3 px-2" scope="col">Nome</th>
+                                <th class="py-3 px-2" scope="col">Categoria</th>
+                                <th class="py-3 px-2" scope="col">Preço</th>
+                                <th class="py-3 px-2" scope="col">Stock</th>
+                                <th class="py-3 px-2" scope="col">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="product-list-body" class="divide-y divide-gray-200">
@@ -205,24 +205,24 @@
                     </table>
                 </div>
                 <div class="flex justify-between items-center mt-4">
-                    <button id="prev-product-page" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 disabled:opacity-50" disabled>Anterior</button>
-                    <span id="product-page-info" class="text-gray-600">Página 1</span>
-                    <button id="next-product-page" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50">Próxima</button>
+                    <button id="prev-product-page" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 disabled:opacity-50" disabled aria-label="Página anterior de produtos">Anterior</button>
+                    <span id="product-page-info" class="text-gray-600" aria-live="polite">Página 1</span>
+                    <button id="next-product-page" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50" aria-label="Próxima página de produtos">Próxima</button>
                 </div>
             </div>
 
             <div id="view-orders" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
                 <h3 class="text-xl font-semibold mb-4">Gerir Encomendas</h3>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg" role="table" aria-label="Lista de Encomendas">
                         <thead>
                             <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="py-3 px-2">ID Encomenda</th>
-                                <th class="py-3 px-2">Email do Cliente</th>
-                                <th class="py-3 px-2">Data</th>
-                                <th class="py-3 px-2">Total</th>
-                                <th class="py-3 px-2">Estado</th>
-                                <th class="py-3 px-2">Itens</th>
+                                <th class="py-3 px-2" scope="col">ID Encomenda</th>
+                                <th class="py-3 px-2" scope="col">Email do Cliente</th>
+                                <th class="py-3 px-2" scope="col">Data</th>
+                                <th class="py-3 px-2" scope="col">Total</th>
+                                <th class="py-3 px-2" scope="col">Estado</th>
+                                <th class="py-3 px-2" scope="col">Itens</th>
                             </tr>
                         </thead>
                         <tbody id="order-list-body" class="divide-y divide-gray-200">
@@ -235,14 +235,14 @@
             <div id="view-reviews" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
                 <h3 class="text-xl font-semibold mb-4">Gerir Avaliações</h3>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg" role="table" aria-label="Lista de Avaliações">
                         <thead>
                             <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="py-3 px-2">Produto</th>
-                                <th class="py-3 px-2">Utilizador</th>
-                                <th class="py-3 px-2">Rating</th>
-                                <th class="py-3 px-2">Comentário</th>
-                                <th class="py-3 px-2">Ações</th>
+                                <th class="py-3 px-2" scope="col">Produto</th>
+                                <th class="py-3 px-2" scope="col">Utilizador</th>
+                                <th class="py-3 px-2" scope="col">Rating</th>
+                                <th class="py-3 px-2" scope="col">Comentário</th>
+                                <th class="py-3 px-2" scope="col">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="review-list-body" class="divide-y divide-gray-200">
@@ -257,11 +257,11 @@
                 <form id="add-coupon-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
                         <label for="coupon-code" class="block text-sm font-medium text-gray-700 mb-1">Código do Cupom</label>
-                        <input type="text" id="coupon-code" name="coupon-code" required class="w-full px-3 py-2 border rounded-md uppercase">
+                        <input type="text" id="coupon-code" name="coupon-code" required class="w-full px-3 py-2 border rounded-md uppercase" aria-required="true">
                     </div>
                     <div>
                         <label for="coupon-discount" class="block text-sm font-medium text-gray-700 mb-1">Desconto (%)</label>
-                        <input type="number" id="coupon-discount" name="coupon-discount" step="1" min="1" max="100" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="number" id="coupon-discount" name="coupon-discount" step="1" min="1" max="100" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="1" aria-valuemax="100">
                     </div>
                     <div class="md:col-span-2">
                         <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Adicionar Cupom</button>
@@ -269,12 +269,12 @@
                 </form>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg" role="table" aria-label="Lista de Cupons">
                         <thead>
                             <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="py-3 px-2">Código</th>
-                                <th class="py-3 px-2">Desconto</th>
-                                <th class="py-3 px-2">Ações</th>
+                                <th class="py-3 px-2" scope="col">Código</th>
+                                <th class="py-3 px-2" scope="col">Desconto</th>
+                                <th class="py-3 px-2" scope="col">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="coupon-list-body" class="divide-y divide-gray-200">
@@ -289,11 +289,11 @@
                 <form id="add-reel-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
                         <label for="reel-url" class="block text-sm font-medium text-gray-700 mb-1">URL do Reel</label>
-                        <input type="url" id="reel-url" name="reel-url" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="url" id="reel-url" name="reel-url" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
                     </div>
                     <div>
                         <label for="reel-thumbnail" class="block text-sm font-medium text-gray-700 mb-1">URL da Thumbnail</label>
-                        <input type="url" id="reel-thumbnail" name="reel-thumbnail" required class="w-full px-3 py-2 border rounded-md">
+                        <input type="url" id="reel-thumbnail" name="reel-thumbnail" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
                     </div>
                     <div class="md:col-span-2">
                         <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Adicionar Reel</button>
@@ -301,12 +301,12 @@
                 </form>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg" role="table" aria-label="Lista de Reels">
                         <thead>
                             <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="py-3 px-2">Thumbnail</th>
-                                <th class="py-3 px-2">URL</th>
-                                <th class="py-3 px-2">Ações</th>
+                                <th class="py-3 px-2" scope="col">Thumbnail</th>
+                                <th class="py-3 px-2" scope="col">URL</th>
+                                <th class="py-3 px-2" scope="col">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="reel-list-body" class="divide-y divide-gray-200">
@@ -319,14 +319,14 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="admin-toast" class="fixed top-5 right-5 bg-white text-slate-800 px-6 py-3 rounded-xl shadow-lg flex items-center gap-4 opacity-0 transform translate-y-10 transition-all duration-300 z-50 border-l-4 border-green-400">
+    <div id="admin-toast" class="fixed top-5 right-5 bg-white text-slate-800 px-6 py-3 rounded-xl shadow-lg flex items-center gap-4 opacity-0 transform translate-y-10 transition-all duration-300 z-50 border-l-4 border-green-400" role="status" aria-live="polite">
         <span id="admin-toast-icon"></span>
         <span id="admin-toast-message" class="font-medium"></span>
     </div>
 
     <!-- Custom Confirmation Modal (Admin) -->
-    <div id="admin-confirmation-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[80] hidden"></div>
-    <div id="admin-confirmation-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-sm bg-white rounded-lg shadow-xl z-[90] hidden p-8 opacity-0 transform scale-95 transition-all duration-300">
+    <div id="admin-confirmation-modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[80] hidden" aria-hidden="true"></div>
+    <div id="admin-confirmation-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-sm bg-white rounded-lg shadow-xl z-[90] hidden p-8 opacity-0 transform scale-95 transition-all duration-300" role="dialog" aria-modal="true" aria-labelledby="admin-confirmation-modal-title" aria-describedby="admin-confirmation-modal-message">
         <h3 id="admin-confirmation-modal-title" class="font-heading text-xl font-bold mb-4">Confirmação</h3>
         <p id="admin-confirmation-modal-message" class="text-slate-700 mb-6 leading-relaxed"></p>
         <div class="flex justify-end gap-4">
