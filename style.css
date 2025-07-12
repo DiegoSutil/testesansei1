@@ -46,96 +46,20 @@ body {
 }
 
 .nav-icon {
-    @apply text-slate-500 hover:text-indigo-600 transition-colors duration-300 p-2 rounded-full hover:bg-slate-100;
+    @apply text-slate-500 hover:text-indigo-600 transition-colors duration-300;
 }
 
 .cart-count-badge {
-    @apply absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-sans;
-}
-
-/* --- Novos estilos para o menu mobile (conforme a imagem) --- */
-.mobile-nav-item {
-    @apply block w-full text-left py-3 px-4 text-base font-medium text-slate-700 relative;
-    /* Removido: border-bottom: 1px solid #e2e8f0; */ /* A borda será aplicada ao LI pai */
-    transition: color 0.2s ease-in-out; /* Transição apenas para a cor */
-}
-
-.mobile-nav-item:hover {
-    @apply text-indigo-700; /* Apenas muda a cor do texto no hover */
-    background-color: transparent; /* Garante que não haja fundo no hover */
-}
-
-/* Adicionado: Borda inferior para os itens da lista do menu mobile */
-#mobile-menu nav ul li {
-    border-bottom: 1px solid #e2e8f0; /* Aplica a borda ao LI */
-}
-
-.mobile-nav-item.with-arrow {
-    @apply flex justify-between items-center;
-}
-.mobile-nav-item.with-arrow i {
-    @apply ml-auto; /* Empurra a seta para a direita */
-}
-
-/* Remove a borda inferior do último item da lista principal do menu */
-#mobile-menu nav ul li:last-child { /* Aplicar diretamente ao LI */
-    border-bottom: none;
+    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center;
 }
 
 /* =================================================================
-   BOTÕES
+   PRODUCT CARDS & LISTINGS
 ================================================================= */
-.btn {
-    @apply py-3 px-8 rounded-full font-bold text-sm tracking-wider uppercase transition-all duration-300 shadow-lg hover:shadow-xl;
+.transition-all-ease {
+    transition: all 0.3s ease-in-out;
 }
 
-.btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-700;
-}
-
-.btn-secondary {
-    @apply bg-white text-slate-800 border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400;
-}
-
-
-/* =================================================================
-   CARDS (Produto e Categoria)
-================================================================= */
-.product-card {
-    @apply bg-white rounded-lg overflow-hidden group transition-all duration-300;
-}
-
-.product-card-image-wrapper {
-    @apply bg-slate-100 overflow-hidden;
-}
-
-.product-card-image {
-    @apply w-full h-full object-cover group-hover:scale-105 transition-transform duration-500;
-}
-
-.category-card {
-    @apply relative h-80 rounded-lg overflow-hidden block bg-cover bg-center group;
-}
-
-.category-card-overlay {
-    @apply absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-all duration-300 flex items-center justify-center;
-}
-
-.category-card-title {
-    @apply text-white font-heading text-3xl font-bold transform group-hover:scale-105 transition-transform duration-300;
-}
-
-/* =================================================================
-   COMPONENTES (FAQ, etc.)
-================================================================= */
-/* FIX: Added styles to control the FAQ accordion animation */
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
-}
-
-/* Styles for the "fly-to-cart" animation */
 .fly-to-cart {
     position: fixed;
     z-index: 100;
@@ -177,16 +101,42 @@ input[type="range"].range-slider::-moz-range-thumb {
 
 
 /* =================================================================
-   FOOTER
+   Mobile Bottom Navigation
 ================================================================= */
-.footer-link {
-    @apply text-slate-400 hover:text-white transition-colors duration-300;
+.mobile-bottom-nav-link {
+    @apply relative flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 py-2 px-3;
 }
 
-/* Mobile Fixed Bottom Navigation */
-#mobile-bottom-nav .mobile-bottom-nav-link.active {
-    @apply text-indigo-600;
+.mobile-bottom-nav-link.active {
+    @apply text-indigo-600; /* Active color for mobile bottom nav */
 }
-#mobile-bottom-nav .mobile-bottom-nav-link.active i {
-    @apply fill-current; /* Fills the icon when active */
+
+/* =================================================================
+   Star Rating Icons
+================================================================= */
+.star-rating .feather-star.filled {
+    fill: #FBBF24; /* Tailwind yellow-500 */
+    color: #FBBF24; /* Tailwind yellow-500 */
+}
+
+/* =================================================================
+   Loader Small (for buttons)
+================================================================= */
+.loader-sm {
+    border: 2px solid #f3f3f3; /* Light grey */
+    border-top: 2px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* =================================================================
+   Wishlist Heart
+================================================================= */
+.wishlist-heart.active i {
+    fill: #EF4444; /* Tailwind red-500 */
+    color: #EF4444; /* Tailwind red-500 */
 }
