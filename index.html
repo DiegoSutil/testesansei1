@@ -143,28 +143,54 @@
                 </div>
             </section>
             
-            <!-- Secção de Categorias -->
+            <!-- Nova Seção de Categorias com Imagens (similar à imagem 2.jpg) -->
             <section class="py-20">
                 <div class="container mx-auto px-6">
                     <div class="text-center mb-12" data-aos="fade-up">
                         <h2 class="font-heading text-4xl font-bold">Navegue por Categorias</h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up" data-aos-delay="200">
-                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="masculino" style="background-image: url('https://images.unsplash.com/photo-1557180295-76eee20542e8?q=80&w=1887&auto=format&fit=crop');" aria-label="Ver perfumes masculinos">
-                            <div class="category-card-overlay">
-                                <h3 class="category-card-title">Masculinos</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="100" data-page="fragrancias" data-category-filter="perfume">
+                            <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/2.jpg" alt="Perfumes" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                <span class="text-white text-2xl font-bold">PERFUMES</span>
                             </div>
                         </a>
-                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="feminino" style="background-image: url('https://images.unsplash.com/photo-1622635995292-350a3921644e?q=80&w=1887&auto=format&fit=crop');" aria-label="Ver perfumes femininos">
-                            <div class="category-card-overlay">
-                                <h3 class="category-card-title">Femininos</h3>
+                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="200" data-page="fragrancias" data-category-filter="hidratantes">
+                            <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/3.jpg" alt="Hidratantes" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                <span class="text-white text-2xl font-bold">HIDRATANTES</span>
                             </div>
                         </a>
-                        <a href="#" class="category-card" data-page="fragrancias" data-category-filter="unissex" style="background-image: url('https://images.unsplash.com/photo-1617121542980-e383d8b4515a?q=80&w=1887&auto=format&fit=crop');" aria-label="Ver perfumes unissex">
-                            <div class="category-card-overlay">
-                                <h3 class="category-card-title">Unissex</h3>
+                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="300" data-page="fragrancias" data-category-filter="home-spray">
+                            <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/4.png" alt="Home Spray" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                <span class="text-white text-2xl font-bold">HOME-SPRAY</span>
                             </div>
                         </a>
+                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="400" data-page="fragrancias" data-category-filter="difusores">
+                            <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/5.jpg" alt="Difusores" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                <span class="text-white text-2xl font-bold">DIFUSORES</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Nova Seção: Conheça Nossa Linha Masculina (similar à imagem 3.jpg) -->
+            <section class="bg-white py-20">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="md:w-1/2" data-aos="fade-right">
+                            <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/3.jpg" alt="Linha Masculina" class="w-full h-auto rounded-lg shadow-xl">
+                        </div>
+                        <div class="md:w-1/2 text-center md:text-left" data-aos="fade-left">
+                            <p class="text-sm text-slate-500 font-semibold mb-2">OS MELHORES AROMAS ESTÃO AQUI!</p>
+                            <h2 class="font-heading text-4xl font-bold mb-6">CONHEÇA NOSSA LINHA MASCULINA</h2>
+                            <p class="text-slate-600 mb-8 leading-relaxed">Apresentamos a você a nossa linha masculina exclusiva, com perfumes elaborados por meio das melhores matérias-primas do mercado. Cada aroma é uma expressão única de personalidade e estilo.</p>
+                            <a href="#" data-page="fragrancias" data-category-filter="masculino" class="btn btn-secondary nav-link-button">VER AGORA</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -372,33 +398,67 @@
         </section>
         <div class="container mx-auto px-6 py-16">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="col-span-2 md:col-span-1">
-                    <h4 class="font-bold text-lg mb-4">SANSEI DECANTS</h4>
+                <!-- Coluna 1: Logo e Descrição -->
+                <div class="col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="SANSEI DECANTS Logo" class="h-20 w-auto mb-4">
                     <p class="text-slate-400 text-sm leading-relaxed">A sua porta de entrada para o universo da perfumaria de luxo.</p>
+                    <div class="flex space-x-4 mt-6">
+                        <a href="https://www.instagram.com/sanseidecants/" target="_blank" class="footer-link" aria-label="Siga-nos no Instagram"><i data-feather="instagram" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Siga-nos no Facebook"><i data-feather="facebook" class="w-6 h-6"></i></a>
+                    </div>
                 </div>
+
+                <!-- Coluna 2: Institucional -->
                 <div>
-                    <h4 class="font-semibold mb-4">Loja</h4>
+                    <h4 class="font-semibold text-lg mb-4">Institucional</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" data-page="fragrancias" class="footer-link">Fragrâncias</a></li>
-                        <li><a href="#" data-page="decants" class="footer-link">Decants</a></li>
+                        <li><a href="#" data-page="sobre" class="footer-link">Sobre a empresa</a></li>
+                        <li><a href="#" class="footer-link">Política de trocas e devoluções</a></li>
+                        <li><a href="#" class="footer-link">Política de privacidade</a></li>
+                        <li><a href="#" class="footer-link">Pagamento</a></li>
+                        <li><a href="#" class="footer-link">Como comprar</a></li>
+                        <li><a href="#" class="footer-link">Segurança</a></li>
+                        <li><a href="#" class="footer-link">Envio</a></li>
                     </ul>
                 </div>
+
+                <!-- Coluna 3: Fale Conosco -->
                 <div>
-                    <h4 class="font-semibold mb-4">Suporte</h4>
+                    <h4 class="font-semibold text-lg mb-4">Fale Conosco</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" data-page="contato" class="footer-link">Contato</a></li>
-                        <li><a href="#" data-page="faq" class="footer-link">FAQ</a></li>
-                        <li><a href="#" class="footer-link">Política de Privacidade</a></li>
+                        <li class="flex items-center"><i data-feather="mail" class="w-4 h-4 mr-2"></i><a href="mailto:suporte@sanseidecants.com.br" class="footer-link">suporte@sanseidecants.com.br</a></li>
+                        <li class="flex items-center"><i data-feather="phone" class="w-4 h-4 mr-2"></i><a href="tel:+5511999999999" class="footer-link">(11) 99999-9999</a></li>
                     </ul>
                 </div>
+
+                <!-- Coluna 4: Horário de Atendimento -->
                 <div>
-                    <h4 class="font-semibold mb-4">Siga-nos</h4>
-                    <div class="flex space-x-4">
-                        <a href="https://www.instagram.com/sanseidecants/" target="_blank" class="footer-link" aria-label="Siga-nos no Instagram"><i data-feather="instagram"></i></a>
-                        <a href="#" class="footer-link" aria-label="Siga-nos no Facebook"><i data-feather="facebook"></i></a>
+                    <h4 class="font-semibold text-lg mb-4">Horário de Atendimento</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li>Segunda à Sexta: 9h às 18h</li>
+                        <li>Sábado: 9h às 13h</li>
+                    </ul>
+                    <h4 class="font-semibold text-lg mt-6 mb-4">Certificados</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/8.png" alt="Certificado Loja Confiável" class="h-12 w-auto">
+                        <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/4.png" alt="Certificado Ótimo" class="h-12 w-auto">
                     </div>
                 </div>
             </div>
+            
+            <!-- Formas de Pagamento -->
+            <div class="border-t border-slate-700 mt-12 pt-8 text-center">
+                <h4 class="font-semibold text-lg mb-4">Formas de Pagamento</h4>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/visa.png" alt="Visa" class="h-8">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/mastercard.png" alt="Mastercard" class="h-8">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/amex.png" alt="American Express" class="h-8">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/elo.png" alt="Elo" class="h-8">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/pix.png" alt="Pix" class="h-8">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/boleto.png" alt="Boleto" class="h-8">
+                </div>
+            </div>
+
             <div class="border-t border-slate-700 mt-12 pt-8 text-center text-slate-500 text-sm">
                 <p>&copy; 2025 SANSEI DECANTS. Todos os direitos reservados.</p>
             </div>
