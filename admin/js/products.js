@@ -2,8 +2,8 @@
  * @fileoverview Módulo de Gestão de Produtos.
  */
 import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc, getDoc, query, orderBy, limit, startAfter, endBefore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { db } from '../firebase-config.js'; // Importa a instância db do ficheiro de configuração centralizado
-import { DOMElements, showToast, showAdminConfirmationModal } from './ui.js'; // Importa showAdminConfirmationModal
+import { db } from '../../firebase-config.js'; // Caminho corrigido
+import { DOMElements, showToast, showAdminConfirmationModal } from './ui.js';
 import { fetchStats } from './stats.js';
 
 // Estado da paginação
