@@ -2,7 +2,7 @@
  * @fileoverview Módulo de Autenticação para o Painel de Admin.
  */
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { auth } from '../firebase-config.js'; // Importa a instância auth do ficheiro de configuração centralizado
+import { auth } from '../../firebase-config.js'; // Caminho corrigido
 import { DOMElements, showAuthMessage, switchView } from './ui.js';
 import { initializeAdminPanel } from './main.js';
 
