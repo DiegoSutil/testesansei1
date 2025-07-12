@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <link rel="stylesheet" href="admin-style.css">
+    <!-- Caminho corrigido para o CSS do admin -->
+    <link rel="stylesheet" href="./admin/css/admin-style.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
@@ -19,212 +20,300 @@
         .admin-nav-link.active { background-color: #4338ca; color: white; }
         .admin-nav-link { color: #cbd5e1; }
         .admin-nav-link:hover { background-color: #4f46e5; color: white; }
-        /* Loader styles */
-        .loader {
-            border-top-color: #3498db;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
-<body class="bg-slate-50 antialiased">
-
-    <!-- Tela de Autenticação -->
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-slate-800">SANSEI DECANTS</h1>
-                <p class="text-slate-500">Acesso ao Painel de Administração</p>
+<body class="bg-gray-100 text-slate-800">
+    <!-- Login Screen -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700 p-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-center mb-6">
+                <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="Sansei Decants Logo" class="h-20">
             </div>
-            <div id="auth-message" class="mb-4"></div>
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Painel de Administração</h2>
+            <div id="auth-message" class="hidden mb-4 p-3 rounded-md text-center"></div>
             <form id="login-form">
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-slate-600 mb-1">Email</label>
-                    <input type="email" id="email" required class="w-full px-4 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
                 <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-slate-600 mb-1">Senha</label>
-                    <input type="password" id="password" required class="w-full px-4 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+                    <input type="password" id="password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
-                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
-                    Entrar
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Login
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Painel de Administração -->
-    <div id="admin-panel" class="hidden">
-        <div class="flex h-screen bg-slate-50">
-            <!-- Sidebar (Dark Theme) -->
-            <div class="w-64 bg-slate-800 text-white shadow-lg flex flex-col">
-                <div class="p-5 border-b border-slate-700">
-                    <h1 class="text-2xl font-bold text-white">SANSEI <span class="text-indigo-400">ADMIN</span></h1>
-                    <p id="admin-email" class="text-xs text-slate-400 mt-1"></p>
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="min-h-screen bg-gray-100 hidden">
+        <aside class="w-64 bg-slate-800 text-white fixed top-0 left-0 h-full p-6 flex flex-col shadow-lg">
+            <div class="flex items-center mb-8">
+                <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="Logo" class="h-10 w-10 mr-3 rounded-full">
+                <h1 class="text-2xl font-semibold">Admin Panel</h1>
+            </div>
+            <nav class="flex-grow">
+                <ul>
+                    <li class="mb-2">
+                        <a href="#" data-view="dashboard" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                            <i data-feather="grid" class="w-5 h-5 mr-3"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="products" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                            <i data-feather="box" class="w-5 h-5 mr-3"></i>
+                            Produtos
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="orders" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                            <i data-feather="shopping-cart" class="w-5 h-5 mr-3"></i>
+                            Encomendas
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="reviews" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                            <i data-feather="star" class="w-5 h-5 mr-3"></i>
+                            Avaliações
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="coupons" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                            <i data-feather="tag" class="w-5 h-5 mr-3"></i>
+                            Cupões
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" data-view="reels" class="admin-nav-link flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors duration-200">
+                            <i data-feather="film" class="w-5 h-5 mr-3"></i>
+                            Reels
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="mt-auto">
+                <div class="flex items-center text-sm text-gray-400 mb-4">
+                    <i data-feather="user" class="w-4 h-4 mr-2"></i>
+                    <span id="admin-email"></span>
                 </div>
-                <nav class="mt-4 flex-grow px-2 space-y-1">
-                    <a href="#" class="admin-nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors" data-view="dashboard"><i data-feather="grid" class="mr-3 h-5 w-5"></i>Dashboard</a>
-                    <a href="#" class="admin-nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors" data-view="products"><i data-feather="package" class="mr-3 h-5 w-5"></i>Produtos</a>
-                    <a href="#" class="admin-nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors" data-view="orders"><i data-feather="shopping-cart" class="mr-3 h-5 w-5"></i>Encomendas</a>
-                    <a href="#" class="admin-nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors" data-view="reviews"><i data-feather="star" class="mr-3 h-5 w-5"></i>Avaliações</a>
-                    <a href="#" class="admin-nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors" data-view="coupons"><i data-feather="tag" class="mr-3 h-5 w-5"></i>Cupons</a>
-                    <a href="#" class="admin-nav-link flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors" data-view="reels"><i data-feather="film" class="mr-3 h-5 w-5"></i>Reels</a>
-                </nav>
-                <div class="p-4 border-t border-slate-700">
-                     <a href="index.html" target="_blank" class="w-full text-left flex items-center px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 rounded-md transition-colors duration-200">
-                        <i data-feather="external-link" class="mr-3 h-5 w-5"></i>Ver Loja
-                    </a>
-                    <button id="logout-button" class="w-full text-left flex items-center px-4 py-3 text-sm text-slate-300 hover:bg-red-500 hover:text-white rounded-md transition-colors duration-200 mt-2">
-                        <i data-feather="log-out" class="mr-3 h-5 w-5"></i>Terminar Sessão
-                    </button>
+                <button id="logout-button" class="w-full flex items-center justify-center p-3 rounded-lg bg-red-600 hover:bg-red-700 transition-colors duration-200">
+                    <i data-feather="log-out" class="w-5 h-5 mr-2"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="ml-64 p-8">
+            <header class="bg-white shadow-sm rounded-lg p-6 mb-8 flex justify-between items-center">
+                <h2 class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <!-- Future notifications or admin specific actions can go here -->
+                </div>
+            </header>
+
+            <!-- Views -->
+            <div id="view-dashboard" class="admin-view grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Encomendas</p>
+                        <p id="stats-orders" class="text-3xl font-bold text-indigo-600">0</p>
+                    </div>
+                    <i data-feather="shopping-bag" class="w-10 h-10 text-indigo-400"></i>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Produtos</p>
+                        <p id="stats-products" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                    <i data-feather="box" class="w-10 h-10 text-green-400"></i>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Utilizadores</p>
+                        <p id="stats-users" class="text-3xl font-bold text-yellow-600">0</p>
+                    </div>
+                    <i data-feather="users" class="w-10 h-10 text-yellow-400"></i>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Avaliações</p>
+                        <p id="stats-reviews" class="text-3xl font-bold text-purple-600">0</p>
+                    </div>
+                    <i data-feather="message-circle" class="w-10 h-10 text-purple-400"></i>
                 </div>
             </div>
 
-            <!-- Main Content -->
-            <div class="flex-1 flex flex-col overflow-hidden">
-                <main class="flex-1 overflow-x-hidden overflow-y-auto p-8">
-                    <!-- View: Dashboard -->
-                    <div id="view-dashboard" class="admin-view">
-                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Dashboard</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><h3 class="text-slate-500 font-semibold">Encomendas</h3><p id="stats-orders" class="text-4xl font-bold text-slate-800 mt-2">0</p></div>
-                            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><h3 class="text-slate-500 font-semibold">Produtos</h3><p id="stats-products" class="text-4xl font-bold text-slate-800 mt-2">0</p></div>
-                            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><h3 class="text-slate-500 font-semibold">Utilizadores</h3><p id="stats-users" class="text-4xl font-bold text-slate-800 mt-2">0</p></div>
-                            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"><h3 class="text-slate-500 font-semibold">Avaliações</h3><p id="stats-reviews" class="text-4xl font-bold text-slate-800 mt-2">0</p></div>
-                        </div>
+            <div id="view-products" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
+                <h3 class="text-xl font-semibold mb-4">Gerir Produtos</h3>
+                <form id="product-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <input type="hidden" id="product-id">
+                    <div>
+                        <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
+                        <input type="text" id="product-name" name="product-name" required class="w-full px-3 py-2 border rounded-md">
                     </div>
+                    <div>
+                        <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
+                        <input type="number" id="product-price" name="product-price" step="0.01" required class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div>
+                        <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                        <select id="product-category" name="product-category" required class="w-full px-3 py-2 border rounded-md">
+                            <option value="">Selecione uma categoria</option>
+                            <option value="perfume">Perfume</option>
+                            <option value="decant">Decant</option>
+                            <option value="homespray">Home Spray</option>
+                            <option value="difusor">Difusor</option>
+                            <option value="kit">Kit</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="product-stock" class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                        <input type="number" id="product-stock" name="product-stock" required class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="product-image" class="block text-sm font-medium text-gray-700 mb-1">URL da Imagem</label>
+                        <input type="url" id="product-image" name="product-image" required class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                        <textarea id="product-description" name="product-description" rows="3" class="w-full px-3 py-2 border rounded-md"></textarea>
+                    </div>
+                    <div class="md:col-span-2 flex gap-4">
+                        <button type="submit" id="submit-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Adicionar Produto</button>
+                        <button type="button" id="cancel-edit-btn" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 hidden">Cancelar Edição</button>
+                    </div>
+                </form>
 
-                    <!-- View: Produtos -->
-                    <div id="view-products" class="admin-view hidden">
-                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Gerir Produtos</h2>
-                        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                            <h3 class="text-xl font-bold text-slate-700 mb-4">Adicionar / Editar Produto</h3>
-                            <form id="product-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <input type="hidden" id="product-id">
-                                <div class="md:col-span-2"><label for="product-name" class="block text-sm font-medium text-slate-600 mb-1">Nome</label><input type="text" id="product-name" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <div><label for="product-price" class="block text-sm font-medium text-slate-600 mb-1">Preço (R$)</label><input type="number" step="0.01" id="product-price" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <div><label for="product-category" class="block text-sm font-medium text-slate-600 mb-1">Categoria</label><select id="product-category" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"><option value="decant">Decant</option><option value="perfume">Perfume</option></select></div>
-                                <div><label for="product-stock" class="block text-sm font-medium text-slate-600 mb-1">Stock</label><input type="number" id="product-stock" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <div><label for="product-image" class="block text-sm font-medium text-slate-600 mb-1">URL da Imagem</label><input type="url" id="product-image" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <div class="md:col-span-2"><label for="product-description" class="block text-sm font-medium text-slate-600 mb-1">Descrição</label><textarea id="product-description" rows="4" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea></div>
-                                <div class="md:col-span-2 flex items-center gap-4">
-                                    <button type="submit" id="submit-product-btn" class="bg-indigo-600 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-indigo-700 transition-all">Adicionar Produto</button>
-                                    <button type="button" id="cancel-edit-btn" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-lg hover:bg-slate-300 hidden transition-all">Cancelar Edição</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                            <table class="w-full">
-                                <thead class="bg-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Imagem</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Nome</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Categoria</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Preço</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Stock</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="product-list-body" class="divide-y divide-slate-200"></tbody>
-                            </table>
-                        </div>
-                        <div id="products-pagination-controls" class="mt-6 flex justify-between items-center">
-                            <button id="prev-product-page" class="bg-white text-slate-800 font-bold py-2 px-4 rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">Anterior</button>
-                            <span id="product-page-info" class="text-slate-700 font-medium">Página 1</span>
-                            <button id="next-product-page" class="bg-white text-slate-800 font-bold py-2 px-4 rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">Próxima</button>
-                        </div>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="py-3 px-2">Imagem</th>
+                                <th class="py-3 px-2">Nome</th>
+                                <th class="py-3 px-2">Categoria</th>
+                                <th class="py-3 px-2">Preço</th>
+                                <th class="py-3 px-2">Stock</th>
+                                <th class="py-3 px-2">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-list-body" class="divide-y divide-gray-200">
+                            <!-- Product rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex justify-between items-center mt-4">
+                    <button id="prev-product-page" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 disabled:opacity-50" disabled>Anterior</button>
+                    <span id="product-page-info" class="text-gray-600">Página 1</span>
+                    <button id="next-product-page" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50">Próxima</button>
+                </div>
+            </div>
 
-                    <!-- View: Encomendas -->
-                    <div id="view-orders" class="admin-view hidden">
-                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Gerir Encomendas</h2>
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                            <table class="w-full whitespace-nowrap">
-                                <thead class="bg-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">ID</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Cliente</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Data</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Total</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Status</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Itens</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-list-body" class="divide-y divide-slate-200"></tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div id="view-orders" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
+                <h3 class="text-xl font-semibold mb-4">Gerir Encomendas</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="py-3 px-2">ID Encomenda</th>
+                                <th class="py-3 px-2">Email do Cliente</th>
+                                <th class="py-3 px-2">Data</th>
+                                <th class="py-3 px-2">Total</th>
+                                <th class="py-3 px-2">Estado</th>
+                                <th class="py-3 px-2">Itens</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-list-body" class="divide-y divide-gray-200">
+                            <!-- Order rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                    <!-- View: Avaliações -->
-                    <div id="view-reviews" class="admin-view hidden">
-                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Gerir Avaliações</h2>
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                            <table class="w-full whitespace-nowrap">
-                                <thead class="bg-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Produto</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Utilizador</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Rating</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Comentário</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="review-list-body" class="divide-y divide-slate-200"></tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div id="view-reviews" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
+                <h3 class="text-xl font-semibold mb-4">Gerir Avaliações</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="py-3 px-2">Produto</th>
+                                <th class="py-3 px-2">Utilizador</th>
+                                <th class="py-3 px-2">Rating</th>
+                                <th class="py-3 px-2">Comentário</th>
+                                <th class="py-3 px-2">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="review-list-body" class="divide-y divide-gray-200">
+                            <!-- Review rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                    <!-- View: Cupons -->
-                    <div id="view-coupons" class="admin-view hidden">
-                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Gerir Cupons</h2>
-                        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                            <form id="add-coupon-form" class="flex flex-col sm:flex-row items-end gap-4">
-                                <div class="w-full"><label for="coupon-code" class="block text-sm font-medium text-slate-600 mb-1">Código</label><input type="text" id="coupon-code" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <div class="w-full"><label for="coupon-discount" class="block text-sm font-medium text-slate-600 mb-1">Desconto (%)</label><input type="number" step="1" id="coupon-discount" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <button type="submit" class="bg-indigo-600 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-indigo-700 transition-all w-full sm:w-auto flex-shrink-0">Adicionar</button>
-                            </form>
-                        </div>
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                            <table class="w-full">
-                                <thead class="bg-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Código</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Desconto</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="coupon-list-body" class="divide-y divide-slate-200"></tbody>
-                            </table>
-                        </div>
+            <div id="view-coupons" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
+                <h3 class="text-xl font-semibold mb-4">Gerir Cupões</h3>
+                <form id="add-coupon-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="coupon-code" class="block text-sm font-medium text-gray-700 mb-1">Código do Cupom</label>
+                        <input type="text" id="coupon-code" name="coupon-code" required class="w-full px-3 py-2 border rounded-md uppercase">
                     </div>
+                    <div>
+                        <label for="coupon-discount" class="block text-sm font-medium text-gray-700 mb-1">Desconto (%)</label>
+                        <input type="number" id="coupon-discount" name="coupon-discount" step="1" min="1" max="100" required class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Adicionar Cupom</button>
+                    </div>
+                </form>
 
-                    <!-- View: Reels -->
-                    <div id="view-reels" class="admin-view hidden">
-                        <h2 class="text-3xl font-bold text-slate-800 mb-6">Gerir Reels</h2>
-                        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                            <form id="add-reel-form" class="flex flex-col sm:flex-row items-end gap-4">
-                                <div class="w-full"><label for="reel-url" class="block text-sm font-medium text-slate-600 mb-1">URL do Reel</label><input type="url" id="reel-url" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <div class="w-full"><label for="reel-thumbnail" class="block text-sm font-medium text-slate-600 mb-1">URL da Thumbnail</label><input type="url" id="reel-thumbnail" required class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></div>
-                                <button type="submit" class="bg-indigo-600 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-indigo-700 transition-all w-full sm:w-auto flex-shrink-0">Adicionar</button>
-                            </form>
-                        </div>
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                            <table class="w-full">
-                                <thead class="bg-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Thumbnail</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">URL</th>
-                                        <th class="p-4 text-left text-sm font-semibold text-slate-600">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="reel-list-body" class="divide-y divide-slate-200"></tbody>
-                            </table>
-                        </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="py-3 px-2">Código</th>
+                                <th class="py-3 px-2">Desconto</th>
+                                <th class="py-3 px-2">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coupon-list-body" class="divide-y divide-gray-200">
+                            <!-- Coupon rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-reels" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
+                <h3 class="text-xl font-semibold mb-4">Gerir Reels</h3>
+                <form id="add-reel-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="reel-url" class="block text-sm font-medium text-gray-700 mb-1">URL do Reel</label>
+                        <input type="url" id="reel-url" name="reel-url" required class="w-full px-3 py-2 border rounded-md">
                     </div>
-                </main>
+                    <div>
+                        <label for="reel-thumbnail" class="block text-sm font-medium text-gray-700 mb-1">URL da Thumbnail</label>
+                        <input type="url" id="reel-thumbnail" name="reel-thumbnail" required class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Adicionar Reel</button>
+                    </div>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th class="py-3 px-2">Thumbnail</th>
+                                <th class="py-3 px-2">URL</th>
+                                <th class="py-3 px-2">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reel-list-body" class="divide-y divide-gray-200">
+                            <!-- Reel rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -241,11 +330,12 @@
         <h3 id="admin-confirmation-modal-title" class="font-heading text-xl font-bold mb-4">Confirmação</h3>
         <p id="admin-confirmation-modal-message" class="text-slate-700 mb-6 leading-relaxed"></p>
         <div class="flex justify-end gap-4">
-            <button id="admin-confirmation-cancel-btn" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-lg hover:bg-slate-300 transition-all">Cancelar</button>
-            <button id="admin-confirmation-confirm-btn" class="bg-red-600 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-red-700 transition-all">Confirmar</button>
+            <button id="admin-confirmation-cancel-btn" class="bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-md hover:bg-slate-300 transition-colors duration-200">Cancelar</button>
+            <button id="admin-confirmation-confirm-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-md hover:bg-red-700 transition-colors duration-200">Confirmar</button>
         </div>
     </div>
-    
-    <script type="module" src="admin-script.js"></script>
+
+    <!-- Caminho corrigido para o script principal do admin -->
+    <script type="module" src="./admin/js/admin-script.js"></script>
 </body>
 </html>
