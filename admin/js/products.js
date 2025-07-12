@@ -40,12 +40,12 @@ export async function fetchAndRenderProducts(direction = 'first') {
                 q = query(baseQuery, limit(PRODUCTS_PER_PAGE));
                 break;
             case 'next':
-                if (!lastVisibleProduct) return;
+                if (!lastVisibleProduct) return; // Should not happen if next button is disabled correctly
                 productCurrentPage++;
                 q = query(baseQuery, startAfter(lastVisibleProduct), limit(PRODUCTS_PER_PAGE));
                 break;
             case 'prev':
-                if (!firstVisibleProduct) return;
+                if (!firstVisibleProduct) return; // Should not happen if prev button is disabled correctly
                 productCurrentPage--;
                 q = query(baseQuery, endBefore(firstVisibleProduct), limit(PRODUCTS_PER_PAGE));
                 break;
@@ -54,9 +54,12 @@ export async function fetchAndRenderProducts(direction = 'first') {
 
         const documentSnapshots = await getDocs(q);
         if (documentSnapshots.empty) {
-            if (direction === 'next') productCurrentPage--;
-            if (direction === 'prev') productCurrentPage++;
-            showToast("Não há mais produtos para mostrar.");
+            // Adjust page number if no results found for next/prev
+            if (direction === 'next' && productCurrentPage > 1) productCurrentPage--;
+            if (direction === 'prev' && productCurrentPage < 1) productCurrentPage++; // Should not go below 1
+            showToast("Não há mais produtos para mostrar.", true);
+            DOMElements.productListBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-gray-500">Nenhum produto encontrado.</td></tr>';
+            await updateProductPaginationButtons(); // Update button state
             return;
         }
 
@@ -67,24 +70,25 @@ export async function fetchAndRenderProducts(direction = 'first') {
         documentSnapshots.docs.forEach((doc) => {
             const product = { id: doc.id, ...doc.data() };
             const row = document.createElement('tr');
-            row.className = 'border-b';
+            row.className = 'border-b hover:bg-gray-50'; // Added hover effect
             row.innerHTML = `
-                <td class="py-2 px-2"><img src="${product.image}" alt="${product.name}" class="w-12 h-12 object-cover rounded-md"></td>
+                <td class="py-2 px-2"><img src="${product.image}" alt="${product.name}" class="w-12 h-12 object-cover rounded-md" loading="lazy"></td>
                 <td class="py-3 px-2">${product.name}</td>
                 <td class="py-3 px-2 capitalize">${product.category}</td>
                 <td class="py-3 px-2">R$ ${product.price.toFixed(2)}</td>
                 <td class="py-3 px-2">${product.stock}</td>
                 <td class="py-3 px-2 flex gap-2 items-center">
-                    <button class="edit-btn text-blue-500 hover:text-blue-700" data-id="${product.id}"><i data-feather="edit-2" class="w-5 h-5"></i></button>
-                    <button class="delete-btn text-red-500 hover:text-red-700" data-id="${product.id}"><i data-feather="trash-2" class="w-5 h-5"></i></button>
+                    <button class="edit-btn text-blue-500 hover:text-blue-700" data-id="${product.id}" aria-label="Editar produto ${product.name}"><i data-feather="edit-2" class="w-5 h-5"></i></button>
+                    <button class="delete-btn text-red-500 hover:text-red-700" data-id="${product.id}" aria-label="Deletar produto ${product.name}"><i data-feather="trash-2" class="w-5 h-5"></i></button>
                 </td>`;
             DOMElements.productListBody.appendChild(row);
         });
         feather.replace();
         await updateProductPaginationButtons();
     } catch (error) {
-        console.error("Error fetching products: ", error);
+        console.error("Erro ao carregar produtos: ", error);
         showToast('Erro ao carregar produtos.', true);
+        DOMElements.productListBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-red-500">Erro ao carregar produtos. Tente novamente.</td></tr>';
     }
 }
 
@@ -94,6 +98,8 @@ export function resetProductForm() {
     DOMElements.submitProductBtn.textContent = 'Adicionar Produto';
     DOMElements.cancelEditBtn.classList.add('hidden');
     DOMElements.submitProductBtn.disabled = false;
+    // Clear any validation messages
+    document.querySelectorAll('.validation-error-message').forEach(el => el.remove());
 }
 
 export function populateProductForm(productId) {
@@ -111,13 +117,80 @@ export function populateProductForm(productId) {
             DOMElements.submitProductBtn.textContent = 'Salvar Alterações';
             DOMElements.cancelEditBtn.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Clear any validation messages when populating
+            document.querySelectorAll('.validation-error-message').forEach(el => el.remove());
+        } else {
+            showToast('Produto não encontrado para edição.', true);
+            console.warn("Tentativa de popular formulário com produto inexistente:", productId);
         }
+    }).catch(error => {
+        console.error("Erro ao obter produto para popular formulário:", error);
+        showToast('Erro ao carregar dados do produto para edição.', true);
     });
 }
+
+function validateProductForm() {
+    let isValid = true;
+    const form = DOMElements.productForm;
+    const fields = ['product-name', 'product-price', 'product-category', 'product-stock', 'product-image'];
+
+    // Clear previous error messages
+    document.querySelectorAll('.validation-error-message').forEach(el => el.remove());
+
+    fields.forEach(fieldId => {
+        const input = form[fieldId];
+        if (!input.value.trim()) {
+            isValid = false;
+            const errorMessage = document.createElement('p');
+            errorMessage.className = 'text-red-500 text-xs mt-1 validation-error-message';
+            errorMessage.textContent = 'Este campo é obrigatório.';
+            input.parentNode.appendChild(errorMessage);
+        }
+    });
+
+    const priceInput = form['product-price'];
+    if (parseFloat(priceInput.value) <= 0) {
+        isValid = false;
+        const errorMessage = document.createElement('p');
+        errorMessage.className = 'text-red-500 text-xs mt-1 validation-error-message';
+        errorMessage.textContent = 'O preço deve ser maior que zero.';
+        priceInput.parentNode.appendChild(errorMessage);
+    }
+
+    const stockInput = form['product-stock'];
+    if (parseInt(stockInput.value) < 0) {
+        isValid = false;
+        const errorMessage = document.createElement('p');
+        errorMessage.className = 'text-red-500 text-xs mt-1 validation-error-message';
+        errorMessage.textContent = 'O stock não pode ser negativo.';
+        stockInput.parentNode.appendChild(errorMessage);
+    }
+
+    const imageUrlInput = form['product-image'];
+    try {
+        new URL(imageUrlInput.value);
+    } catch (_) {
+        isValid = false;
+        const errorMessage = document.createElement('p');
+        errorMessage.className = 'text-red-500 text-xs mt-1 validation-error-message';
+        errorMessage.textContent = 'URL da imagem inválida.';
+        imageUrlInput.parentNode.appendChild(errorMessage);
+    }
+
+    return isValid;
+}
+
 
 export async function handleProductFormSubmit(e) {
     e.preventDefault();
     DOMElements.submitProductBtn.disabled = true;
+
+    if (!validateProductForm()) {
+        DOMElements.submitProductBtn.disabled = false;
+        showToast('Por favor, corrija os erros no formulário.', true);
+        return;
+    }
+
     const productId = DOMElements.productIdField.value;
     const productData = {
         name: DOMElements.productForm['product-name'].value,
@@ -132,17 +205,19 @@ export async function handleProductFormSubmit(e) {
         if (productId) {
             await updateDoc(doc(db, "products", productId), productData);
             showToast('Produto atualizado com sucesso!');
+            console.log("Produto atualizado:", productId, productData);
         } else {
-            productData.rating = 0;
-            productData.reviews = [];
+            productData.rating = 0; // Default new products to 0 rating
+            productData.reviews = []; // Initialize with empty reviews array
             await addDoc(collection(db, "products"), productData);
             showToast('Produto adicionado com sucesso!');
+            console.log("Novo produto adicionado:", productData);
         }
         resetProductForm();
-        await fetchAndRenderProducts('first');
+        await fetchAndRenderProducts('first'); // Re-render from first page
         await fetchStats();
     } catch (error) {
-        console.error("Error saving product: ", error);
+        console.error("Erro ao salvar produto: ", error);
         showToast('Erro ao salvar produto.', true);
     } finally {
         DOMElements.submitProductBtn.disabled = false;
@@ -156,10 +231,11 @@ export async function deleteProduct(productId) {
         try {
             await deleteDoc(doc(db, "products", productId));
             showToast('Produto eliminado com sucesso.');
-            await fetchAndRenderProducts('first');
+            console.log("Produto eliminado:", productId);
+            await fetchAndRenderProducts('first'); // Re-render from first page
             await fetchStats();
         } catch (error) {
-            console.error("Error deleting product: ", error);
+            console.error("Erro ao eliminar produto: ", error);
             showToast('Erro ao eliminar produto.', true);
         }
     }
