@@ -1,24 +1,18 @@
 // Import Firebase modules from the latest SDK
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, addDoc, query, where, Timestamp, orderBy, limit, startAfter, endBefore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, addDoc, query, where, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // Import Firebase app and database instances from the centralized config
 import { auth, db } from './firebase-config.js'; // Caminho corrigido
 
 // =================================================================
 // GLOBAL STATE & VARIABLES
 // =================================================================
-let allProducts = []; // Still store all products for search and other filters not directly using pagination
+let allProducts = [];
 let cart = JSON.parse(localStorage.getItem('sanseiCart')) || [];
 let appliedCoupon = null;
 let currentUserData = null;
 let allCoupons = [];
 let selectedShipping = null;
-
-// Pagination state for front-end product list (Fragrances page)
-let lastVisibleProductFront = null;
-let firstVisibleProductFront = null;
-let productCurrentPageFront = 1;
-const PRODUCTS_PER_PAGE_FRONT = 8; // Adjusted for front-end display
 
 
 // =================================================================
@@ -79,7 +73,7 @@ function showConfirmationModal(message, title = 'Confirmação') {
         const cancelBtn = document.getElementById('confirmation-cancel-btn');
 
         if (!modalOverlay || !modal || !modalTitle || !modalMessage || !confirmBtn || !cancelBtn) {
-            console.error("Elementos do modal de confirmação não encontrados. Resolvendo para false.");
+            console.error("Elementos do modal de confirmação não encontrados.");
             resolve(false); // Fallback to false if elements are missing
             return;
         }
@@ -144,9 +138,9 @@ async function handleCheckout() {
         const product = allProducts.find(p => p.id === item.id);
         return {
             productId: item.id,
-            name: product ? product.name : 'Produto Desconhecido', // Fallback for product name
+            name: product.name,
             quantity: item.quantity,
-            price: product ? product.price : 0 // Fallback for price
+            price: product.price
         };
     });
 
@@ -175,7 +169,7 @@ async function handleCheckout() {
         toggleCart(false);
         showPage('profile'); // Redirect to profile to see the new order
     } catch (error) {
-        console.error("Erro ao criar encomenda: ", error);
+        console.error("Error creating order: ", error);
         showToast("Ocorreu um erro ao processar a sua encomenda.", true);
     } finally {
         showLoader(false);
@@ -214,7 +208,7 @@ async function handleCalculateShipping() {
     const loader = btn.querySelector('.loader-sm');
 
     if (cep.length !== 8) {
-        showToast("Por favor, insira um CEP válido com 8 dígitos.", true);
+        showToast("Por favor, insira um CEP válido.", true);
         return;
     }
 
@@ -237,8 +231,8 @@ async function handleCalculateShipping() {
         renderShippingOptions(shippingOptions);
 
     } catch (error) {
-        console.error("Erro no cálculo do frete:", error);
-        showToast("Não foi possível calcular o frete. Usando valores padrão.", true);
+        console.error("Shipping calculation error:", error);
+        showToast("Cálculo indisponível. Usando valores padrão.", true);
         
         // Fallback logic: If the API fails, provide default shipping options.
         const defaultShippingOptions = [
@@ -274,7 +268,7 @@ function renderShippingOptions(options) {
         label.className = 'flex items-center justify-between p-3 border rounded-md cursor-pointer hover:bg-gray-50';
         label.innerHTML = `
             <div class="flex items-center">
-                <input type="radio" name="shipping-option" id="${optionId}" value="${price}" data-name="${option.nome}" class="form-radio text-gold-500" aria-label="${option.nome}, Prazo de entrega ${option.PrazoEntrega} dias úteis, Valor R$ ${price.toFixed(2).replace('.', ',')}">
+                <input type="radio" name="shipping-option" id="${optionId}" value="${price}" data-name="${option.nome}" class="form-radio text-gold-500">
                 <div class="ml-3">
                     <p class="font-semibold">${option.nome}</p>
                     <p class="text-sm text-gray-500">Prazo: ${option.PrazoEntrega} dias úteis</p>
@@ -334,12 +328,6 @@ function flyToCart(targetElement) {
     flyingImage.style.top = `${rect.top}px`;
     flyingImage.style.width = `${rect.width}px`;
     flyingImage.style.height = `${rect.height}px`;
-    flyingImage.style.position = 'fixed'; // Ensure it's fixed for animation
-    flyingImage.style.zIndex = '100'; // Ensure it's above other elements
-    flyingImage.style.transition = 'all 1s cubic-bezier(0.5, -0.5, 0.5, 1.5)'; // Adjust cubic-bezier for desired effect
-    flyingImage.style.borderRadius = '50%';
-    flyingImage.style.objectFit = 'cover';
-
 
     document.body.appendChild(flyingImage);
 
@@ -363,21 +351,18 @@ async function addToCart(productId, quantity = 1, event) {
     const button = event.target.closest('.add-to-cart-btn');
     const originalText = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<span class="loader-sm"></span> Adicionando...'; // Enhanced feedback
+    button.innerHTML = '<span class="loader-sm"></span>';
 
     const product = allProducts.find(p => p.id === productId);
     if (!product) {
-        console.error("Produto não encontrado no array allProducts:", productId);
-        showToast("Erro: Produto não disponível.", true); // User-friendly error
+        console.error("Product not found in allProducts array:", productId);
         button.disabled = false;
         button.innerHTML = originalText;
         return;
     }
     
     const productImage = button.closest('.group').querySelector('img');
-    if (productImage) { // Ensure image exists before flying
-        flyToCart(productImage);
-    }
+    flyToCart(productImage);
 
     const cartItem = cart.find(item => item.id === productId);
     if (cartItem) {
@@ -404,7 +389,6 @@ async function removeFromCart(productId) {
         await syncCartWithFirestore();
         updateCartIcon();
         renderCart();
-        showToast('Item removido do carrinho.'); // Feedback for removal
     }
 }
 
@@ -433,12 +417,10 @@ function updateCartIcon() {
     if (cartCountEl) {
         cartCountEl.textContent = totalItems;
         cartCountEl.classList.toggle('hidden', totalItems === 0);
-        cartCountEl.setAttribute('aria-label', `${totalItems} itens no carrinho`); // ARIA
     }
     if (mobileCartCountEl) {
         mobileCartCountEl.textContent = totalItems;
         mobileCartCountEl.classList.toggle('hidden', totalItems === 0);
-        mobileCartCountEl.setAttribute('aria-label', `${totalItems} itens no carrinho`); // ARIA
     }
 }
 
@@ -451,7 +433,6 @@ function renderCart() {
     const shippingCostEl = document.getElementById('shipping-cost');
     
     if (!cartItemsEl || !cartSubtotalEl || !cartTotalEl) {
-        console.error("Elementos do carrinho não encontrados para renderização.");
         return;
     }
     
@@ -471,7 +452,7 @@ function renderCart() {
     if (appliedCoupon) {
         const discountAmount = subtotal * appliedCoupon.discount;
         subtotal -= discountAmount;
-        discountInfoEl.innerHTML = `Cupom "${appliedCoupon.code}" aplicado! (-R$ ${discountAmount.toFixed(2).replace('.',',')}) <button id="remove-coupon-btn" class="text-red-500 ml-2 font-semibold" aria-label="Remover cupom">Remover</button>`;
+        discountInfoEl.innerHTML = `Cupom "${appliedCoupon.code}" aplicado! (-R$ ${discountAmount.toFixed(2).replace('.',',')}) <button id="remove-coupon-btn" class="text-red-500 ml-2 font-semibold">Remover</button>`;
         document.getElementById('remove-coupon-btn').addEventListener('click', removeCoupon);
     } else {
         if(discountInfoEl) discountInfoEl.innerHTML = '';
@@ -489,23 +470,20 @@ function renderCart() {
     
     cartItemsEl.innerHTML = cart.map(item => {
         const product = allProducts.find(p => p.id === item.id);
-        if (!product) {
-            console.warn(`Produto com ID ${item.id} não encontrado para renderização no carrinho.`);
-            return ''; // Skip if product not found
-        }
+        if (!product) return ''; // Skip if product not found
         return `
-        <div class="flex items-center gap-4 mb-4" role="listitem">
-            <img src="${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded-md" loading="lazy">
+        <div class="flex items-center gap-4 mb-4">
+            <img src="${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded-md">
             <div class="flex-grow">
                 <h4 class="font-semibold">${product.name}</h4>
                 <p class="text-sm text-gray-600">R$ ${product.price.toFixed(2).replace('.',',')}</p>
                 <div class="flex items-center mt-2">
-                    <button data-id="${item.id}" data-qty="${item.quantity - 1}" class="cart-qty-btn w-6 h-6 border rounded-md" aria-label="Diminuir quantidade de ${product.name}">-</button>
-                    <span class="px-3" aria-live="polite" aria-atomic="true">${item.quantity}</span>
-                    <button data-id="${item.id}" data-qty="${item.quantity + 1}" class="cart-qty-btn w-6 h-6 border rounded-md" aria-label="Aumentar quantidade de ${product.name}">+</button>
+                    <button data-id="${item.id}" data-qty="${item.quantity - 1}" class="cart-qty-btn w-6 h-6 border rounded-md">-</button>
+                    <span class="px-3">${item.quantity}</span>
+                    <button data-id="${item.id}" data-qty="${item.quantity + 1}" class="cart-qty-btn w-6 h-6 border rounded-md">+</button>
                 </div>
             </div>
-            <button data-id="${item.id}" class="cart-remove-btn text-red-500 hover:text-red-700" aria-label="Remover ${product.name} do carrinho"><i data-feather="trash-2" class="w-5 h-5"></i></button>
+            <button data-id="${item.id}" class="cart-remove-btn text-red-500 hover:text-red-700"><i data-feather="trash-2" class="w-5 h-5"></i></button>
         </div>
     `}).join('');
     
@@ -544,14 +522,10 @@ function toggleCart(show) {
     if (show) {
         cartModalOverlay.classList.remove('hidden');
         cartModal.classList.remove('translate-x-full');
-        cartModal.setAttribute('aria-hidden', 'false');
-        cartModalOverlay.setAttribute('aria-hidden', 'false');
         renderCart(); // Renderiza o carrinho sempre que ele é aberto
     } else {
         cartModalOverlay.classList.add('hidden');
         cartModal.classList.add('translate-x-full');
-        cartModal.setAttribute('aria-hidden', 'true');
-        cartModalOverlay.setAttribute('aria-hidden', 'true');
     }
 }
 
@@ -561,24 +535,23 @@ function toggleCart(show) {
 // =================================================================
 function renderStars(rating) {
     let stars = '';
-    const roundedRating = Math.round(rating); // Ensure integer for star display
     for (let i = 1; i <= 5; i++) {
-        stars += `<i data-feather="star" class="feather-star ${i <= roundedRating ? 'filled' : ''}"></i>`;
+        stars += `<i data-feather="star" class="feather-star ${i <= rating ? 'filled' : ''}"></i>`;
     }
-    return `<div class="flex items-center star-rating" role="img" aria-label="Avaliação de ${roundedRating} de 5 estrelas">${stars}</div>`;
+    return `<div class="flex items-center star-rating">${stars}</div>`;
 }
 
 function createProductCard(product, delay = 0) {
     const isInWishlist = currentUserData && currentUserData.wishlist.includes(product.id);
     return `
-        <div class="bg-white group text-center rounded-lg shadow-sm flex flex-col transition-all-ease hover:-translate-y-2 hover:shadow-xl whitespace-normal flex-shrink-0 w-full sm:w-auto" data-aos="fade-up" data-aos-delay="${delay}" role="listitem">
+        <div class="bg-white group text-center rounded-lg shadow-sm flex flex-col transition-all-ease hover:-translate-y-2 hover:shadow-xl whitespace-normal flex-shrink-0 w-full sm:w-auto" data-aos="fade-up" data-aos-delay="${delay}">
             <div class="relative overflow-hidden rounded-t-lg">
-                <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover group-hover:scale-105 transition-all-ease cursor-pointer" data-id="${product.id}" loading="lazy">
-                <button class="wishlist-heart absolute top-4 right-4 p-2 bg-white/70 rounded-full ${isInWishlist ? 'active' : ''}" data-id="${product.id}" aria-label="${isInWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}">
+                <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover group-hover:scale-105 transition-all-ease cursor-pointer" data-id="${product.id}">
+                <button class="wishlist-heart absolute top-4 right-4 p-2 bg-white/70 rounded-full ${isInWishlist ? 'active' : ''}" data-id="${product.id}">
                     <i data-feather="heart" class="w-5 h-5"></i>
                 </button>
                 <!-- Quick View Button -->
-                <button class="quick-view-btn absolute bottom-0 left-0 right-0 bg-black/70 text-white py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" data-id="${product.id}" aria-label="Visualização rápida de ${product.name}">
+                <button class="quick-view-btn absolute bottom-0 left-0 right-0 bg-black/70 text-white py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" data-id="${product.id}">
                     Visualização Rápida
                 </button>
             </div>
@@ -586,7 +559,7 @@ function createProductCard(product, delay = 0) {
                 <h3 class="font-heading font-semibold text-xl cursor-pointer" data-id="${product.id}">${product.name}</h3>
                 <div class="flex justify-center my-2">${renderStars(product.rating)}</div>
                 <p class="text-gold-500 font-bold mt-auto text-lg">R$ ${product.price.toFixed(2).replace('.',',')}</p>
-                <button class="add-to-cart-btn mt-4 bg-black text-white py-2 px-6 rounded-full hover:bg-gold-500 hover:text-black transition-all-ease" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">Adicionar ao Carrinho</button>
+                <button class="add-to-cart-btn mt-4 bg-black text-white py-2 px-6 rounded-full hover:bg-gold-500 hover:text-black transition-all-ease" data-id="${product.id}">Adicionar ao Carrinho</button>
             </div>
         </div>
     `;
@@ -594,10 +567,7 @@ function createProductCard(product, delay = 0) {
 
 function renderProducts(productsToRender, containerId) {
     const productListEl = document.getElementById(containerId);
-    if (!productListEl) {
-        console.error(`Elemento com ID "${containerId}" não encontrado para renderizar produtos.`);
-        return;
-    }
+    if (!productListEl) return;
     
     if (productsToRender.length === 0) {
         productListEl.innerHTML = `
@@ -614,129 +584,36 @@ function renderProducts(productsToRender, containerId) {
     feather.replace();
 }
 
-async function updateProductPaginationButtonsFront() {
-    const pageInfoEl = document.getElementById('product-page-info-front');
-    const prevBtn = document.getElementById('prev-product-page-front');
-    const nextBtn = document.getElementById('next-product-page-front');
-
-    if (!pageInfoEl || !prevBtn || !nextBtn) {
-        console.error("Elementos de paginação do front-end não encontrados.");
-        return;
-    }
-
-    pageInfoEl.textContent = `Página ${productCurrentPageFront}`;
-    prevBtn.disabled = productCurrentPageFront === 1;
-
-    // Check if there's a next page
-    const productsRef = collection(db, "products");
-    let baseQuery = query(productsRef, orderBy("name")); // Using 'name' for consistent ordering
-    
-    // Apply filters to determine next page availability
+function applyFilters() {
+    let filteredProducts = [...allProducts];
     const selectedCategories = Array.from(document.querySelectorAll('#filter-cat-perfume, #filter-cat-decant'))
         .filter(cb => cb.checked)
         .map(cb => cb.value);
+
     if (selectedCategories.length > 0) {
-        baseQuery = query(baseQuery, where('category', 'in', selectedCategories));
+        filteredProducts = filteredProducts.filter(p => selectedCategories.includes(p.category));
     }
+
+    // Price Range Filter
     const priceMin = parseFloat(document.getElementById('price-min').value);
     const priceMax = parseFloat(document.getElementById('price-max').value);
-    baseQuery = query(baseQuery, where('price', '>=', priceMin), where('price', '<=', priceMax));
+    filteredProducts = filteredProducts.filter(p => p.price >= priceMin && p.price <= priceMax);
 
-
-    if (lastVisibleProductFront) {
-        const nextQuery = query(baseQuery, startAfter(lastVisibleProductFront), limit(1));
-        const nextSnap = await getDocs(nextQuery);
-        nextBtn.disabled = nextSnap.empty;
-    } else {
-        // If no lastVisibleProductFront, we are on the first page, so check if there's more than one page
-        const countQuery = query(baseQuery, limit(PRODUCTS_PER_PAGE_FRONT + 1)); // Fetch one more than page size
-        const countSnap = await getDocs(countQuery);
-        nextBtn.disabled = countSnap.size <= PRODUCTS_PER_PAGE_FRONT;
+    // Update price display
+    document.getElementById('price-min-display').textContent = `R$ ${priceMin.toFixed(2).replace('.', ',')}`;
+    document.getElementById('price-max-display').textContent = `R$ ${priceMax.toFixed(2).replace('.', ',')}`;
+    
+    const sortBy = document.getElementById('sort-by').value;
+    if (sortBy === 'price-asc') {
+        filteredProducts.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-desc') {
+        filteredProducts.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'popularity') {
+        filteredProducts.sort((a, b) => b.rating - a.rating);
     }
+
+    renderProducts(filteredProducts, 'product-list-fragrancias');
 }
-
-async function applyFilters(direction = 'first') {
-    showLoader(true);
-    try {
-        const productsRef = collection(db, "products");
-        let q;
-        let baseQuery = query(productsRef, orderBy("name")); // Always order for consistent pagination
-
-        const selectedCategories = Array.from(document.querySelectorAll('#filter-cat-perfume, #filter-cat-decant'))
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
-
-        if (selectedCategories.length > 0) {
-            baseQuery = query(baseQuery, where('category', 'in', selectedCategories));
-        }
-
-        const priceMin = parseFloat(document.getElementById('price-min').value);
-        const priceMax = parseFloat(document.getElementById('price-max').value);
-        baseQuery = query(baseQuery, where('price', '>=', priceMin), where('price', '<=', priceMax));
-
-        // Update price display
-        document.getElementById('price-min-display').textContent = `R$ ${priceMin.toFixed(2).replace('.', ',')}`;
-        document.getElementById('price-max-display').textContent = `R$ ${priceMax.toFixed(2).replace('.', ',')}`;
-        
-        const sortBy = document.getElementById('sort-by').value;
-        // Note: Firestore queries can only have one orderBy clause unless it's an indexed composite query.
-        // If sorting by different fields is needed, you might fetch all and sort in JS, or create multiple indexes.
-        // For now, we'll stick to 'name' for pagination consistency and sort in JS for 'price'.
-        let productsToFilterAndSort = [];
-
-        switch (direction) {
-            case 'first':
-                productCurrentPageFront = 1;
-                q = query(baseQuery, limit(PRODUCTS_PER_PAGE_FRONT));
-                break;
-            case 'next':
-                if (!lastVisibleProductFront) return;
-                productCurrentPageFront++;
-                q = query(baseQuery, startAfter(lastVisibleProductFront), limit(PRODUCTS_PER_PAGE_FRONT));
-                break;
-            case 'prev':
-                if (!firstVisibleProductFront) return;
-                productCurrentPageFront--;
-                q = query(baseQuery, endBefore(firstVisibleProductFront), limit(PRODUCTS_PER_PAGE_FRONT));
-                break;
-            default: return;
-        }
-
-        const documentSnapshots = await getDocs(q);
-        if (documentSnapshots.empty) {
-            if (direction === 'next') productCurrentPageFront--;
-            if (direction === 'prev') productCurrentPageFront++;
-            renderProducts([], 'product-list-fragrancias'); // Clear list if no products
-            showToast("Não há mais produtos para mostrar com estes filtros.", true);
-            await updateProductPaginationButtonsFront(); // Update button state
-            return;
-        }
-
-        firstVisibleProductFront = documentSnapshots.docs[0];
-        lastVisibleProductFront = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-        
-        productsToFilterAndSort = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        // Client-side sorting for price and popularity
-        if (sortBy === 'price-asc') {
-            productsToFilterAndSort.sort((a, b) => a.price - b.price);
-        } else if (sortBy === 'price-desc') {
-            productsToFilterAndSort.sort((a, b) => b.price - a.price);
-        } else if (sortBy === 'popularity') {
-            productsToFilterAndSort.sort((a, b) => b.rating - a.rating);
-        }
-
-        renderProducts(productsToFilterAndSort, 'product-list-fragrancias');
-        await updateProductPaginationButtonsFront();
-
-    } catch (error) {
-        console.error("Erro ao aplicar filtros e carregar produtos:", error);
-        showToast('Erro ao carregar produtos com os filtros selecionados.', true);
-    } finally {
-        showLoader(false);
-    }
-}
-
 
 async function fetchAndRenderReels() {
     const reelsContainer = document.getElementById('reels-container');
@@ -755,9 +632,8 @@ async function fetchAndRenderReels() {
             reelElement.href = reel.url;
             reelElement.target = '_blank';
             reelElement.className = 'block relative group';
-            reelElement.setAttribute('aria-label', `Ver reel: ${reel.url}`); // ARIA
             reelElement.innerHTML = `
-                <img src="${reel.thumbnail}" alt="Reel" class="w-full h-full object-cover rounded-lg aspect-square" loading="lazy">
+                <img src="${reel.thumbnail}" alt="Reel" class="w-full h-full object-cover rounded-lg aspect-square">
                 <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all-ease flex items-center justify-center">
                     <i data-feather="play-circle" class="text-white opacity-0 group-hover:opacity-100 w-10 h-10"></i>
                 </div>
@@ -766,7 +642,7 @@ async function fetchAndRenderReels() {
         });
         feather.replace();
     } catch (error) {
-        console.error("Erro ao carregar reels para a página inicial:", error);
+        console.error("Error fetching reels for homepage:", error);
         reelsContainer.innerHTML = '<p class="text-red-500 col-span-full text-center">Não foi possível carregar os reels.</p>';
     }
 }
@@ -779,24 +655,23 @@ function renderAuthForm(isLogin = true) {
     const authContent = document.getElementById('auth-content');
     if (!authContent) return;
     let formHtml = `
-        <h2 id="auth-modal-title" class="font-heading text-3xl font-bold text-center mb-6">${isLogin ? 'Login' : 'Criar Conta'}</h2>
-        <div id="auth-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert" aria-live="assertive"></div>
+        <h2 class="font-heading text-3xl font-bold text-center mb-6">${isLogin ? 'Login' : 'Criar Conta'}</h2>
+        <div id="auth-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert"></div>
         <form id="auth-form">
             <div class="mb-4">
                 <label for="auth-email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                <input type="email" id="auth-email" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500" aria-required="true">
+                <input type="email" id="auth-email" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500">
             </div>
             <div class="mb-4">
                 <label for="auth-password" class="block text-sm font-semibold text-gray-700 mb-2">Senha</label>
-                <input type="password" id="auth-password" required minlength="6" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500" aria-required="true" aria-describedby="password-hint">
-                <p id="password-hint" class="text-xs text-gray-500 mt-1">A senha deve ter no mínimo 6 caracteres.</p>
+                <input type="password" id="auth-password" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500">
             </div>
     `;
     if (!isLogin) {
         formHtml += `
             <div class="mb-6">
                 <label for="auth-confirm-password" class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha</label>
-                <input type="password" id="auth-confirm-password" required minlength="6" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500" aria-required="true">
+                <input type="password" id="auth-confirm-password" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500">
             </div>
         `;
     }
@@ -807,7 +682,7 @@ function renderAuthForm(isLogin = true) {
         </form>
         <p class="text-center text-sm mt-4">
             ${isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
-            <a href="#" id="auth-switch" class="text-gold-500 font-semibold" aria-label="${isLogin ? 'Criar uma nova conta' : 'Fazer login em uma conta existente'}">
+            <a href="#" id="auth-switch" class="text-gold-500 font-semibold">
                 ${isLogin ? 'Crie uma aqui.' : 'Faça login.'}
             </a>
         </p>
@@ -825,7 +700,6 @@ function showAuthError(message) {
     if (errorDiv) {
         errorDiv.textContent = message;
         errorDiv.classList.remove('hidden');
-        errorDiv.focus(); // Focus on error for accessibility
     }
 }
 
@@ -840,7 +714,7 @@ async function handleLogin(e) {
         showToast(`Bem-vindo(a) de volta!`);
     } catch (error) {
         showAuthError('Email ou senha inválidos.');
-        console.error("Erro no Login:", error);
+        console.error("Login error:", error);
     } finally {
         showLoader(false);
     }
@@ -852,10 +726,6 @@ async function handleRegister(e) {
     const password = document.getElementById('auth-password').value;
     const confirmPassword = document.getElementById('auth-confirm-password').value;
     
-    if (password.length < 6) {
-        showAuthError('A senha deve ter no mínimo 6 caracteres.');
-        return;
-    }
     if (password !== confirmPassword) {
         showAuthError('As senhas não coincidem.');
         return;
@@ -870,14 +740,14 @@ async function handleRegister(e) {
             cart: [] // Initialize cart in Firestore
         });
         showToast('Conta criada com sucesso! Faça login para continuar.');
-        renderAuthForm(true); // Switch to login form after successful registration
+        renderAuthForm(true);
     } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
             showAuthError('Este email já está registado.');
         } else {
             showAuthError('Ocorreu um erro ao criar a conta.');
         }
-        console.error("Erro no Registro:", error);
+        console.error("Register error:", error);
     } finally {
         showLoader(false);
     }
@@ -896,24 +766,22 @@ async function logout() {
 function updateAuthUI(user) {
     const userButton = document.getElementById('user-button');
     const mobileUserLink = document.getElementById('mobile-user-link');
-    const mobileBottomUserLink = document.getElementById('mobile-bottom-user-link');
+    const mobileBottomUserLink = document.getElementById('mobile-bottom-user-link'); // New
     if (user) {
         userButton.onclick = () => showPage('profile');
         mobileUserLink.onclick = (e) => { e.preventDefault(); showPage('profile'); };
         mobileUserLink.textContent = 'Minha Conta';
-        if (mobileBottomUserLink) {
+        if (mobileBottomUserLink) { // Update new mobile bottom nav link
             mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showPage('profile'); };
             mobileBottomUserLink.querySelector('span').textContent = 'Conta';
-            mobileBottomUserLink.setAttribute('aria-label', 'Acessar Minha Conta');
         }
     } else {
         userButton.onclick = () => toggleAuthModal(true);
         mobileUserLink.onclick = (e) => { e.preventDefault(); toggleAuthModal(true); };
         mobileUserLink.textContent = 'Login / Registar';
-        if (mobileBottomUserLink) {
+        if (mobileBottomUserLink) { // Update new mobile bottom nav link
             mobileBottomUserLink.onclick = (e) => { e.preventDefault(); toggleAuthModal(true); };
             mobileBottomUserLink.querySelector('span').textContent = 'Login';
-            mobileBottomUserLink.setAttribute('aria-label', 'Fazer Login ou Registrar');
         }
     }
 }
@@ -939,7 +807,7 @@ async function toggleWishlist(productId) {
         // Re-render all visible products to update heart icons
         refreshAllProductViews();
     } catch (error) {
-        console.error("Erro ao atualizar a lista de desejos:", error);
+        console.error("Error updating wishlist:", error);
         showToast("Erro ao atualizar a lista de desejos.", true);
     }
 }
@@ -954,8 +822,8 @@ function handleSearch(e) {
     const results = allProducts.filter(p => p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query));
     if (results.length > 0) {
         resultsContainer.innerHTML = results.map(product => `
-            <a href="#" class="search-result-item flex items-center gap-4 p-2 hover:bg-gray-100 rounded-md" data-id="${product.id}" role="option" aria-label="Ver detalhes de ${product.name}">
-                <img src="${product.image}" alt="${product.name}" class="w-12 h-16 object-cover rounded" loading="lazy">
+            <a href="#" class="search-result-item flex items-center gap-4 p-2 hover:bg-gray-100 rounded-md" data-id="${product.id}">
+                <img src="${product.image}" alt="${product.name}" class="w-12 h-16 object-cover rounded">
                 <div>
                     <p class="font-semibold">${product.name}</p>
                     <p class="text-sm text-gray-600">R$ ${product.price.toFixed(2).replace('.',',')}</p>
@@ -972,12 +840,9 @@ function handleSearch(e) {
 // =================================================================
 function showProductDetails(productId) {
     const product = allProducts.find(p => p.id === productId);
-    if (!product) {
-        console.error("Produto não encontrado para exibir detalhes:", productId);
-        showToast("Detalhes do produto não disponíveis.", true);
-        return;
-    }
+    if (!product) return;
 
+    // FIX: Using the correct ID for the content area
     const contentEl = document.getElementById('product-details-main-content');
     if (!contentEl) {
         console.error('Element with ID "product-details-main-content" not found!');
@@ -985,10 +850,10 @@ function showProductDetails(productId) {
     }
     contentEl.innerHTML = `
         <div class="w-full md:w-1/2 p-8">
-            <img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover rounded-lg shadow-lg" loading="lazy">
+            <img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover rounded-lg shadow-lg">
         </div>
         <div class="w-full md:w-1/2 p-8 flex flex-col">
-            <h2 id="product-details-title" class="font-heading text-4xl font-bold mb-2">${product.name}</h2>
+            <h2 class="font-heading text-4xl font-bold mb-2">${product.name}</h2>
             <div class="flex items-center gap-2 mb-4">
                 ${renderStars(product.rating)}
                 <span class="text-gray-500 text-sm">(${product.reviews ? product.reviews.length : 0} avaliações)</span>
@@ -996,7 +861,7 @@ function showProductDetails(productId) {
             <p class="text-gray-600 mb-6 text-lg leading-relaxed">${product.description}</p>
             <div class="mt-auto">
                 <p class="text-gold-500 font-bold text-3xl mb-6">R$ ${product.price.toFixed(2).replace('.',',')}</p>
-                <button class="add-to-cart-btn w-full bg-black text-white py-3 rounded-md hover:bg-gold-500 hover:text-black transition-all-ease" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">Adicionar ao Carrinho</button>
+                <button class="add-to-cart-btn w-full bg-black text-white py-3 rounded-md hover:bg-gold-500 hover:text-black transition-all-ease" data-id="${product.id}">Adicionar ao Carrinho</button>
             </div>
         </div>
     `;
@@ -1010,15 +875,10 @@ function toggleProductDetailsModal(show) {
     if (show) {
         overlay.classList.remove('hidden');
         modal.classList.remove('hidden', 'opacity-0', 'scale-95');
-        modal.setAttribute('aria-hidden', 'false');
-        overlay.setAttribute('aria-hidden', 'false');
-        modal.focus(); // Focus for accessibility
     } else {
         overlay.classList.add('hidden');
         modal.classList.add('opacity-0', 'scale-95');
         setTimeout(() => modal.classList.add('hidden'), 300);
-        modal.setAttribute('aria-hidden', 'true');
-        overlay.setAttribute('aria-hidden', 'true');
     }
 }
 
@@ -1029,15 +889,10 @@ function toggleAuthModal(show) {
         renderAuthForm();
         overlay.classList.remove('hidden');
         modal.classList.remove('hidden', 'opacity-0', 'scale-95');
-        modal.setAttribute('aria-hidden', 'false');
-        overlay.setAttribute('aria-hidden', 'false');
-        modal.focus(); // Focus for accessibility
     } else {
         overlay.classList.add('hidden');
         modal.classList.add('opacity-0', 'scale-95');
         setTimeout(() => modal.classList.add('hidden'), 300);
-        modal.setAttribute('aria-hidden', 'true');
-        overlay.setAttribute('aria-hidden', 'true');
     }
 }
 
@@ -1048,12 +903,9 @@ function toggleMobileMenu(show) {
     if (show) {
         mobileMenu.classList.remove('-translate-x-full');
         mobileMenuOverlay.classList.remove('hidden');
-        mobileMenu.setAttribute('aria-expanded', 'true'); // ARIA
-        mobileMenu.focus(); // Focus for accessibility
     } else {
         mobileMenu.classList.add('-translate-x-full');
         mobileMenuOverlay.classList.add('hidden');
-        mobileMenu.setAttribute('aria-expanded', 'false'); // ARIA
     }
 }
 
@@ -1100,25 +952,15 @@ function showPage(pageId, categoryFilter = null) {
     }
     
     // Update top navigation active state
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-        link.removeAttribute('aria-current');
-    });
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
     const activeLink = document.getElementById('nav-' + pageId);
-    if(activeLink) { 
-        activeLink.classList.add('active'); 
-        activeLink.setAttribute('aria-current', 'page');
-    }
+    if(activeLink) { activeLink.classList.add('active'); }
 
     // Update mobile bottom navigation active state
-    mobileBottomNavLinks.forEach(link => {
-        link.classList.remove('active');
-        link.removeAttribute('aria-current');
-    });
+    mobileBottomNavLinks.forEach(link => link.classList.remove('active'));
     const activeBottomLink = document.querySelector(`#mobile-bottom-nav a[data-page="${pageId}"]`);
     if (activeBottomLink) {
         activeBottomLink.classList.add('active');
-        activeBottomLink.setAttribute('aria-current', 'page');
     } else if (pageId === 'search') { // Special handling for search button
         document.getElementById('mobile-bottom-search-btn').classList.add('active');
     } else if (pageId === 'cart') { // Special handling for cart button
@@ -1140,11 +982,7 @@ function showPage(pageId, categoryFilter = null) {
                 filterCheckbox.checked = true;
             }
         }
-        // Reset pagination to first page when changing filters or entering page
-        productCurrentPageFront = 1;
-        lastVisibleProductFront = null;
-        firstVisibleProductFront = null;
-        applyFilters('first'); // Reaplicar filtros para refletir a nova seleção
+        applyFilters(); // Reaplicar filtros para refletir a nova seleção
     } else if (pageId === 'decants') {
         const decantProducts = allProducts.filter(p => p.category === 'decant');
         renderProducts(decantProducts, 'product-list-decants');
@@ -1163,7 +1001,12 @@ function showPage(pageId, categoryFilter = null) {
     }
     // Lógica para as novas páginas do menu mobile
     else if (pageId === 'homespray' || pageId === 'difusores' || pageId === 'kits' || pageId === 'mais-vendidos' || pageId === 'descontos' || pageId === 'cupom') {
+        // Para estas páginas, você pode adicionar lógica específica de renderização ou conteúdo
+        // Por enquanto, apenas para demonstração, vamos mostrar um toast
         showToast(`Navegando para a página: ${pageId.replace('-', ' ').toUpperCase()}`);
+        // Se você tiver um elemento div para cada uma dessas páginas (ex: <div id="page-homespray" class="page-content hidden">),
+        // elas já serão mostradas pela lógica inicial de showPage.
+        // Caso contrário, você precisará adicionar o HTML para essas páginas no index.html.
     }
     
     window.scrollTo(0, 0);
@@ -1190,38 +1033,33 @@ async function renderOrders() {
     // O Firestore exige um índice composto para consultas que usam where e orderBy.
     // Se a consulta falhar, o console do Firebase fornecerá um link para criar o índice necessário.
     const q = query(collection(db, "orders"), where("userId", "==", currentUserData.uid), orderBy("createdAt", "desc"));
-    try {
-        const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-            ordersListContainer.innerHTML = '<p class="text-gray-500 text-center">Você ainda não fez nenhuma encomenda.</p>';
-            return;
-        }
-
-        ordersListContainer.innerHTML = '';
-        querySnapshot.forEach(doc => {
-            const order = {id: doc.id, ...doc.data()};
-            const orderDate = order.createdAt.toDate().toLocaleDateString('pt-BR');
-            const orderElement = document.createElement('div');
-            orderElement.className = 'bg-gray-50 p-4 rounded-lg shadow-sm';
-            orderElement.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">Encomenda #${order.id.substring(0, 7)}</p>
-                        <p class="text-sm text-gray-500">Data: ${orderDate}</p>
-                    </div>
-                    <div>
-                        <p class="font-bold">Total: R$ ${order.total.toFixed(2).replace('.',',')}</p>
-                        <p class="text-sm text-right font-semibold ${order.status === 'Pendente' ? 'text-yellow-500' : 'text-green-500'}">${order.status}</p>
-                    </div>
-                </div>
-            `;
-            ordersListContainer.appendChild(orderElement);
-        });
-    } catch (error) {
-        console.error("Erro ao carregar encomendas do usuário:", error);
-        ordersListContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar suas encomendas.</p>';
+    if (querySnapshot.empty) {
+        ordersListContainer.innerHTML = '<p class="text-gray-500 text-center">Você ainda não fez nenhuma encomenda.</p>';
+        return;
     }
+
+    ordersListContainer.innerHTML = '';
+    querySnapshot.forEach(doc => {
+        const order = {id: doc.id, ...doc.data()};
+        const orderDate = order.createdAt.toDate().toLocaleDateString('pt-BR');
+        const orderElement = document.createElement('div');
+        orderElement.className = 'bg-gray-50 p-4 rounded-lg shadow-sm';
+        orderElement.innerHTML = `
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-bold">Encomenda #${order.id.substring(0, 7)}</p>
+                    <p class="text-sm text-gray-500">Data: ${orderDate}</p>
+                </div>
+                <div>
+                    <p class="font-bold">Total: R$ ${order.total.toFixed(2).replace('.',',')}</p>
+                    <p class="text-sm text-right font-semibold ${order.status === 'Pendente' ? 'text-yellow-500' : 'text-green-500'}">${order.status}</p>
+                </div>
+            </div>
+        `;
+        ordersListContainer.appendChild(orderElement);
+    });
 }
 
 function refreshAllProductViews() {
@@ -1232,7 +1070,7 @@ function refreshAllProductViews() {
     if (pageId === 'inicio') {
         renderProducts(allProducts.slice(0, 4), 'product-list-home');
     } else if (pageId === 'fragrancias') {
-        applyFilters('first'); // Re-apply filters and reset pagination
+        applyFilters();
     } else if (pageId === 'decants') {
          const decantProducts = allProducts.filter(p => p.category === 'decant');
         renderProducts(decantProducts, 'product-list-decants');
@@ -1243,14 +1081,12 @@ function refreshAllProductViews() {
 
 async function fetchInitialData() {
     try {
-        // Fetch all products for search and other non-paginated displays
         const productsSnapshot = await getDocs(collection(db, "products"));
         allProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         const couponsSnapshot = await getDocs(collection(db, "coupons"));
         allCoupons = couponsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Render initial products for home page (first 4)
         renderProducts(allProducts.slice(0, 4), 'product-list-home');
         const navInicio = document.getElementById('nav-inicio');
         if (navInicio) {
@@ -1258,7 +1094,7 @@ async function fetchInitialData() {
         }
         
     } catch (error) {
-        console.error("Erro ao carregar dados iniciais:", error);
+        console.error("Error fetching initial data: ", error);
         showToast("Não foi possível carregar os dados do site.", true);
     }
 }
@@ -1268,8 +1104,6 @@ function initializeEventListeners() {
         const element = document.getElementById(id);
         if (element) {
             element.addEventListener(event, handler);
-        } else {
-            console.warn(`Elemento com ID "${id}" não encontrado para adicionar listener de evento.`);
         }
     };
 
@@ -1287,6 +1121,7 @@ function initializeEventListeners() {
     safeAddEventListener('mobile-menu-overlay', 'click', () => toggleMobileMenu(false));
 
     // NEW: Event listeners for mobile nav items inside the sliding menu
+    // Corrigido o seletor para '.mobile-nav-link'
     document.querySelectorAll('.mobile-nav-link').forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1325,6 +1160,7 @@ function initializeEventListeners() {
     // New: Mobile Bottom Nav Listeners
     safeAddEventListener('mobile-bottom-search-btn', 'click', () => {
         document.getElementById('search-bar').classList.toggle('hidden');
+        // You might want a dedicated search page or just toggle the bar
     });
     safeAddEventListener('mobile-bottom-cart-btn', 'click', () => toggleCart(true));
     document.querySelectorAll('#mobile-bottom-nav a[data-page]').forEach(link => {
@@ -1334,20 +1170,16 @@ function initializeEventListeners() {
         });
     });
 
-    // Pagination for Fragrances page
-    safeAddEventListener('prev-product-page-front', 'click', () => applyFilters('prev'));
-    safeAddEventListener('next-product-page-front', 'click', () => applyFilters('next'));
-
 
     // Filter controls
-    document.querySelectorAll('.filter-control').forEach(el => el.addEventListener('change', () => applyFilters('first'))); // Reset to first page on filter change
+    document.querySelectorAll('.filter-control').forEach(el => el.addEventListener('change', applyFilters));
     
     // Price range slider listeners
     const priceMinInput = document.getElementById('price-min');
     const priceMaxInput = document.getElementById('price-max');
     if (priceMinInput && priceMaxInput) {
-        priceMinInput.addEventListener('input', () => applyFilters('first')); // Reset to first page on price change
-        priceMaxInput.addEventListener('input', () => applyFilters('first')); // Reset to first page on price change
+        priceMinInput.addEventListener('input', applyFilters);
+        priceMaxInput.addEventListener('input', applyFilters);
     }
 
 
@@ -1356,10 +1188,6 @@ function initializeEventListeners() {
             const answer = question.nextElementSibling;
             const icon = question.querySelector('i');
             if (answer && icon) {
-                const isExpanded = question.getAttribute('aria-expanded') === 'true';
-                question.setAttribute('aria-expanded', !isExpanded);
-                answer.setAttribute('aria-hidden', isExpanded);
-
                 if (answer.style.maxHeight) {
                     answer.style.maxHeight = null;
                     icon.style.transform = 'rotate(0deg)';
@@ -1449,7 +1277,7 @@ async function main() {
             refreshAllProductViews();
         });
     } catch (error) {
-        console.error("Erro crítico durante a inicialização:", error);
+        console.error("Critical error during initialization:", error);
         showToast("Ocorreu um erro crítico ao carregar o site.", true);
     } finally {
         showLoader(false);
