@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-config.js'; // Importa auth e db do ficheiro de configuração centralizado
+import { auth, db } from '../firebase-config.js'; // Importa auth e db do ficheiro de configuração centralizado
 import { DOMElements, showToast, showAuthMessage, switchView, renderStars } from './ui.js';
 import { initializeAdminPanel } from './main.js';
 import { showAdminConfirmationModal } from './ui.js'; // Importa o modal de confirmação personalizado
@@ -29,6 +29,11 @@ const ADMIN_EMAILS = ["admin@sansei.com", "diego.sutil@gmail.com", "sanseiadmin@
 // foram movidas para os seus respetivos módulos (orders.js, products.js)
 
 // Funções de exclusão que usam o modal de confirmação
+// Nota: Estas funções foram movidas para os seus respetivos módulos (products.js, reviews.js, etc.)
+// para melhor modularização. O admin-script.js deve apenas chamar as funções exportadas.
+// Mantendo-as aqui para referência, mas a versão nos módulos individuais é a que será usada.
+
+/*
 async function deleteProduct(productId) {
     const confirmed = await showAdminConfirmationModal('Tem certeza que quer eliminar este produto?', 'Eliminar Produto');
     if (confirmed) {
@@ -111,6 +116,7 @@ async function deleteReel(reelId) {
         }
     }
 }
+*/
 
 // =================================================================
 // AUTHENTICATION (Funções de autenticação)
@@ -143,72 +149,72 @@ document.addEventListener('DOMContentLoaded', () => {
     // Eles devem chamar as funções importadas dos respetivos módulos.
 
     // Autenticação
-    DOMElements.loginForm.addEventListener('submit', handleLogin);
-    DOMElements.logoutButton.addEventListener('click', handleLogout);
+    // DOMElements.loginForm.addEventListener('submit', handleLogin); // Movido para main.js
+    // DOMElements.logoutButton.addEventListener('click', handleLogout); // Movido para main.js
 
     // Navegação Principal
-    DOMElements.navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchView(link.dataset.view);
-        });
-    });
+    // DOMElements.navLinks.forEach(link => { // Movido para main.js
+    //     link.addEventListener('click', (e) => {
+    //         e.preventDefault();
+    //         switchView(link.dataset.view);
+    //     });
+    // });
 
     // Produtos
-    DOMElements.productForm.addEventListener('submit', handleProductFormSubmit);
-    DOMElements.cancelEditBtn.addEventListener('click', resetProductForm);
-    DOMElements.productListBody.addEventListener('click', (e) => {
-        const editBtn = e.target.closest('.edit-btn');
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (editBtn) populateProductForm(editBtn.dataset.id);
-        // Chama a função deleteProduct deste ficheiro
-        if (deleteBtn) deleteProduct(deleteBtn.dataset.id);
-    });
+    // DOMElements.productForm.addEventListener('submit', handleProductFormSubmit); // Movido para main.js
+    // DOMElements.cancelEditBtn.addEventListener('click', resetProductForm); // Movido para main.js
+    // DOMElements.productListBody.addEventListener('click', (e) => { // Movido para main.js
+    //     const editBtn = e.target.closest('.edit-btn');
+    //     const deleteBtn = e.target.closest('.delete-btn');
+    //     if (editBtn) populateProductForm(editBtn.dataset.id);
+    //     // Chama a função deleteProduct do módulo products.js
+    //     if (deleteBtn) deleteProduct(deleteBtn.dataset.id);
+    // });
     // Paginação de produtos - listeners para os botões
-    DOMElements.nextProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('next'));
-    DOMElements.prevProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('prev'));
+    // DOMElements.nextProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('next')); // Movido para main.js
+    // DOMElements.prevProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('prev')); // Movido para main.js
     
     // Encomendas
-    DOMElements.orderListBody.addEventListener('change', (e) => {
-        if (e.target.classList.contains('order-status-select')) {
-            updateOrderStatus(e.target.dataset.id, e.target.value);
-        }
-    });
+    // DOMElements.orderListBody.addEventListener('change', (e) => { // Movido para main.js
+    //     if (e.target.classList.contains('order-status-select')) {
+    //         updateOrderStatus(e.target.dataset.id, e.target.value);
+    //     }
+    // });
     
     // Avaliações
-    DOMElements.reviewListBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-review-btn');
-        if (deleteBtn) {
-            const productId = deleteBtn.dataset.productId;
-            const reviewIndex = parseInt(deleteBtn.dataset.reviewIndex, 10);
-            // Chama a função deleteReview deste ficheiro
-            deleteReview(productId, reviewIndex);
-        }
-    });
+    // DOMElements.reviewListBody.addEventListener('click', (e) => { // Movido para main.js
+    //     const deleteBtn = e.target.closest('.delete-review-btn');
+    //     if (deleteBtn) {
+    //         const productId = deleteBtn.dataset.productId;
+    //         const reviewIndex = parseInt(deleteBtn.dataset.reviewIndex, 10);
+    //         // Chama a função deleteReview do módulo reviews.js
+    //         deleteReview(productId, reviewIndex);
+    //     }
+    // });
 
     // Cupões
-    DOMElements.addCouponForm.addEventListener('submit', handleCouponFormSubmit);
-    DOMElements.couponListBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-coupon-btn');
-        // Chama a função deleteCoupon deste ficheiro
-        if (deleteBtn) deleteCoupon(deleteBtn.dataset.id);
-    });
+    // DOMElements.addCouponForm.addEventListener('submit', handleCouponFormSubmit); // Movido para main.js
+    // DOMElements.couponListBody.addEventListener('click', (e) => { // Movido para main.js
+    //     const deleteBtn = e.target.closest('.delete-coupon-btn');
+    //     // Chama a função deleteCoupon do módulo coupons.js
+    //     if (deleteBtn) deleteCoupon(deleteBtn.dataset.id);
+    // });
 
     // Reels
-    DOMElements.addReelForm.addEventListener('submit', handleAddReelFormSubmit);
-    DOMElements.reelListBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-reel-btn');
-        // Chama a função deleteReel deste ficheiro
-        if (deleteBtn) deleteReel(deleteBtn.dataset.id);
-    });
+    // DOMElements.addReelForm.addEventListener('submit', handleAddReelFormSubmit); // Movido para main.js
+    // DOMElements.reelListBody.addEventListener('click', (e) => { // Movido para main.js
+    //     const deleteBtn = e.target.closest('.delete-reel-btn');
+    //     // Chama a função deleteReel do módulo reels.js
+    //     if (deleteBtn) deleteReel(deleteBtn.dataset.id);
+    // });
 
     // Listener para fechar o modal de confirmação com a tecla Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            // Assumindo que hideAdminConfirmationModal é global ou importado
-            hideAdminConfirmationModal();
-        }
-    });
+    // document.addEventListener('keydown', (e) => { // Movido para main.js
+    //     if (e.key === 'Escape') {
+    //         // Assumindo que hideAdminConfirmationModal é global ou importado
+    //         hideAdminConfirmationModal();
+    //     }
+    // });
 
     // Inicializa o painel de administração se o utilizador já estiver autenticado
     // (Esta lógica é agora tratada por authStateObserver em auth.js)
