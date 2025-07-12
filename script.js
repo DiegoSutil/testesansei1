@@ -1,22 +1,8 @@
 // Import Firebase modules from the latest SDK
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, addDoc, query, where, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// IMPORTANT: Replace with your actual Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC4-kp4wBq6fz-pG1Rm3VQcq6pO17OEeOI",
-  authDomain: "sansei-d3cf6.firebaseapp.com",
-  projectId: "sansei-d3cf6",
-  storageBucket: "sansei-d3cf6.appspot.com",
-  messagingSenderId: "774111823223",
-  appId: "1:774111823223:web:c03c73c4b89d96244b8d72"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import { collection, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, addDoc, query, where, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// Import Firebase app and database instances from the centralized config
+import { auth, db } from './firebase-config.js'; // Caminho corrigido
 
 // =================================================================
 // GLOBAL STATE & VARIABLES
@@ -308,10 +294,24 @@ function renderShippingOptions(options) {
 // =================================================================
 // CART FUNCTIONS (WITH FIRESTORE INTEGRATION)
 // =================================================================
+
+/**
+ * Sincroniza o carrinho local com o Firestore.
+ * Chamado após login, logout e qualquer alteração no carrinho.
+ */
 async function syncCartWithFirestore() {
-    if (!currentUserData) return;
+    if (!currentUserData || !currentUserData.uid) {
+        console.warn("Não há usuário autenticado para sincronizar o carrinho com o Firestore.");
+        return;
+    }
     const userRef = doc(db, "users", currentUserData.uid);
-    await updateDoc(userRef, { cart: cart });
+    try {
+        await updateDoc(userRef, { cart: cart });
+        console.log("Carrinho sincronizado com o Firestore com sucesso.");
+    } catch (error) {
+        console.error("Erro ao sincronizar carrinho com Firestore:", error);
+        showToast("Erro ao salvar o carrinho.", true);
+    }
 }
 
 function flyToCart(targetElement) {
@@ -393,7 +393,7 @@ async function removeFromCart(productId) {
 }
 
 async function updateQuantity(productId, newQuantity) {
-    const cartItem = cart.find(item => item.id === productId); // Corrigido: era item.id !== productId
+    const cartItem = cart.find(item => item.id === productId); 
     if (!cartItem) return;
     if (newQuantity <= 0) {
         await removeFromCart(productId);
@@ -406,15 +406,21 @@ async function updateQuantity(productId, newQuantity) {
     }
 }
 
+/**
+ * Atualiza o contador de itens no ícone do carrinho.
+ */
 function updateCartIcon() {
     const cartCountEl = document.getElementById('cart-count');
-    const mobileCartCountEl = document.getElementById('mobile-cart-count'); // New mobile cart count
+    const mobileCartCountEl = document.getElementById('mobile-cart-count');
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
     if (cartCountEl) {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         cartCountEl.textContent = totalItems;
-        if (mobileCartCountEl) {
-            mobileCartCountEl.textContent = totalItems;
-        }
+        cartCountEl.classList.toggle('hidden', totalItems === 0);
+    }
+    if (mobileCartCountEl) {
+        mobileCartCountEl.textContent = totalItems;
+        mobileCartCountEl.classList.toggle('hidden', totalItems === 0);
     }
 }
 
@@ -505,6 +511,24 @@ function removeCoupon() {
     renderCart();
     showToast('Cupom removido.');
 }
+
+/**
+ * Alterna a visibilidade do modal do carrinho.
+ * @param {boolean} show - True para mostrar, false para esconder.
+ */
+function toggleCart(show) {
+    const cartModalOverlay = document.getElementById('cart-modal-overlay');
+    const cartModal = document.getElementById('cart-modal');
+    if (show) {
+        cartModalOverlay.classList.remove('hidden');
+        cartModal.classList.remove('translate-x-full');
+        renderCart(); // Renderiza o carrinho sempre que ele é aberto
+    } else {
+        cartModalOverlay.classList.add('hidden');
+        cartModal.classList.add('translate-x-full');
+    }
+}
+
 
 // =================================================================
 // PRODUCT & RENDERING FUNCTIONS
@@ -814,19 +838,6 @@ function handleSearch(e) {
 // =================================================================
 // MODAL & PAGE LOGIC
 // =================================================================
-function toggleCart(show) {
-    const cartModalOverlay = document.getElementById('cart-modal-overlay');
-    const cartModal = document.getElementById('cart-modal');
-    if (show) {
-        cartModalOverlay.classList.remove('hidden');
-        cartModal.classList.remove('translate-x-full');
-        renderCart();
-    } else {
-        cartModalOverlay.classList.add('hidden');
-        cartModal.classList.add('translate-x-full');
-    }
-}
-
 function showProductDetails(productId) {
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
@@ -924,16 +935,20 @@ const pages = document.querySelectorAll('.page-content');
 const navLinks = document.querySelectorAll('.nav-link');
 const mobileBottomNavLinks = document.querySelectorAll('#mobile-bottom-nav .mobile-bottom-nav-link');
 
-
-function showPage(pageId, categoryFilter = null) { // Adicionado categoryFilter
-    console.log("Attempting to show page:", pageId, "with filter:", categoryFilter); // Log para depuração
+/**
+ * Mostra uma página específica do site e atualiza os links de navegação.
+ * @param {string} pageId - O ID da página a ser mostrada (ex: 'inicio', 'fragrancias').
+ * @param {string} [categoryFilter=null] - Um filtro de categoria opcional para a página de fragrâncias.
+ */
+function showPage(pageId, categoryFilter = null) {
+    console.log("Attempting to show page:", pageId, "with filter:", categoryFilter);
     pages.forEach(page => page.classList.add('hidden'));
     const targetPage = document.getElementById('page-' + pageId);
     if(targetPage) { 
         targetPage.classList.remove('hidden'); 
-        console.log("Page shown successfully:", pageId); // Log para depuração
+        console.log("Page shown successfully:", pageId);
     } else {
-        console.warn("Page element not found for ID:", pageId); // Log para depuração
+        console.warn("Page element not found for ID:", pageId);
     }
     
     // Update top navigation active state
@@ -1223,7 +1238,7 @@ async function main() {
         // Initial UI setup that doesn't depend on data
         feather.replace();
         AOS.init({ duration: 800, once: true });
-        updateCartIcon();
+        updateCartIcon(); // Ensure cart icon is updated on load
 
         // Fetch all site data first
         await Promise.all([fetchInitialData(), fetchAndRenderReels()]);
@@ -1244,13 +1259,14 @@ async function main() {
                         else { mergedCart.push(localItem); }
                     });
                     cart = mergedCart;
-                    localStorage.removeItem('sanseiCart');
-                    await syncCartWithFirestore();
+                    localStorage.removeItem('sanseiCart'); // Clear local storage after merge
+                    await syncCartWithFirestore(); // Ensure merged cart is saved to Firestore
                 } else {
-                    const newUser = { email: user.email, wishlist: [], cart: cart };
+                    // New user or user document doesn't exist, create it
+                    const newUser = { email: user.email, wishlist: [], cart: cart }; // Use current local cart
                     await setDoc(userDocRef, newUser);
                     currentUserData = { uid: user.uid, ...newUser };
-                    await syncCartWithFirestore();
+                    await syncCartWithFirestore(); // Sync initial cart for new user
                 }
             } else {
                 currentUserData = null;
