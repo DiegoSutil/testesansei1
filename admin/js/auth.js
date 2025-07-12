@@ -6,7 +6,10 @@ import { auth } from '../../firebase-config.js'; // Caminho corrigido
 import { DOMElements, showAuthMessage, switchView } from './ui.js';
 import { initializeAdminPanel } from './main.js';
 
-// Lista de emails autorizados. Considere usar Custom Claims para maior segurança em produção.
+// IMPORTANT: Lista de emails de administradores autorizados.
+// Em um ambiente de produção, considere usar Firebase Custom Claims para maior segurança.
+// Exemplo de verificação de Custom Claim (requer configuração no backend do Firebase):
+// if (user && user.emailVerified && user.customClaims && user.customClaims.admin) { ... }
 const ADMIN_EMAILS = ["admin@sansei.com", "diego.sutil@gmail.com", "sanseiadmin@gmail.com"];
 
 /**
@@ -25,9 +28,16 @@ export async function handleLogin(e) {
 
     try {
         await signInWithEmailAndPassword(auth, email, password);
+        // showAuthMessage('Login bem-sucedido!', 'green'); // Feedback positivo
     } catch (error) {
-        console.error("Login Error:", error.code);
-        showAuthMessage('Email ou senha inválidos.', 'red');
+        console.error("Erro no Login:", error.code, error.message); // Log mais detalhado
+        let errorMessage = 'Email ou senha inválidos.';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            errorMessage = 'Email ou senha incorretos.';
+        } else if (error.code === 'auth/invalid-email') {
+            errorMessage = 'Formato de email inválido.';
+        }
+        showAuthMessage(errorMessage, 'red');
     }
 }
 
@@ -37,8 +47,10 @@ export async function handleLogin(e) {
 export async function handleLogout() {
     try {
         await signOut(auth);
+        // showAuthMessage('Logout bem-sucedido.', 'green'); // Feedback positivo
     } catch (error) {
-        console.error("Logout Error:", error);
+        console.error("Erro no Logout:", error);
+        showAuthMessage('Ocorreu um erro ao fazer logout.', 'red'); // Feedback de erro
     }
 }
 
@@ -48,6 +60,9 @@ export async function handleLogout() {
 export function authStateObserver() {
     onAuthStateChanged(auth, async (user) => {
         if (user && ADMIN_EMAILS.includes(user.email)) {
+            // Em um ambiente de produção, você também verificaria custom claims aqui:
+            // const idTokenResult = await user.getIdTokenResult();
+            // if (idTokenResult.claims.admin) { ... }
             DOMElements.authScreen.classList.add('hidden');
             DOMElements.adminPanel.classList.remove('hidden');
             DOMElements.adminEmail.textContent = user.email;
@@ -59,10 +74,12 @@ export function authStateObserver() {
             DOMElements.adminPanel.classList.add('hidden');
             if (user) { 
                 // Se o utilizador está logado mas não é admin, faz logout
+                console.warn(`Usuário ${user.email} tentou acessar o painel de admin sem permissão. Fazendo logout.`);
                 await signOut(auth);
+                showAuthMessage('Acesso negado. Você não tem permissão de administrador.', 'red');
+            } else {
+                showAuthMessage('Por favor, faça login para acessar o painel de administração.', 'blue'); // Mensagem padrão para não logados
             }
         }
-        // Garante que os ícones Feather sejam renderizados após as mudanças no DOM
-        feather.replace();
     });
 }
