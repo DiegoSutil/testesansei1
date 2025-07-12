@@ -2,8 +2,8 @@
  * @fileoverview Módulo de Gestão de Avaliações.
  */
 import { collection, getDocs, doc, updateDoc, getDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { db } from '../firebase-config.js'; // Importa a instância db do ficheiro de configuração centralizado
-import { DOMElements, showToast, renderStars, showAdminConfirmationModal } from './ui.js'; // Importa showAdminConfirmationModal
+import { db } from '../../firebase-config.js'; // Caminho corrigido
+import { DOMElements, showToast, renderStars, showAdminConfirmationModal } from './ui.js';
 import { fetchStats } from './stats.js';
 
 export async function fetchAndRenderReviews() {
@@ -44,7 +44,9 @@ export async function deleteReview(productId, reviewIndex) {
             const productDoc = await getDoc(productRef);
             if (!productDoc.exists()) throw new Error("Produto não encontrado");
             
-            const reviewToDelete = productDoc.data().reviews[reviewIndex];
+            const reviews = productDoc.data().reviews || [];
+            const reviewToDelete = reviews[reviewIndex];
+            
             if (!reviewToDelete) throw new Error("Avaliação não encontrada");
 
             await updateDoc(productRef, { reviews: arrayRemove(reviewToDelete) });
