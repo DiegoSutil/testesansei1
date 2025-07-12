@@ -4,7 +4,7 @@
  */
 
 // Módulos de UI e Autenticação
-import { DOMElements, switchView } from './ui.js';
+import { DOMElements, switchView, hideAdminConfirmationModal } from './ui.js';
 import { authStateObserver, handleLogin, handleLogout } from './auth.js';
 
 // Módulos de Gestão de Conteúdo
@@ -14,7 +14,7 @@ import { fetchAndRenderReviews, deleteReview } from './reviews.js';
 import { fetchAndRenderCoupons, handleCouponFormSubmit, deleteCoupon } from './coupons.js';
 import { fetchAndRenderReels, handleAddReelFormSubmit, deleteReel } from './reels.js';
 import { fetchStats } from './stats.js';
-import { hideAdminConfirmationModal } from './ui.js'; // Importa a função para fechar o modal
+
 
 /**
  * Inicializa todas as funcionalidades do painel após o login do admin.
@@ -52,8 +52,7 @@ function setupEventListeners() {
         const editBtn = e.target.closest('.edit-btn');
         const deleteBtn = e.target.closest('.delete-btn');
         if (editBtn) populateProductForm(editBtn.dataset.id);
-        // Chama a função deleteProduct do módulo products.js
-        if (deleteBtn) deleteProduct(deleteBtn.dataset.id);
+        if (deleteBtn) deleteProduct(deleteBtn.dataset.id); // Chama a função deleteProduct do módulo products.js
     });
     DOMElements.nextProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('next'));
     DOMElements.prevProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('prev'));
@@ -71,8 +70,7 @@ function setupEventListeners() {
         if (deleteBtn) {
             const productId = deleteBtn.dataset.productId;
             const reviewIndex = parseInt(deleteBtn.dataset.reviewIndex, 10);
-            // Chama a função deleteReview do módulo reviews.js
-            deleteReview(productId, reviewIndex);
+            deleteReview(productId, reviewIndex); // Chama a função deleteReview do módulo reviews.js
         }
     });
 
@@ -80,16 +78,14 @@ function setupEventListeners() {
     DOMElements.addCouponForm.addEventListener('submit', handleCouponFormSubmit);
     DOMElements.couponListBody.addEventListener('click', (e) => {
         const deleteBtn = e.target.closest('.delete-coupon-btn');
-        // Chama a função deleteCoupon do módulo coupons.js
-        if (deleteBtn) deleteCoupon(deleteBtn.dataset.id);
+        if (deleteBtn) deleteCoupon(deleteBtn.dataset.id); // Chama a função deleteCoupon do módulo coupons.js
     });
 
     // Reels
     DOMElements.addReelForm.addEventListener('submit', handleAddReelFormSubmit);
     DOMElements.reelListBody.addEventListener('click', (e) => {
         const deleteBtn = e.target.closest('.delete-reel-btn');
-        // Chama a função deleteReel do módulo reels.js
-        if (deleteBtn) deleteReel(deleteBtn.dataset.id);
+        if (deleteBtn) deleteReel(deleteBtn.dataset.id); // Chama a função deleteReel do módulo reels.js
     });
 
     // Listener para fechar o modal de confirmação com a tecla Escape
