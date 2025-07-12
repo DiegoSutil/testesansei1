@@ -1,4 +1,4 @@
-import { auth, db } from '../firebase-config.js'; // Importa auth e db do ficheiro de configuração centralizado
+import { auth, db } from '../../firebase-config.js'; // Caminho corrigido: sobe dois níveis para encontrar firebase-config.js
 import { DOMElements, showToast, showAuthMessage, switchView, renderStars } from './ui.js';
 import { initializeAdminPanel } from './main.js';
 import { showAdminConfirmationModal } from './ui.js'; // Importa o modal de confirmação personalizado
