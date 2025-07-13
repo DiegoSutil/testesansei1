@@ -5,8 +5,8 @@
 
 import { doc, updateDoc, addDoc, collection, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from '../firebase-config.js';
-import { state, setCart, setAppliedCoupon, setSelectedShipping } from './state.js';
-import { showToast, showConfirmationModal, showLoader, toggleModal } from './ui.js';
+import { state, setCart } from './state.js';
+import { showToast, showConfirmationModal } from './ui.js';
 // A importação de 'showPage' foi removida para corrigir o erro de referência circular.
 
 export function updateCartIcon() {
@@ -44,6 +44,7 @@ export async function addToCart(productId, quantity = 1, event) {
         return;
     }
 
+    // Verificação de Stock
     if (product.stock <= 0) {
         showToast("Este produto está esgotado.", true);
         return;
@@ -56,8 +57,25 @@ export async function addToCart(productId, quantity = 1, event) {
 
     const cartItem = state.cart.find(item => item.id === productId);
     if (cartItem) {
+        // Verifica se a quantidade desejada excede o stock
+        if (cartItem.quantity + quantity > product.stock) {
+            showToast(`Stock insuficiente. Apenas ${product.stock} unidades disponíveis.`, true);
+            if(button) {
+                button.disabled = false;
+                button.innerHTML = 'Adicionar ao Carrinho';
+            }
+            return;
+        }
         cartItem.quantity += quantity;
     } else {
+        if (quantity > product.stock) {
+            showToast(`Stock insuficiente. Apenas ${product.stock} unidades disponíveis.`, true);
+             if(button) {
+                button.disabled = false;
+                button.innerHTML = 'Adicionar ao Carrinho';
+            }
+            return;
+        }
         state.cart.push({ id: productId, quantity });
     }
     
@@ -89,6 +107,14 @@ async function removeFromCart(productId) {
 }
 
 async function updateQuantity(productId, newQuantity) {
+    const product = state.allProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    if (newQuantity > product.stock) {
+        showToast(`Stock insuficiente. Apenas ${product.stock} unidades disponíveis.`, true);
+        return;
+    }
+
     if (newQuantity <= 0) {
         await removeFromCart(productId);
         return;
