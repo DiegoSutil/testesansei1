@@ -10,9 +10,9 @@ export let state = {
     currentUserData: null,
     allCoupons: [],
     selectedShipping: null,
-    lastVisibleProductFront: null,
-    firstVisibleProductFront: null,
-    productCurrentPageFront: 1,
+    // Estado da paginação da página de fragrâncias
+    fragrancePage: 1,
+    productsPerPage: 12, // Define quantos produtos carregar por vez
 };
 
 // Funções "setters" para atualizar o estado de forma controlada
@@ -21,6 +21,8 @@ export function setAllProducts(products) {
 }
 export function setCart(newCart) {
     state.cart = newCart;
+    // Sincroniza com o localStorage sempre que o carrinho é atualizado
+    localStorage.setItem('sanseiCart', JSON.stringify(newCart));
 }
 export function setAppliedCoupon(coupon) {
     state.appliedCoupon = coupon;
@@ -34,8 +36,12 @@ export function setAllCoupons(coupons) {
 export function setSelectedShipping(shipping) {
     state.selectedShipping = shipping;
 }
-export function setPaginationFront(last, first, page) {
-    state.lastVisibleProductFront = last;
-    state.firstVisibleProductFront = first;
-    state.productCurrentPageFront = page;
+
+// Funções de paginação
+export function setFragrancePage(page) {
+    state.fragrancePage = page;
+}
+
+export function incrementFragrancePage() {
+    state.fragrancePage++;
 }
