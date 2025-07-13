@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <!-- Caminho corrigido para o CSS do admin -->
     <link rel="stylesheet" href="./admin/css/admin-style.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -148,40 +147,63 @@
 
             <div id="view-products" class="admin-view hidden bg-white p-6 rounded-lg shadow-md mb-8">
                 <h3 class="text-xl font-semibold mb-4">Gerir Produtos</h3>
-                <form id="product-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <form id="product-form" class="space-y-4 mb-6">
                     <input type="hidden" id="product-id">
-                    <div>
-                        <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
-                        <input type="text" id="product-name" name="product-name" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
+                            <input type="text" id="product-name" name="product-name" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
+                        </div>
+                        <div>
+                            <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
+                            <input type="number" id="product-price" name="product-price" step="0.01" min="0.01" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="0.01">
+                        </div>
+                        <div>
+                            <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                            <select id="product-category" name="product-category" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
+                                <option value="">Selecione uma categoria</option>
+                                <option value="perfume">Perfume</option>
+                                <option value="decant">Decant</option>
+                                <option value="hidratantes">Hidratantes</option>
+                                <option value="home-spray">Home-Spray</option>
+                                <option value="difusores">Difusores</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="feminino">Feminino</option>
+                                <option value="unissex">Unissex</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="product-stock" class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                            <input type="number" id="product-stock" name="product-stock" min="0" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="0">
+                        </div>
                     </div>
                     <div>
-                        <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
-                        <input type="number" id="product-price" name="product-price" step="0.01" min="0.01" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="0.01">
-                    </div>
-                    <div>
-                        <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                        <select id="product-category" name="product-category" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
-                            <option value="">Selecione uma categoria</option>
-                            <option value="perfume">Perfume</option>
-                            <option value="decant">Decant</option>
-                            <option value="homespray">Home Spray</option>
-                            <option value="difusor">Difusor</option>
-                            <option value="kit">Kit</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="product-stock" class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-                        <input type="number" id="product-stock" name="product-stock" min="0" required class="w-full px-3 py-2 border rounded-md" aria-required="true" aria-valuemin="0">
-                    </div>
-                    <div class="md:col-span-2">
                         <label for="product-image" class="block text-sm font-medium text-gray-700 mb-1">URL da Imagem</label>
                         <input type="url" id="product-image" name="product-image" required class="w-full px-3 py-2 border rounded-md" aria-required="true">
                     </div>
-                    <div class="md:col-span-2">
+                    <div>
                         <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
                         <textarea id="product-description" name="product-description" rows="3" class="w-full px-3 py-2 border rounded-md"></textarea>
                     </div>
-                    <div class="md:col-span-2 flex gap-4">
+                    <!-- Campos da Pirâmide Olfativa -->
+                    <div class="border-t pt-4">
+                         <h4 class="text-md font-semibold text-gray-800 mb-2">Pirâmide Olfativa</h4>
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="product-notes-top" class="block text-sm font-medium text-gray-700 mb-1">Notas de Topo</label>
+                                <textarea id="product-notes-top" name="product-notes-top" rows="2" class="w-full px-3 py-2 border rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label for="product-notes-heart" class="block text-sm font-medium text-gray-700 mb-1">Notas de Coração</label>
+                                <textarea id="product-notes-heart" name="product-notes-heart" rows="2" class="w-full px-3 py-2 border rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label for="product-notes-base" class="block text-sm font-medium text-gray-700 mb-1">Notas de Base</label>
+                                <textarea id="product-notes-base" name="product-notes-base" rows="2" class="w-full px-3 py-2 border rounded-md"></textarea>
+                            </div>
+                         </div>
+                    </div>
+                    <div class="flex gap-4">
                         <button type="submit" id="submit-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Adicionar Produto</button>
                         <button type="button" id="cancel-edit-btn" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 hidden">Cancelar Edição</button>
                     </div>
@@ -335,7 +357,6 @@
         </div>
     </div>
 
-    <!-- Caminho corrigido para o script principal do admin -->
     <script type="module" src="./admin/js/main.js"></script>
 </body>
 </html>
