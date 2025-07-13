@@ -12,7 +12,7 @@ body {
 
 /* Custom Loader for global loader */
 .loader {
-    border-top-color: #4f46e5; /* Indigo color */
+    border-top-color: #333; /* Cor escura para o loader */
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -25,7 +25,7 @@ body {
 /* Small loader for buttons */
 .loader-sm {
     border: 2px solid #f3f3f3; /* Light grey */
-    border-top: 2px solid #3498db; /* Blue */
+    border-top: 2px solid #333; /* Dark color */
     border-radius: 50%;
     width: 16px;
     height: 16px;
@@ -40,18 +40,18 @@ body {
    HEADER E NAVEGAÇÃO
 ================================================================= */
 .nav-link {
-    @apply font-semibold text-slate-600 hover:text-indigo-600 transition-colors duration-300 relative py-2 px-3 block;
+    @apply font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block;
 }
 
 .nav-link::after {
     content: '';
     position: absolute;
-    bottom: -1px; /* Position it on the border */
+    bottom: -1px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 2px;
-    @apply bg-indigo-600 transition-all duration-300;
+    @apply bg-black transition-all duration-300;
 }
 
 .nav-link:hover::after,
@@ -60,7 +60,7 @@ body {
 }
 
 .nav-icon {
-    @apply text-slate-500 hover:text-indigo-600 transition-colors duration-300;
+    @apply text-slate-500 hover:text-black transition-colors duration-300;
 }
 
 .cart-count-badge {
@@ -76,7 +76,7 @@ body {
 }
 
 .mobile-bottom-nav-link.active {
-    @apply text-indigo-600;
+    @apply text-black;
 }
 
 /* =================================================================
@@ -87,7 +87,7 @@ body {
 }
 
 .btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl;
+    @apply bg-slate-900 text-white hover:bg-black shadow-lg hover:shadow-xl; /* Cor primária alterada */
 }
 
 .btn-secondary {
@@ -126,9 +126,15 @@ body {
     @apply text-red-500 fill-current; /* Fill heart when active */
 }
 
+/* Estilo para o novo botão de adicionar ao carrinho no hover */
+.product-card-btn {
+    @apply absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5 bg-slate-900 text-white py-2 px-4 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0;
+}
+
+/* Cor dourada para as estrelas */
 .feather-star.filled {
-    fill: #D4AF37; /* Gold color for filled stars */
-    color: #D4AF37;
+    fill: #B8860B;
+    color: #B8860B;
 }
 
 /* Fly to cart animation */
@@ -146,20 +152,20 @@ input[type="range"].range-slider::-webkit-slider-thumb {
     appearance: none;
     width: 16px;
     height: 16px;
-    background: #4f46e5; /* Indigo color */
+    background: #333; /* Cor escura */
     border-radius: 50%;
     cursor: pointer;
     margin-top: -7px; /* Adjust to align with track */
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); /* Ring effect */
+    box-shadow: 0 0 0 4px rgba(51, 51, 51, 0.2); /* Ring effect */
 }
 
 input[type="range"].range-slider::-moz-range-thumb {
     width: 16px;
     height: 16px;
-    background: #4f46e5; /* Indigo color */
+    background: #333;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); /* Ring effect */
+    box-shadow: 0 0 0 4px rgba(51, 51, 51, 0.2);
 }
 
 /* Hide scrollbar for horizontal product list */
