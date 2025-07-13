@@ -76,7 +76,7 @@ function showPage(pageId, categoryFilter = null) {
         renderProducts(decantProducts, 'product-list-decants');
     }
 }
-window.showPage = showPage;
+window.showPage = showPage; // Torna a função acessível globalmente para que outros módulos possam chamá-la.
 
 function refreshAllProductViews() {
     const currentPageEl = document.querySelector('.page-content:not(.hidden)');
@@ -97,8 +97,13 @@ function applyFiltersAndRender(resetPage = false) {
     }
 
     const categoryFilters = Array.from(document.querySelectorAll('#filter-categories input:checked')).map(cb => cb.value);
-    const priceFilter = document.getElementById('price-range-filter').value;
-    const sortBy = document.getElementById('sort-by').value;
+    const priceRangeEl = document.getElementById('price-range-filter');
+    const sortByEl = document.getElementById('sort-by');
+    
+    if (!priceRangeEl || !sortByEl) return; // Adiciona verificação para garantir que os elementos existem
+
+    const priceFilter = priceRangeEl.value;
+    const sortBy = sortByEl.value;
 
     let filteredProducts = [...state.allProducts];
 
@@ -127,9 +132,11 @@ function applyFiltersAndRender(resetPage = false) {
     if (resetPage) {
         renderProducts(productsToRender, 'product-list-fragrancias');
     } else {
-        productListEl.insertAdjacentHTML('beforeend', productsToRender.map((p, i) => createProductCardTemplate(p, i * 100)).join(''));
-        feather.replace();
-        AOS.refresh();
+        if(productListEl) {
+            productListEl.insertAdjacentHTML('beforeend', productsToRender.map((p, i) => createProductCardTemplate(p, i * 100)).join(''));
+            feather.replace();
+            AOS.refresh();
+        }
     }
 
     if (noProductsEl) noProductsEl.classList.toggle('hidden', filteredProducts.length > 0);
@@ -155,6 +162,7 @@ let quizAnswers = {};
 
 function renderQuizStep(step) {
     const quizModal = document.getElementById('quiz-modal');
+    if(!quizModal) return;
     const question = quizQuestions[step];
     
     quizModal.innerHTML = `
@@ -180,6 +188,7 @@ function renderQuizStep(step) {
 
 function showQuizResults() {
     const quizModal = document.getElementById('quiz-modal');
+    if(!quizModal) return;
     const recommended = state.allProducts.filter(p => {
         return (quizAnswers.gender ? p.category === quizAnswers.gender.toLowerCase() : true);
     }).slice(0, 3);
