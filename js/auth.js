@@ -7,7 +7,6 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { auth, db } from '../firebase-config.js';
 import { showToast, toggleModal, toggleMobileMenu } from './ui.js';
-import { showPage } from '../script.js';
 
 function showAuthError(message) {
     const errorDiv = document.getElementById('auth-error');
@@ -90,7 +89,7 @@ async function handleRegister(e) {
 export async function handleLogout() {
     await signOut(auth);
     showToast('Sessão terminada.');
-    showPage('inicio');
+    window.showPage('inicio');
 }
 
 export function updateAuthUI(user) {
@@ -98,7 +97,7 @@ export function updateAuthUI(user) {
     const mobileUserLink = document.getElementById('mobile-user-link');
     const mobileBottomUserLink = document.getElementById('mobile-bottom-user-link');
     
-    const showProfile = () => showPage('profile');
+    const showProfile = () => window.showPage('profile');
     const showAuthModal = () => { renderAuthForm(); toggleModal('auth-modal', true); };
 
     if (user) {
