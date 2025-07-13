@@ -7,7 +7,7 @@ import { doc, updateDoc, addDoc, collection, Timestamp } from "https://www.gstat
 import { db } from '../firebase-config.js';
 import { state, setCart, setAppliedCoupon, setSelectedShipping } from './state.js';
 import { showToast, showConfirmationModal, showLoader, toggleModal } from './ui.js';
-import { showPage } from '../script.js';
+// A importação de 'showPage' foi removida para corrigir o erro de referência circular.
 
 export function updateCartIcon() {
     const cartCountEl = document.getElementById('cart-count');
@@ -37,15 +37,21 @@ async function syncCartWithFirestore() {
 
 export async function addToCart(productId, quantity = 1, event) {
     const button = event.target.closest('.add-to-cart-btn');
-    button.disabled = true;
-    button.innerHTML = '<span class="loader-sm"></span>';
-
+    
     const product = state.allProducts.find(p => p.id === productId);
     if (!product) {
         showToast("Erro: Produto não disponível.", true);
-        button.disabled = false;
-        button.innerHTML = 'Adicionar ao Carrinho';
         return;
+    }
+
+    if (product.stock <= 0) {
+        showToast("Este produto está esgotado.", true);
+        return;
+    }
+
+    if(button) {
+        button.disabled = true;
+        button.innerHTML = '<span class="loader-sm"></span>';
     }
 
     const cartItem = state.cart.find(item => item.id === productId);
@@ -62,8 +68,10 @@ export async function addToCart(productId, quantity = 1, event) {
     
     setTimeout(() => {
         showToast(`${product.name} adicionado ao carrinho!`);
-        button.disabled = false;
-        button.innerHTML = 'Adicionar ao Carrinho';
+        if(button) {
+            button.disabled = false;
+            button.innerHTML = 'Adicionar ao Carrinho';
+        }
     }, 500);
 }
 
@@ -101,6 +109,8 @@ export function renderCart() {
     const subtotalEl = document.getElementById('cart-subtotal');
     const totalEl = document.getElementById('cart-total');
     const discountInfoEl = document.getElementById('discount-info');
+    const shippingCostLine = document.getElementById('shipping-cost-line');
+    const shippingCostEl = document.getElementById('shipping-cost');
     const checkoutButton = document.getElementById('checkout-button');
 
     if (!cartItemsEl || !subtotalEl || !totalEl || !discountInfoEl) return;
@@ -110,6 +120,7 @@ export function renderCart() {
         subtotalEl.textContent = 'R$ 0,00';
         totalEl.textContent = 'R$ 0,00';
         discountInfoEl.innerHTML = '';
+        shippingCostLine.classList.add('hidden');
         checkoutButton.disabled = true;
         return;
     }
@@ -134,8 +145,16 @@ export function renderCart() {
         discountInfoEl.innerHTML = '';
     }
 
-    let total = subtotal - discount;
-    // Adicionar lógica de frete aqui quando implementado
+    let shippingCost = 0;
+    if (state.selectedShipping) {
+        shippingCost = state.selectedShipping.price;
+        shippingCostEl.textContent = `R$ ${shippingCost.toFixed(2).replace('.', ',')}`;
+        shippingCostLine.classList.remove('hidden');
+    } else {
+        shippingCostLine.classList.add('hidden');
+    }
+
+    let total = subtotal - discount + shippingCost;
     
     subtotalEl.textContent = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
     totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
