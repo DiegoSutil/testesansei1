@@ -1044,6 +1044,83 @@ function handleSearch(e) {
 // =================================================================
 // MODAL & PAGE LOGIC
 // =================================================================
+
+/**
+ * NEW: Handles the submission of a product review.
+ * @param {Event} event - The form submission event.
+ * @param {string} productId - The ID of the product being reviewed.
+ */
+async function handleReviewSubmit(event, productId) {
+    event.preventDefault();
+    const form = event.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const rating = parseInt(form.querySelector('#review-rating-value').value);
+    const text = form.querySelector('#review-text').value.trim();
+
+    if (!currentUserData) {
+        showToast("Você precisa estar logado para avaliar.", true);
+        return;
+    }
+
+    if (rating === 0) {
+        showToast("Por favor, selecione uma nota (1 a 5 estrelas).", true);
+        return;
+    }
+
+    if (text === '') {
+        showToast("Por favor, escreva um comentário.", true);
+        return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="loader-sm"></span> Enviando...';
+
+    const newReview = {
+        userId: currentUserData.uid,
+        userName: currentUserData.email.split('@')[0], // Use username part of email
+        rating: rating,
+        text: text,
+        createdAt: Timestamp.now()
+    };
+
+    try {
+        const productRef = doc(db, "products", productId);
+        
+        // Add the new review
+        await updateDoc(productRef, {
+            reviews: arrayUnion(newReview)
+        });
+
+        // Recalculate the average rating
+        const updatedDoc = await getDoc(productRef);
+        const updatedReviews = updatedDoc.data().reviews || [];
+        const newAvgRating = updatedReviews.length > 0
+            ? updatedReviews.reduce((sum, r) => sum + r.rating, 0) / updatedReviews.length
+            : 0;
+        
+        await updateDoc(productRef, {
+            rating: newAvgRating
+        });
+
+        // Update the local product data to reflect changes immediately
+        const productIndex = allProducts.findIndex(p => p.id === productId);
+        if (productIndex !== -1) {
+            allProducts[productIndex].reviews.push(newReview);
+            allProducts[productIndex].rating = newAvgRating;
+        }
+
+        showToast("Sua avaliação foi enviada com sucesso!");
+        showProductDetails(productId); // Refresh the modal to show the new review
+
+    } catch (error) {
+        console.error("Erro ao enviar avaliação: ", error);
+        showToast("Ocorreu um erro ao enviar sua avaliação.", true);
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Enviar Avaliação';
+    }
+}
+
+
 function showProductDetails(productId) {
     const product = allProducts.find(p => p.id === productId);
     if (!product) {
@@ -1053,14 +1130,9 @@ function showProductDetails(productId) {
     }
 
     const contentEl = document.getElementById('product-details-main-content');
-    const reviewsSectionEl = document.getElementById('product-reviews-section');
-    const relatedProductsSectionEl = document.getElementById('related-products-section');
+    const extraContentEl = document.getElementById('product-details-extra-content');
 
-    if (!contentEl || !reviewsSectionEl || !relatedProductsSectionEl) {
-        console.error('Um ou mais elementos do modal de detalhes do produto não foram encontrados!');
-        return;
-    }
-
+    // Pirâmide Olfativa
     let notesHtml = '';
     if (product.notes_top || product.notes_heart || product.notes_base) {
         notesHtml = `
@@ -1096,29 +1168,68 @@ function showProductDetails(productId) {
         </div>
     `;
 
+    // --- Extra Content: Reviews, Review Form, Related Products ---
+    
     // Reviews section
-    if (product.reviews && product.reviews.length > 0) {
-        reviewsSectionEl.innerHTML = product.reviews.map(review => `
-            <div class="border-b border-gray-200 pb-4 last:border-b-0">
+    const reviewsHtml = (product.reviews && product.reviews.length > 0)
+        ? product.reviews.map(review => `
+            <div class="border-b border-gray-200 pb-4 mb-4 last:border-b-0 last:mb-0">
                 <div class="flex items-center mb-2">
                     <span class="font-semibold mr-2">${review.userName}</span>
                     ${renderStars(review.rating)}
                 </div>
                 <p class="text-gray-700 text-sm leading-relaxed">${review.text}</p>
             </div>
-        `).join('');
+        `).join('')
+        : '<p class="text-gray-500">Nenhuma avaliação ainda. Seja o primeiro a avaliar!</p>';
+
+    // Review Form Section
+    let reviewFormHtml = '';
+    if (currentUserData) {
+        reviewFormHtml = `
+            <div class="mt-8 pt-6 border-t">
+                <h4 class="font-heading text-xl font-bold mb-4">Deixe sua Avaliação</h4>
+                <form id="review-form-${productId}" data-product-id="${productId}">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Sua nota:</label>
+                        <div class="flex items-center gap-1" id="review-rating-stars">
+                            <i data-value="1" data-feather="star" class="w-6 h-6 text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"></i>
+                            <i data-value="2" data-feather="star" class="w-6 h-6 text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"></i>
+                            <i data-value="3" data-feather="star" class="w-6 h-6 text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"></i>
+                            <i data-value="4" data-feather="star" class="w-6 h-6 text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"></i>
+                            <i data-value="5" data-feather="star" class="w-6 h-6 text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"></i>
+                        </div>
+                        <input type="hidden" id="review-rating-value" value="0">
+                    </div>
+                    <div class="mb-4">
+                        <label for="review-text" class="block text-sm font-semibold text-gray-700 mb-2">Seu comentário:</label>
+                        <textarea id="review-text" rows="4" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
+                </form>
+            </div>
+        `;
     } else {
-        reviewsSectionEl.innerHTML = '<p class="text-gray-500">Nenhuma avaliação ainda. Seja o primeiro a avaliar!</p>';
+        reviewFormHtml = `
+            <div class="mt-8 pt-6 border-t text-center">
+                <p class="text-slate-600"><a href="#" id="login-to-review" class="font-semibold text-black underline">Faça login</a> para deixar sua avaliação.</p>
+            </div>
+        `;
     }
 
-    // Related products section (simple example: show other products from the same category)
+    // Related products section
     const relatedProducts = allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-    if (relatedProducts.length > 0) {
-        relatedProductsSectionEl.innerHTML = relatedProducts.map(p => createProductCard(p)).join('');
-    } else {
-        relatedProductsSectionEl.innerHTML = '<p class="text-gray-500 col-span-full">Nenhum produto relacionado encontrado.</p>';
-    }
+    const relatedProductsHtml = (relatedProducts.length > 0)
+        ? `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">${relatedProducts.map(p => createProductCard(p)).join('')}</div>`
+        : '<p class="text-gray-500 col-span-full">Nenhum produto relacionado encontrado.</p>';
 
+    extraContentEl.innerHTML = `
+        <h3 class="font-heading text-2xl font-bold mb-4">Avaliações de Clientes</h3>
+        <div id="product-reviews-section">${reviewsHtml}</div>
+        <div id="product-review-form-container">${reviewFormHtml}</div>
+        <h3 class="font-heading text-2xl font-bold mt-12 mb-4">Produtos Relacionados</h3>
+        <div id="related-products-section">${relatedProductsHtml}</div>
+    `;
 
     feather.replace();
     toggleProductDetailsModal(true);
@@ -1491,19 +1602,23 @@ function initializeEventListeners() {
             }
         });
     });
+    
+    // Delegated event listeners for dynamic content
     document.body.addEventListener('click', (e) => {
         const addToCartBtn = e.target.closest('.add-to-cart-btn');
         const wishlistHeart = e.target.closest('.wishlist-heart');
         const productLink = e.target.closest('img[data-id], h3[data-id]');
-        const quickViewBtn = e.target.closest('.quick-view-btn'); // New
+        const quickViewBtn = e.target.closest('.quick-view-btn');
         const searchResult = e.target.closest('.search-result-item');
         const cartQtyBtn = e.target.closest('.cart-qty-btn');
         const cartRemoveBtn = e.target.closest('.cart-remove-btn');
+        const loginToReviewLink = e.target.closest('#login-to-review');
+        const ratingStar = e.target.closest('#review-rating-stars i');
 
         if (addToCartBtn) { e.stopPropagation(); addToCart(addToCartBtn.dataset.id, 1, e); }
         else if (wishlistHeart) { e.stopPropagation(); toggleWishlist(wishlistHeart.dataset.id); }
         else if (productLink) { e.stopPropagation(); showProductDetails(productLink.dataset.id); }
-        else if (quickViewBtn) { e.stopPropagation(); showProductDetails(quickViewBtn.dataset.id); } // Handle quick view
+        else if (quickViewBtn) { e.stopPropagation(); showProductDetails(quickViewBtn.dataset.id); }
         else if (searchResult) { e.preventDefault(); showProductDetails(searchResult.dataset.id); 
             const searchBar = document.getElementById('search-bar');
             const searchInput = document.getElementById('search-input');
@@ -1514,6 +1629,31 @@ function initializeEventListeners() {
         }
         else if (cartQtyBtn) { updateQuantity(cartQtyBtn.dataset.id, parseInt(cartQtyBtn.dataset.qty)); }
         else if (cartRemoveBtn) { removeFromCart(cartRemoveBtn.dataset.id); }
+        else if (loginToReviewLink) { e.preventDefault(); toggleProductDetailsModal(false); toggleAuthModal(true); }
+        else if (ratingStar) {
+            const ratingValue = ratingStar.dataset.value;
+            const starsContainer = ratingStar.parentElement;
+            const hiddenInput = starsContainer.parentElement.querySelector('#review-rating-value');
+            hiddenInput.value = ratingValue;
+
+            starsContainer.querySelectorAll('i').forEach(star => {
+                star.classList.remove('filled', 'text-yellow-400');
+                star.classList.add('text-gray-300');
+                if (parseInt(star.dataset.value) <= parseInt(ratingValue)) {
+                    star.classList.add('filled', 'text-yellow-400');
+                    star.classList.remove('text-gray-300');
+                }
+            });
+            feather.replace();
+        }
+    });
+
+    // Delegated listener for the review form submission
+    document.body.addEventListener('submit', (e) => {
+        if (e.target && e.target.id.startsWith('review-form-')) {
+            const productId = e.target.dataset.productId;
+            handleReviewSubmit(e, productId);
+        }
     });
     
     document.addEventListener('keydown', (e) => {
