@@ -100,22 +100,43 @@ export function renderCart() {
     const cartItemsEl = document.getElementById('cart-items');
     const subtotalEl = document.getElementById('cart-subtotal');
     const totalEl = document.getElementById('cart-total');
-    
+    const discountInfoEl = document.getElementById('discount-info');
+    const checkoutButton = document.getElementById('checkout-button');
+
+    if (!cartItemsEl || !subtotalEl || !totalEl || !discountInfoEl) return;
+
     if (state.cart.length === 0) {
         cartItemsEl.innerHTML = '<p class="text-gray-500 text-center">Seu carrinho está vazio.</p>';
         subtotalEl.textContent = 'R$ 0,00';
         totalEl.textContent = 'R$ 0,00';
+        discountInfoEl.innerHTML = '';
+        checkoutButton.disabled = true;
         return;
     }
+
+    checkoutButton.disabled = false;
 
     const subtotal = state.cart.reduce((sum, item) => {
         const product = state.allProducts.find(p => p.id === item.id);
         return sum + (product ? product.price * item.quantity : 0);
     }, 0);
 
-    let total = subtotal;
-    // Adicionar lógica de cupom e frete aqui se necessário
+    let discount = 0;
+    if (state.appliedCoupon) {
+        discount = subtotal * state.appliedCoupon.discount;
+        discountInfoEl.innerHTML = `
+            <div class="flex justify-between text-green-600">
+                <span>Desconto (${state.appliedCoupon.code})</span>
+                <span>- R$ ${discount.toFixed(2).replace('.',',')}</span>
+            </div>
+        `;
+    } else {
+        discountInfoEl.innerHTML = '';
+    }
 
+    let total = subtotal - discount;
+    // Adicionar lógica de frete aqui quando implementado
+    
     subtotalEl.textContent = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
     totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
 
@@ -123,18 +144,18 @@ export function renderCart() {
         const product = state.allProducts.find(p => p.id === item.id);
         if (!product) return '';
         return `
-        <div class="flex items-center gap-4 mb-4">
-            <img src="${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded-md">
+        <div class="flex items-center gap-4 py-4 border-b last:border-b-0">
+            <img src="${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
             <div class="flex-grow">
-                <h4 class="font-semibold">${product.name}</h4>
-                <p class="text-sm text-gray-600">R$ ${product.price.toFixed(2).replace('.',',')}</p>
+                <h4 class="font-semibold text-sm">${product.name}</h4>
+                <p class="text-xs text-gray-600">R$ ${product.price.toFixed(2).replace('.',',')}</p>
                 <div class="flex items-center mt-2">
-                    <button data-id="${item.id}" data-qty="${item.quantity - 1}" class="cart-qty-btn w-6 h-6 border rounded-md">-</button>
-                    <span class="px-3">${item.quantity}</span>
-                    <button data-id="${item.id}" data-qty="${item.quantity + 1}" class="cart-qty-btn w-6 h-6 border rounded-md">+</button>
+                    <button data-id="${item.id}" data-qty="${item.quantity - 1}" class="cart-qty-btn w-6 h-6 border rounded-md flex items-center justify-center">-</button>
+                    <span class="px-3 text-sm">${item.quantity}</span>
+                    <button data-id="${item.id}" data-qty="${item.quantity + 1}" class="cart-qty-btn w-6 h-6 border rounded-md flex items-center justify-center">+</button>
                 </div>
             </div>
-            <button data-id="${item.id}" class="cart-remove-btn text-red-500"><i data-feather="trash-2" class="w-5 h-5"></i></button>
+            <button data-id="${item.id}" class="cart-remove-btn text-red-500 hover:text-red-700"><i data-feather="trash-2" class="w-5 h-5"></i></button>
         </div>`;
     }).join('');
     feather.replace();
@@ -142,12 +163,13 @@ export function renderCart() {
 
 export function setupCartEventListeners() {
     document.body.addEventListener('click', e => {
-        if (e.target.closest('.cart-qty-btn')) {
-            const btn = e.target.closest('.cart-qty-btn');
-            updateQuantity(btn.dataset.id, parseInt(btn.dataset.qty));
+        const qtyBtn = e.target.closest('.cart-qty-btn');
+        if (qtyBtn) {
+            updateQuantity(qtyBtn.dataset.id, parseInt(qtyBtn.dataset.qty));
         }
-        if (e.target.closest('.cart-remove-btn')) {
-            removeFromCart(e.target.closest('.cart-remove-btn').dataset.id);
+        const removeBtn = e.target.closest('.cart-remove-btn');
+        if (removeBtn) {
+            removeFromCart(removeBtn.dataset.id);
         }
     });
 }
