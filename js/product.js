@@ -5,10 +5,10 @@
 
 import { doc, getDoc, updateDoc, arrayUnion, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from '../firebase-config.js';
-import { state, setAllProducts } from './state.js';
+import { state } from './state.js';
 import { showToast, renderStars, toggleModal } from './ui.js';
-import { createProductCard } from './cart.js'; // Importação circular pode ser um problema, vamos mover createProductCard para cá
 
+// A função createProductCardTemplate está aqui, então não precisamos importá-la.
 export function createProductCardTemplate(product, delay = 0) {
     const isInWishlist = state.currentUserData && state.currentUserData.wishlist.includes(product.id);
     const priceHtml = `
