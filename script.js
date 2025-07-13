@@ -5,11 +5,11 @@
 
 // Módulos do Firebase
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { auth, db } from './firebase-config.js';
 
 // Módulos da Aplicação
-import { state, setCurrentUserData, setCart, setAppliedCoupon, setSelectedShipping, setFragrancePage, incrementFragrancePage } from './js/state.js';
+import { state, setCurrentUserData, setCart, setAppliedCoupon, setSelectedShipping, setFragrancePage, incrementFragrancePage, productsPerPage } from './js/state.js';
 import { showLoader, toggleModal, toggleMobileMenu, showToast } from './js/ui.js';
 import { fetchInitialData, fetchAndRenderReels } from './js/api.js';
 import { renderProducts, showProductDetails, handleReviewSubmit, createProductCardTemplate } from './js/product.js';
@@ -19,14 +19,14 @@ import { updateAuthUI, handleLogout, renderAuthForm } from './js/auth.js';
 // Função principal de inicialização
 async function main() {
     showLoader(true);
-    initializeEventListeners();
     
     const products = await fetchInitialData();
     if (products) {
         renderProducts(products.slice(0, 4), 'product-list-home');
-        applyFiltersAndRender(true); // Renderiza a página de fragrâncias com todos os produtos inicialmente
+        applyFiltersAndRender(true); 
     }
     fetchAndRenderReels();
+    initializeEventListeners();
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -38,13 +38,8 @@ async function main() {
                 setCart(firestoreCart);
                 localStorage.removeItem('sanseiCart');
             } else {
-                // Cria um novo documento de utilizador se não existir
-                await setDoc(userDocRef, {
-                    email: user.email,
-                    wishlist: [],
-                    cart: []
-                });
-                 setCurrentUserData({ uid: user.uid, email: user.email, wishlist: [], cart: [] });
+                await setDoc(userDocRef, { email: user.email, wishlist: [], cart: [] });
+                setCurrentUserData({ uid: user.uid, email: user.email, wishlist: [], cart: [] });
             }
         } else {
             setCurrentUserData(null);
@@ -59,7 +54,7 @@ async function main() {
 }
 
 // Gestão de Páginas
-export function showPage(pageId, categoryFilter = null) {
+function showPage(pageId, categoryFilter = null) {
     document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
     const targetPage = document.getElementById(`page-${pageId}`);
     if (targetPage) {
@@ -81,11 +76,12 @@ export function showPage(pageId, categoryFilter = null) {
         renderProducts(decantProducts, 'product-list-decants');
     }
 }
+window.showPage = showPage;
 
 function refreshAllProductViews() {
-    const currentPage = document.querySelector('.page-content:not(.hidden)');
-    if (!currentPage) return;
-    const pageId = currentPage.id.replace('page-', '');
+    const currentPageEl = document.querySelector('.page-content:not(.hidden)');
+    if (!currentPageEl) return;
+    const pageId = currentPageEl.id.replace('page-', '');
 
     if (pageId === 'inicio') {
         renderProducts(state.allProducts.slice(0, 4), 'product-list-home');
@@ -113,29 +109,19 @@ function applyFiltersAndRender(resetPage = false) {
     filteredProducts = filteredProducts.filter(p => p.price <= priceFilter);
 
     switch (sortBy) {
-        case 'price-asc':
-            filteredProducts.sort((a, b) => a.price - b.price);
-            break;
-        case 'price-desc':
-            filteredProducts.sort((a, b) => b.price - a.price);
-            break;
-        case 'name-asc':
-            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-            break;
-        case 'name-desc':
-            filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
-            break;
-        case 'popularity':
-        default:
-            filteredProducts.sort((a, b) => (b.reviews?.length || 0) - (a.reviews?.length || 0));
-            break;
+        case 'price-asc': filteredProducts.sort((a, b) => a.price - b.price); break;
+        case 'price-desc': filteredProducts.sort((a, b) => b.price - a.price); break;
+        case 'name-asc': filteredProducts.sort((a, b) => a.name.localeCompare(b.name)); break;
+        case 'name-desc': filteredProducts.sort((a, b) => b.name.localeCompare(a.name)); break;
+        default: filteredProducts.sort((a, b) => (b.reviews?.length || 0) - (a.reviews?.length || 0)); break;
     }
     
     const productListEl = document.getElementById('product-list-fragrancias');
     const loadMoreBtn = document.getElementById('load-more-btn');
+    const noProductsEl = document.getElementById('no-products-found');
     
-    const start = (state.fragrancePage - 1) * state.productsPerPage;
-    const end = start + state.productsPerPage;
+    const start = (state.fragrancePage - 1) * productsPerPage;
+    const end = start + productsPerPage;
     const productsToRender = filteredProducts.slice(start, end);
 
     if (resetPage) {
@@ -146,10 +132,14 @@ function applyFiltersAndRender(resetPage = false) {
         AOS.refresh();
     }
 
-    if (filteredProducts.length > end) {
-        loadMoreBtn.classList.remove('hidden');
-    } else {
-        loadMoreBtn.classList.add('hidden');
+    if (noProductsEl) noProductsEl.classList.toggle('hidden', filteredProducts.length > 0);
+
+    if (loadMoreBtn) {
+        if (filteredProducts.length > end) {
+            loadMoreBtn.classList.remove('hidden');
+        } else {
+            loadMoreBtn.classList.add('hidden');
+        }
     }
 }
 
@@ -190,7 +180,6 @@ function renderQuizStep(step) {
 
 function showQuizResults() {
     const quizModal = document.getElementById('quiz-modal');
-    // Lógica de recomendação simplificada (pode ser melhorada)
     const recommended = state.allProducts.filter(p => {
         return (quizAnswers.gender ? p.category === quizAnswers.gender.toLowerCase() : true);
     }).slice(0, 3);
@@ -208,8 +197,6 @@ function showQuizResults() {
     feather.replace();
 }
 
-
-// Inicialização dos Event Listeners
 function initializeEventListeners() {
     AOS.init({ duration: 800, once: true });
     setupCartEventListeners();
