@@ -274,7 +274,7 @@ function renderShippingOptions(options) {
         label.className = 'flex items-center justify-between p-3 border rounded-md cursor-pointer hover:bg-gray-50';
         label.innerHTML = `
             <div class="flex items-center">
-                <input type="radio" name="shipping-option" id="${optionId}" value="${price}" data-name="${option.nome}" class="form-radio text-gold-500" aria-label="${option.nome}, Prazo de entrega ${option.PrazoEntrega} dias úteis, Valor R$ ${price.toFixed(2).replace('.', ',')}">
+                <input type="radio" name="shipping-option" id="${optionId}" value="${price}" data-name="${option.nome}" class="form-radio text-black" aria-label="${option.nome}, Prazo de entrega ${option.PrazoEntrega} dias úteis, Valor R$ ${price.toFixed(2).replace('.', ',')}">
                 <div class="ml-3">
                     <p class="font-semibold">${option.nome}</p>
                     <p class="text-sm text-gray-500">Prazo: ${option.PrazoEntrega} dias úteis</p>
@@ -393,7 +393,7 @@ async function addToCart(productId, quantity = 1, event) {
     setTimeout(() => {
         showToast(`${product.name} foi adicionado ao carrinho!`);
         button.disabled = false;
-        button.innerHTML = originalText;
+        button.innerHTML = "Adicionar ao Carrinho"; // Reset text
     }, 500);
 }
 
@@ -579,6 +579,11 @@ function renderStars(rating) {
 
 function createProductCard(product, delay = 0) {
     const isInWishlist = currentUserData && currentUserData.wishlist.includes(product.id);
+    const priceHtml = `
+        <p class="text-xl font-bold mt-auto text-slate-800">R$ ${product.price.toFixed(2).replace('.',',')}</p>
+        <p class="text-xs text-slate-500">ou em até 10x de R$ ${(product.price / 10).toFixed(2).replace('.',',')} sem juros</p>
+    `;
+
     return `
         <div class="bg-white group text-center rounded-lg shadow-sm flex flex-col transition-all-ease hover:-translate-y-2 hover:shadow-xl whitespace-normal flex-shrink-0 w-full sm:w-auto" data-aos="fade-up" data-aos-delay="${delay}" role="listitem">
             <div class="relative overflow-hidden rounded-t-lg">
@@ -586,17 +591,19 @@ function createProductCard(product, delay = 0) {
                 <button class="wishlist-heart absolute top-4 right-4 p-2 bg-white/70 rounded-full ${isInWishlist ? 'active' : ''}" data-id="${product.id}" aria-label="${isInWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}">
                     <i data-feather="heart" class="w-5 h-5"></i>
                 </button>
-                <!-- Quick View Button -->
                 <button class="quick-view-btn absolute bottom-0 left-0 right-0 bg-black/70 text-white py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" data-id="${product.id}" aria-label="Visualização rápida de ${product.name}">
                     Visualização Rápida
                 </button>
+                <!-- Botão de adicionar ao carrinho que aparece no hover -->
+                <button class="add-to-cart-btn product-card-btn" data-id="${product.id}">Adicionar ao Carrinho</button>
             </div>
             <div class="p-6 flex flex-col flex-grow">
                 <h3 class="font-heading font-semibold text-xl cursor-pointer" data-id="${product.id}">${product.name}</h3>
                 <p class="text-slate-600 text-sm mb-2">${product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : ''}</p>
                 <div class="flex justify-center my-2">${renderStars(product.rating)}</div>
-                <p class="text-gold-500 font-bold mt-auto text-lg">R$ ${product.price.toFixed(2).replace('.',',')}</p>
-                <button class="add-to-cart-btn mt-4 bg-black text-white py-2 px-6 rounded-full hover:bg-gold-500 hover:text-black transition-all-ease" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">Adicionar ao Carrinho</button>
+                <div class="mt-auto">
+                    ${priceHtml}
+                </div>
             </div>
         </div>
     `;
@@ -846,11 +853,11 @@ function renderAuthForm(isLogin = true) {
         <form id="auth-form">
             <div class="mb-4">
                 <label for="auth-email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                <input type="email" id="auth-email" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500" aria-required="true">
+                <input type="email" id="auth-email" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true">
             </div>
             <div class="mb-4">
                 <label for="auth-password" class="block text-sm font-semibold text-gray-700 mb-2">Senha</label>
-                <input type="password" id="auth-password" required minlength="6" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500" aria-required="true" aria-describedby="password-hint">
+                <input type="password" id="auth-password" required minlength="6" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true" aria-describedby="password-hint">
                 <p id="password-hint" class="text-xs text-gray-500 mt-1">A senha deve ter no mínimo 6 caracteres.</p>
             </div>
     `;
@@ -858,18 +865,18 @@ function renderAuthForm(isLogin = true) {
         formHtml += `
             <div class="mb-6">
                 <label for="auth-confirm-password" class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha</label>
-                <input type="password" id="auth-confirm-password" required minlength="6" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500" aria-required="true">
+                <input type="password" id="auth-confirm-password" required minlength="6" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true">
             </div>
         `;
     }
     formHtml += `
-            <button type="submit" class="w-full bg-gold-500 text-black font-bold py-3 rounded-md hover:bg-gold-600 transition-all-ease">
+            <button type="submit" class="w-full bg-black text-white font-bold py-3 rounded-md hover:bg-slate-800 transition-all-ease">
                 ${isLogin ? 'Entrar' : 'Registar'}
             </button>
         </form>
         <p class="text-center text-sm mt-4">
             ${isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
-            <a href="#" id="auth-switch" class="text-gold-500 font-semibold" aria-label="${isLogin ? 'Criar uma nova conta' : 'Fazer login em uma conta existente'}">
+            <a href="#" id="auth-switch" class="text-black font-semibold" aria-label="${isLogin ? 'Criar uma nova conta' : 'Fazer login em uma conta existente'}">
                 ${isLogin ? 'Crie uma aqui.' : 'Faça login.'}
             </a>
         </p>
@@ -1054,6 +1061,20 @@ function showProductDetails(productId) {
         return;
     }
 
+    let notesHtml = '';
+    if (product.notes_top || product.notes_heart || product.notes_base) {
+        notesHtml = `
+        <div class="mt-6 border-t pt-6">
+            <h4 class="font-semibold text-lg mb-3">Pirâmide Olfativa</h4>
+            <div class="text-sm text-slate-600 space-y-2">
+                ${product.notes_top ? `<p><strong>Topo:</strong> ${product.notes_top}</p>` : ''}
+                ${product.notes_heart ? `<p><strong>Coração:</strong> ${product.notes_heart}</p>` : ''}
+                ${product.notes_base ? `<p><strong>Fundo:</strong> ${product.notes_base}</p>` : ''}
+            </div>
+        </div>
+        `;
+    }
+
     // Main product content
     contentEl.innerHTML = `
         <div class="w-full md:w-1/2 p-8">
@@ -1067,9 +1088,10 @@ function showProductDetails(productId) {
                 <span class="text-gray-500 text-sm">(${product.reviews ? product.reviews.length : 0} avaliações)</span>
             </div>
             <p class="text-gray-600 mb-6 text-lg leading-relaxed whitespace-pre-wrap">${product.description}</p>
+            ${notesHtml}
             <div class="mt-auto">
-                <p class="text-gold-500 font-bold text-3xl mb-6">R$ ${product.price.toFixed(2).replace('.',',')}</p>
-                <button class="add-to-cart-btn w-full bg-black text-white py-3 rounded-md hover:bg-gold-500 hover:text-black transition-all-ease" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">Adicionar ao Carrinho</button>
+                <p class="text-black font-bold text-3xl mb-6">R$ ${product.price.toFixed(2).replace('.',',')}</p>
+                <button class="add-to-cart-btn w-full bg-black text-white py-3 rounded-md hover:bg-slate-800 transition-all-ease" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">Adicionar ao Carrinho</button>
             </div>
         </div>
     `;
@@ -1201,12 +1223,11 @@ function showPage(pageId, categoryFilter = null) {
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
         link.removeAttribute('aria-current');
+        if (link.dataset.page === pageId) {
+            link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
+        }
     });
-    const activeLink = document.getElementById('nav-' + pageId);
-    if(activeLink) { 
-        activeLink.classList.add('active'); 
-        activeLink.setAttribute('aria-current', 'page');
-    }
 
     // Update mobile bottom navigation active state
     mobileBottomNavLinks.forEach(link => {
@@ -1233,7 +1254,7 @@ function showPage(pageId, categoryFilter = null) {
             // Desmarcar todos os checkboxes de categoria primeiro
             document.querySelectorAll('#filter-cat-perfume, #filter-cat-decant, #filter-cat-masculino, #filter-cat-feminino, #filter-cat-unissex').forEach(cb => cb.checked = false);
             // Marcar o checkbox correspondente ao filtro
-            const filterCheckbox = document.querySelector(`#filter-cat-${categoryFilter}`);
+            const filterCheckbox = document.querySelector(`input[value="${categoryFilter}"]`);
             if (filterCheckbox) {
                 filterCheckbox.checked = true;
             }
@@ -1350,10 +1371,6 @@ async function fetchInitialData() {
 
         // Render initial products for home page (first 4)
         renderProducts(allProducts.slice(0, 4), 'product-list-home');
-        const navInicio = document.getElementById('nav-inicio');
-        if (navInicio) {
-            navInicio.classList.add('active');
-        }
         
     } catch (error) {
         console.error("Erro ao carregar dados iniciais:", error);
@@ -1372,29 +1389,18 @@ function initializeEventListeners() {
     };
 
     safeAddEventListener('logo-link', 'click', (e) => { e.preventDefault(); showPage('inicio'); });
-    document.querySelectorAll('.nav-link, .nav-link-footer, .nav-link-button').forEach(link => {
+    document.querySelectorAll('.nav-link, .nav-link-footer, .nav-link-button, .mobile-nav-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const page = link.dataset.page;
-            if (page) showPage(page);
+            const categoryFilter = link.dataset.categoryFilter;
+            if (page) showPage(page, categoryFilter);
         });
     });
     // NEW: Event listeners for mobile menu toggle
     safeAddEventListener('mobile-menu-button', 'click', () => toggleMobileMenu(true));
     safeAddEventListener('close-mobile-menu', 'click', () => toggleMobileMenu(false));
     safeAddEventListener('mobile-menu-overlay', 'click', () => toggleMobileMenu(false));
-
-    // NEW: Event listeners for mobile nav items inside the sliding menu
-    document.querySelectorAll('.mobile-nav-link').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const page = item.dataset.page;
-            const categoryFilter = item.dataset.categoryFilter; // Obter o filtro de categoria
-            if (page) showPage(page, categoryFilter); // Passar o filtro de categoria
-            toggleMobileMenu(false); // Close menu after navigating
-        });
-    });
-
 
     safeAddEventListener('cart-button', 'click', () => toggleCart(true));
     safeAddEventListener('close-cart-button', 'click', () => toggleCart(false));
@@ -1538,6 +1544,7 @@ async function main() {
         feather.replace();
         AOS.init({ duration: 800, once: true });
         updateCartIcon(); // Initial call
+        showPage('inicio'); // Garante que a página inicial seja exibida primeiro
         console.log("DEBUG: main - Após a chamada inicial de updateCartIcon. Carrinho Desktop:", document.getElementById('cart-count')?.textContent, "Carrinho Mobile:", document.getElementById('mobile-cart-count')?.textContent);
 
         // Fetch all site data first
