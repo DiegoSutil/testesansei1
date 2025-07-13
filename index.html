@@ -488,7 +488,24 @@
     <div id="cart-modal" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[70] transform translate-x-full transition-transform duration-300" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
         <div class="flex flex-col h-full">
             <div class="flex justify-between items-center p-6 border-b"><h2 id="cart-modal-title" class="font-heading text-2xl font-bold">Seu Carrinho</h2><button id="close-cart-button" class="text-slate-500 hover:text-slate-800" aria-label="Fechar carrinho"><i data-feather="x" class="w-6 h-6"></i></button></div>
-            <div id="cart-items" class="flex-grow overflow-y-auto p-6"></div>
+            <div class="flex-grow overflow-y-auto">
+                <div id="cart-items" class="p-6"></div>
+                <!-- Secção de Frete Restaurada -->
+                <div class="p-6 border-t">
+                    <h3 class="font-semibold mb-2 text-lg">Calcular Frete</h3>
+                    <div id="shipping-calculator" class="flex gap-2 mb-4">
+                        <label for="cep-input" class="sr-only">Seu CEP</label>
+                        <input type="text" id="cep-input" placeholder="Seu CEP" class="w-full px-4 py-2 border rounded-md focus:ring-2 ring-black" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" title="Formato: 12345-678 ou 12345678">
+                        <button id="calculate-shipping-btn" class="bg-slate-800 text-white px-4 rounded-md hover:bg-black disabled:bg-slate-400" aria-label="Calcular Frete">
+                            <span class="loader-sm hidden"></span>
+                            <span class="btn-text">Calcular</span>
+                        </button>
+                    </div>
+                    <div id="shipping-options" class="space-y-2" role="radiogroup" aria-labelledby="shipping-options-label">
+                        <span id="shipping-options-label" class="sr-only">Opções de Frete</span>
+                    </div>
+                </div>
+            </div>
             <div class="p-6 border-t bg-slate-50">
                 <form id="coupon-form" class="flex gap-2 mb-4">
                     <label for="coupon-input" class="sr-only">Código do cupom</label>
@@ -498,6 +515,7 @@
                 <div id="discount-info" class="text-sm mb-2" role="status" aria-live="polite"></div>
                 <div class="space-y-1 text-lg">
                     <div class="flex justify-between"><span>Subtotal</span><span id="cart-subtotal">R$ 0,00</span></div>
+                    <div id="shipping-cost-line" class="flex justify-between hidden"><span>Frete</span><span id="shipping-cost">R$ 0,00</span></div>
                 </div>
                 <div class="flex justify-between items-center font-bold text-xl mt-4 border-t pt-4">
                     <span>Total</span>
