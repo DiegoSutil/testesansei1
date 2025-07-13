@@ -4,12 +4,10 @@
  */
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, setDoc, getDocs, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { auth, db } from '../firebase-config.js';
-import { showToast, toggleModal, renderStars } from './ui.js';
-import { showPage } from './navigation.js';
-import { state } from './state.js';
-import { renderProducts } from './product.js';
+import { showToast, toggleModal, toggleMobileMenu } from './ui.js';
+import { showPage } from '../script.js';
 
 function showAuthError(message) {
     const errorDiv = document.getElementById('auth-error');
@@ -39,7 +37,7 @@ export function renderAuthForm(isLogin = true) {
                 <label for="auth-confirm-password" class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha</label>
                 <input type="password" id="auth-confirm-password" required class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-black">
             </div>` : ''}
-            <button type="submit" class="w-full btn btn-primary">${isLogin ? 'Entrar' : 'Registar'}</button>
+            <button type="submit" class="w-full inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-900 text-white hover:bg-black shadow-lg hover:shadow-xl">${isLogin ? 'Entrar' : 'Registar'}</button>
         </form>
         <p class="text-center text-sm mt-4">
             ${isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
@@ -55,8 +53,8 @@ export function renderAuthForm(isLogin = true) {
 
 async function handleLogin(e) {
     e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    const email = e.target.querySelector('#auth-email').value;
+    const password = e.target.querySelector('#auth-password').value;
     try {
         await signInWithEmailAndPassword(auth, email, password);
         toggleModal('auth-modal', false);
@@ -68,9 +66,9 @@ async function handleLogin(e) {
 
 async function handleRegister(e) {
     e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const confirm = e.target['auth-confirm-password'].value;
+    const email = e.target.querySelector('#auth-email').value;
+    const password = e.target.querySelector('#auth-password').value;
+    const confirm = e.target.querySelector('#auth-confirm-password').value;
     if (password !== confirm) {
         showAuthError('As senhas não coincidem.');
         return;
@@ -104,62 +102,18 @@ export function updateAuthUI(user) {
     const showAuthModal = () => { renderAuthForm(); toggleModal('auth-modal', true); };
 
     if (user) {
-        userButton.onclick = showProfile;
-        mobileUserLink.onclick = (e) => { e.preventDefault(); document.getElementById('close-mobile-menu').click(); showProfile(); };
-        mobileUserLink.textContent = 'Minha Conta';
-        mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showProfile(); };
-    } else {
-        userButton.onclick = showAuthModal;
-        mobileUserLink.onclick = (e) => { e.preventDefault(); document.getElementById('close-mobile-menu').click(); showAuthModal(); };
-        mobileUserLink.textContent = 'Login / Registar';
-        mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showAuthModal(); };
-    }
-}
-
-export async function renderWishlist() {
-    const wishlistContainer = document.getElementById('wishlist-items');
-    if (!state.currentUserData || !wishlistContainer) return;
-
-    const wishlistProducts = state.allProducts.filter(p => state.currentUserData.wishlist.includes(p.id));
-    if (wishlistProducts.length === 0) {
-        wishlistContainer.innerHTML = '<p class="text-gray-500 col-span-full text-center">A sua lista de desejos está vazia.</p>';
-        return;
-    }
-    renderProducts(wishlistProducts, 'wishlist-items');
-}
-
-export async function renderOrders() {
-    const ordersListContainer = document.getElementById('orders-list');
-    if (!state.currentUserData || !ordersListContainer) return;
-
-    const q = query(collection(db, "orders"), where("userId", "==", state.currentUserData.uid), orderBy("createdAt", "desc"));
-    try {
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-            ordersListContainer.innerHTML = '<p class="text-gray-500 text-center">Você ainda não fez nenhuma encomenda.</p>';
-            return;
+        if (userButton) userButton.onclick = showProfile;
+        if (mobileUserLink) {
+            mobileUserLink.onclick = (e) => { e.preventDefault(); showProfile(); toggleMobileMenu(false); };
+            mobileUserLink.textContent = 'Minha Conta';
         }
-        ordersListContainer.innerHTML = '';
-        querySnapshot.forEach(doc => {
-            const order = {id: doc.id, ...doc.data()};
-            const orderDate = order.createdAt.toDate().toLocaleDateString('pt-BR');
-            const orderElement = document.createElement('div');
-            orderElement.className = 'bg-gray-50 p-4 rounded-lg shadow-sm';
-            orderElement.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold">Encomenda #${order.id.substring(0, 7)}</p>
-                        <p class="text-sm text-gray-500">Data: ${orderDate}</p>
-                    </div>
-                    <div>
-                        <p class="font-bold">Total: R$ ${order.total.toFixed(2).replace('.',',')}</p>
-                        <p class="text-sm text-right font-semibold ${order.status === 'Pendente' ? 'text-yellow-500' : 'text-green-500'}">${order.status}</p>
-                    </div>
-                </div>`;
-            ordersListContainer.appendChild(orderElement);
-        });
-    } catch (error) {
-        console.error("Erro ao carregar encomendas:", error);
-        ordersListContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar encomendas.</p>';
+        if (mobileBottomUserLink) mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showProfile(); };
+    } else {
+        if (userButton) userButton.onclick = showAuthModal;
+        if (mobileUserLink) {
+            mobileUserLink.onclick = (e) => { e.preventDefault(); showAuthModal(); };
+            mobileUserLink.textContent = 'Login / Registar';
+        }
+        if (mobileBottomUserLink) mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showAuthModal(); };
     }
 }
