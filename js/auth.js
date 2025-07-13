@@ -4,10 +4,12 @@
  */
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, setDoc, getDocs, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { auth, db } from '../firebase-config.js';
-import { showToast, toggleModal } from './ui.js';
-import { showPage } from '../script.js';
+import { showToast, toggleModal, renderStars } from './ui.js';
+import { showPage } from './navigation.js';
+import { state } from './state.js';
+import { renderProducts } from './product.js';
 
 function showAuthError(message) {
     const errorDiv = document.getElementById('auth-error');
@@ -103,13 +105,61 @@ export function updateAuthUI(user) {
 
     if (user) {
         userButton.onclick = showProfile;
-        mobileUserLink.onclick = (e) => { e.preventDefault(); showProfile(); toggleMobileMenu(false); };
+        mobileUserLink.onclick = (e) => { e.preventDefault(); document.getElementById('close-mobile-menu').click(); showProfile(); };
         mobileUserLink.textContent = 'Minha Conta';
         mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showProfile(); };
     } else {
         userButton.onclick = showAuthModal;
-        mobileUserLink.onclick = (e) => { e.preventDefault(); showAuthModal(); };
+        mobileUserLink.onclick = (e) => { e.preventDefault(); document.getElementById('close-mobile-menu').click(); showAuthModal(); };
         mobileUserLink.textContent = 'Login / Registar';
         mobileBottomUserLink.onclick = (e) => { e.preventDefault(); showAuthModal(); };
+    }
+}
+
+export async function renderWishlist() {
+    const wishlistContainer = document.getElementById('wishlist-items');
+    if (!state.currentUserData || !wishlistContainer) return;
+
+    const wishlistProducts = state.allProducts.filter(p => state.currentUserData.wishlist.includes(p.id));
+    if (wishlistProducts.length === 0) {
+        wishlistContainer.innerHTML = '<p class="text-gray-500 col-span-full text-center">A sua lista de desejos está vazia.</p>';
+        return;
+    }
+    renderProducts(wishlistProducts, 'wishlist-items');
+}
+
+export async function renderOrders() {
+    const ordersListContainer = document.getElementById('orders-list');
+    if (!state.currentUserData || !ordersListContainer) return;
+
+    const q = query(collection(db, "orders"), where("userId", "==", state.currentUserData.uid), orderBy("createdAt", "desc"));
+    try {
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            ordersListContainer.innerHTML = '<p class="text-gray-500 text-center">Você ainda não fez nenhuma encomenda.</p>';
+            return;
+        }
+        ordersListContainer.innerHTML = '';
+        querySnapshot.forEach(doc => {
+            const order = {id: doc.id, ...doc.data()};
+            const orderDate = order.createdAt.toDate().toLocaleDateString('pt-BR');
+            const orderElement = document.createElement('div');
+            orderElement.className = 'bg-gray-50 p-4 rounded-lg shadow-sm';
+            orderElement.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold">Encomenda #${order.id.substring(0, 7)}</p>
+                        <p class="text-sm text-gray-500">Data: ${orderDate}</p>
+                    </div>
+                    <div>
+                        <p class="font-bold">Total: R$ ${order.total.toFixed(2).replace('.',',')}</p>
+                        <p class="text-sm text-right font-semibold ${order.status === 'Pendente' ? 'text-yellow-500' : 'text-green-500'}">${order.status}</p>
+                    </div>
+                </div>`;
+            ordersListContainer.appendChild(orderElement);
+        });
+    } catch (error) {
+        console.error("Erro ao carregar encomendas:", error);
+        ordersListContainer.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar encomendas.</p>';
     }
 }
