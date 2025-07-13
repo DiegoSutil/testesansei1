@@ -9,10 +9,10 @@ import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gst
 import { auth, db } from './firebase-config.js';
 
 // Módulos da Aplicação
-import { state, setCurrentUserData, setCart, setAppliedCoupon } from './js/state.js';
+import { state, setCurrentUserData, setCart, setAppliedCoupon, setSelectedShipping } from './js/state.js';
 import { showLoader, toggleModal, toggleMobileMenu, showToast } from './js/ui.js';
 import { fetchInitialData, fetchAndRenderReels } from './js/api.js';
-import { renderProducts, showProductDetails, handleReviewSubmit } from './js/product.js';
+import { renderProducts, showProductDetails, handleReviewSubmit, createProductCardTemplate } from './js/product.js';
 import { addToCart, updateCartIcon, setupCartEventListeners, renderCart } from './js/cart.js';
 import { updateAuthUI, handleLogout, renderAuthForm } from './js/auth.js';
 
@@ -95,15 +95,12 @@ function applyFiltersAndRender() {
 
     let filteredProducts = [...state.allProducts];
 
-    // Aplicar filtro de categoria
     if (categoryFilters.length > 0) {
         filteredProducts = filteredProducts.filter(p => categoryFilters.includes(p.category));
     }
 
-    // Aplicar filtro de preço
     filteredProducts = filteredProducts.filter(p => p.price <= priceFilter);
 
-    // Aplicar ordenação
     switch (sortBy) {
         case 'price-asc':
             filteredProducts.sort((a, b) => a.price - b.price);
@@ -123,13 +120,6 @@ function applyFiltersAndRender() {
             break;
     }
     
-    const noProductsEl = document.getElementById('no-products-found');
-    if (filteredProducts.length === 0) {
-        noProductsEl.classList.remove('hidden');
-    } else {
-        noProductsEl.classList.add('hidden');
-    }
-
     renderProducts(filteredProducts, 'product-list-fragrancias');
 }
 
@@ -159,7 +149,6 @@ function initializeEventListeners() {
             }
         }
         
-        // UI controls
         if (e.target.closest('#mobile-menu-button')) toggleMobileMenu(true);
         if (e.target.closest('#close-mobile-menu, #mobile-menu-overlay')) toggleMobileMenu(false);
         if (e.target.closest('#cart-button, #mobile-bottom-cart-btn')) { renderCart(); toggleModal('cart-modal', true); }
@@ -178,9 +167,52 @@ function initializeEventListeners() {
             renderAuthForm();
             toggleModal('auth-modal', true);
         }
+
+        const star = e.target.closest('#review-rating-stars > i');
+        if (star) {
+            const ratingValue = star.dataset.value;
+            const starsContainer = star.parentElement;
+            const ratingInput = document.getElementById('review-rating-value');
+            if(ratingInput) ratingInput.value = ratingValue;
+            const allStars = starsContainer.querySelectorAll('i');
+            allStars.forEach(s => {
+                const isFilled = parseInt(s.dataset.value) <= parseInt(ratingValue);
+                s.classList.toggle('filled', isFilled);
+                s.classList.toggle('text-yellow-500', isFilled);
+                s.classList.toggle('text-gray-300', !isFilled);
+            });
+            feather.replace();
+        }
+
+        const faqQuestion = e.target.closest('.faq-question');
+        if (faqQuestion) {
+            const answer = faqQuestion.nextElementSibling;
+            const icon = faqQuestion.querySelector('i');
+            const isExpanded = faqQuestion.getAttribute('aria-expanded') === 'true';
+            faqQuestion.setAttribute('aria-expanded', !isExpanded);
+            answer.classList.toggle('hidden');
+            icon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        const calculateShippingBtn = e.target.closest('#calculate-shipping-btn');
+        if(calculateShippingBtn) handleShippingCalculation();
+
+        const searchResultItem = e.target.closest('.search-result-item');
+        if (searchResultItem) {
+            e.preventDefault();
+            showProductDetails(searchResultItem.dataset.id);
+            document.getElementById('search-bar').classList.add('hidden');
+            document.getElementById('search-results').innerHTML = '';
+            document.getElementById('search-input').value = '';
+        }
+
+        const footerLinkPlaceholder = e.target.closest('.footer-link-placeholder');
+        if(footerLinkPlaceholder) {
+            e.preventDefault();
+            showToast('Página em construção.', true);
+        }
     });
 
-    // Listeners de formulário
     document.body.addEventListener('submit', (e) => {
         if (e.target.id.startsWith('review-form-')) {
             handleReviewSubmit(e, e.target.dataset.productId);
@@ -189,9 +221,18 @@ function initializeEventListeners() {
             e.preventDefault();
             applyCoupon(e.target.querySelector('#coupon-input').value);
         }
+        if (e.target.id === 'contact-form') {
+            e.preventDefault();
+            showToast('Mensagem enviada com sucesso! (Simulação)');
+            e.target.reset();
+        }
+        if (e.target.id === 'newsletter-form') {
+            e.preventDefault();
+            showToast('Obrigado por se inscrever! (Simulação)');
+            e.target.reset();
+        }
     });
 
-    // Listeners para filtros
     document.querySelectorAll('.filter-control').forEach(el => {
         el.addEventListener('change', applyFiltersAndRender);
     });
@@ -203,9 +244,36 @@ function initializeEventListeners() {
             applyFiltersAndRender();
         });
     }
+
+    const searchInput = document.getElementById('search-input');
+    const searchResultsContainer = document.getElementById('search-results');
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        if (searchTerm.length < 2) {
+            searchResultsContainer.innerHTML = '';
+            return;
+        }
+        const results = state.allProducts.filter(p => 
+            p.name.toLowerCase().includes(searchTerm) ||
+            p.category.toLowerCase().includes(searchTerm) ||
+            p.description.toLowerCase().includes(searchTerm)
+        );
+        if (results.length > 0) {
+            searchResultsContainer.innerHTML = results.slice(0, 5).map(product => `
+                <a href="#" class="flex items-center gap-4 p-2 hover:bg-gray-100 rounded-md search-result-item" data-id="${product.id}">
+                    <img src="${product.image}" alt="${product.name}" class="w-12 h-12 object-cover rounded-md">
+                    <div>
+                        <p class="font-semibold">${product.name}</p>
+                        <p class="text-sm text-gray-500">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                </a>
+            `).join('');
+        } else {
+            searchResultsContainer.innerHTML = '<p class="p-2 text-gray-500">Nenhum resultado encontrado.</p>';
+        }
+    });
 }
 
-// Função para aplicar cupom
 function applyCoupon(code) {
     const coupon = state.allCoupons.find(c => c.code.toUpperCase() === code.toUpperCase());
     if (coupon) {
@@ -215,10 +283,9 @@ function applyCoupon(code) {
         setAppliedCoupon(null);
         showToast("Cupom inválido ou expirado.", true);
     }
-    renderCart(); // Re-renderiza o carrinho para mostrar o desconto
+    renderCart();
 }
 
-// Função para Wishlist
 async function toggleWishlist(productId) {
     if (!state.currentUserData) {
         showToast("Você precisa estar logado para usar a lista de desejos.", true);
@@ -227,33 +294,76 @@ async function toggleWishlist(productId) {
     }
 
     const userRef = doc(db, "users", state.currentUserData.uid);
-    const heartButton = document.querySelector(`.wishlist-heart[data-id="${productId}"]`);
-    heartButton.disabled = true;
+    const heartButtons = document.querySelectorAll(`.wishlist-heart[data-id="${productId}"]`);
+    heartButtons.forEach(btn => btn.disabled = true);
 
     try {
         if (state.currentUserData.wishlist.includes(productId)) {
-            // Remove from wishlist
             await updateDoc(userRef, { wishlist: arrayRemove(productId) });
             state.currentUserData.wishlist = state.currentUserData.wishlist.filter(id => id !== productId);
             showToast("Removido da lista de desejos.");
-            heartButton.classList.remove('active');
         } else {
-            // Add to wishlist
             await updateDoc(userRef, { wishlist: arrayUnion(productId) });
             state.currentUserData.wishlist.push(productId);
             showToast("Adicionado à lista de desejos!");
-            heartButton.classList.add('active');
         }
     } catch (error) {
         console.error("Erro ao atualizar a lista de desejos:", error);
         showToast("Ocorreu um erro. Tente novamente.", true);
     } finally {
-        heartButton.disabled = false;
-        // Atualiza a UI em todos os lugares
+        heartButtons.forEach(btn => btn.disabled = false);
         refreshAllProductViews();
     }
 }
 
+async function handleShippingCalculation() {
+    const cepInput = document.getElementById('cep-input');
+    const cep = cepInput.value.replace(/\D/g, '');
+    const shippingOptionsEl = document.getElementById('shipping-options');
+    const calculateBtn = document.getElementById('calculate-shipping-btn');
+    const btnText = calculateBtn.querySelector('.btn-text');
+    const loader = calculateBtn.querySelector('.loader-sm');
 
-// Inicia a aplicação
+    if (cep.length !== 8) {
+        showToast("Por favor, insira um CEP válido.", true);
+        return;
+    }
+
+    btnText.classList.add('hidden');
+    loader.classList.remove('hidden');
+    calculateBtn.disabled = true;
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const options = [
+        { name: 'SEDEX', price: parseFloat((Math.random() * 15 + 25).toFixed(2)), days: '3-5 dias úteis' },
+        { name: 'PAC', price: parseFloat((Math.random() * 10 + 15).toFixed(2)), days: '7-12 dias úteis' }
+    ];
+
+    shippingOptionsEl.innerHTML = options.map(opt => `
+        <label class="flex items-center justify-between p-3 border rounded-md cursor-pointer hover:bg-gray-100">
+            <div class="flex items-center">
+                <input type="radio" name="shipping-option" class="h-4 w-4 text-black focus:ring-black" value='${JSON.stringify(opt)}'>
+                <div class="ml-3 text-sm">
+                    <p class="font-semibold">${opt.name}</p>
+                    <p class="text-gray-500">${opt.days}</p>
+                </div>
+            </div>
+            <span class="font-semibold">R$ ${opt.price.toFixed(2).replace('.', ',')}</span>
+        </label>
+    `).join('');
+
+    shippingOptionsEl.querySelectorAll('input[name="shipping-option"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const selectedOption = JSON.parse(e.target.value);
+            setSelectedShipping(selectedOption);
+            renderCart();
+        });
+    });
+
+    btnText.classList.remove('hidden');
+    loader.classList.add('hidden');
+    calculateBtn.disabled = false;
+}
+
 document.addEventListener('DOMContentLoaded', main);
