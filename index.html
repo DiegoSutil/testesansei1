@@ -45,14 +45,12 @@
                 
                 <!-- Navigation Bar - Visible on larger screens -->
                 <nav class="hidden lg:flex flex-grow justify-center" role="navigation" aria-label="Navegação Principal">
-                    <ul class="flex items-center space-x-6">
-                        <li class="nav-item"><a href="#" id="nav-quiz" data-page="quiz" class="nav-link">QUIZ - SEU PERFUME IDEAL</a></li>
-                        <li class="nav-item"><a href="#" id="nav-inicio" data-page="inicio" class="nav-link active" aria-current="page">Início</a></li>
-                        <li class="nav-item"><a href="#" id="nav-fragrancias" data-page="fragrancias" class="nav-link">Fragrâncias</a></li>
-                        <li class="nav-item"><a href="#" id="nav-decants" data-page="decants" class="nav-link">Decants</a></li>
-                        <li class="nav-item"><a href="#" id="nav-sobre" data-page="sobre" class="nav-link">Sobre</a></li>
-                        <li class="nav-item"><a href="#" id="nav-faq" data-page="faq" class="nav-link">FAQ</a></li>
-                        <li class="nav-item"><a href="#" data-page="contato" class="nav-link">Contato</a></li>
+                    <ul class="flex items-center space-x-8"> <!-- Espaçamento aumentado -->
+                        <li class="nav-item"><a href="#" data-page="inicio" class="nav-link active" aria-current="page">Início</a></li>
+                        <li class="nav-item"><a href="#" data-page="fragrancias" data-category-filter="feminino" class="nav-link">Feminino</a></li>
+                        <li class="nav-item"><a href="#" data-page="fragrancias" data-category-filter="masculino" class="nav-link">Masculino</a></li>
+                        <li class="nav-item"><a href="#" data-page="decants" class="nav-link">Decants</a></li>
+                        <li class="nav-item"><a href="#" data-page="sobre" class="nav-link">Nossa História</a></li>
                     </ul>
                 </nav>
 
@@ -80,11 +78,11 @@
                 <button id="close-mobile-menu" class="text-slate-500 hover:text-slate-800" aria-label="Fechar menu mobile"><i data-feather="x" class="w-6 h-6"></i></button>
             </div>
             <div class="px-4 py-4 space-y-2">
-                 <a href="#" class="mobile-nav-link" data-page="quiz">QUIZ - SEU PERFUME IDEAL</a>
                  <a href="#" class="mobile-nav-link" data-page="inicio">Início</a>
-                 <a href="#" class="mobile-nav-link" data-page="fragrancias">Fragrâncias</a>
+                 <a href="#" class="mobile-nav-link" data-page="fragrancias" data-category-filter="feminino">Feminino</a>
+                 <a href="#" class="mobile-nav-link" data-page="fragrancias" data-category-filter="masculino">Masculino</a>
                  <a href="#" class="mobile-nav-link" data-page="decants">Decants</a>
-                 <a href="#" class="mobile-nav-link" data-page="sobre">Sobre</a>
+                 <a href="#" class="mobile-nav-link" data-page="sobre">Nossa História</a>
                  <a href="#" class="mobile-nav-link" data-page="faq">FAQ</a>
                  <a href="#" class="mobile-nav-link" data-page="contato">Contato</a>
                  <a href="#" id="mobile-user-link" class="mobile-nav-link">Minha Conta</a>
@@ -94,7 +92,7 @@
         <div id="search-bar" class="hidden lg:hidden bg-white border-t border-slate-200" role="search">
             <div class="container mx-auto p-4 flex items-center gap-4">
                 <label for="search-input" class="sr-only">O que você procura?</label>
-                <input type="text" id="search-input" placeholder="O que você procura?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <input type="text" id="search-input" placeholder="O que você procura?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                 <button id="close-search-bar" class="text-slate-500 hover:text-slate-800" aria-label="Fechar barra de busca"><i data-feather="x"></i></button>
             </div>
             <div id="search-results" class="container mx-auto px-4 pb-4 max-h-96 overflow-y-auto"></div>
@@ -109,7 +107,7 @@
             <section class="relative h-[70vh] md:h-[80vh] bg-cover bg-center bg-fixed" style="background-image: url('https://raw.githubusercontent.com/DiegoSutil/TesteSansei/7d368b520b04e2693d0313b19f040a0611f20ba3/Gemini_Generated_Image_17fx3q17fx3q17fx.png');">
                 <div class="absolute inset-0 bg-black/50"></div>
                 <div class="container mx-auto px-6 h-full flex flex-col justify-center items-center text-center relative z-10" data-aos="fade-up">
-                    <h1 class="font-heading text-4xl md:text-6xl font-bold text-white leading-tight mb-4">A Arte de um Aroma Inesquecível</h1>
+                    <h1 class="font-heading text-4xl md:text-6xl font-bold text-white leading-tight mb-4">Perfumes que Contam Histórias</h1>
                     <p class="text-lg md:text-xl mb-10 max-w-2xl text-slate-200 leading-relaxed">Explore decants de perfumes de luxo e encontre a sua assinatura olfativa.</p>
                     <a href="#" data-page="fragrancias" class="btn btn-primary nav-link-button" aria-label="Descobrir Fragrâncias">Descobrir Fragrâncias</a>
                 </div>
@@ -119,9 +117,9 @@
             <section class="bg-white py-16">
                 <div class="container mx-auto px-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center" data-aos="fade-up">
-                        <div class="flex flex-col items-center"><i data-feather="award" class="h-10 w-10 text-indigo-600 mb-4"></i><h3 class="font-bold text-lg">100% Originais</h3><p class="text-slate-600 text-sm mt-1 leading-relaxed">Decants extraídos diretamente do frasco original.</p></div>
-                        <div class="flex flex-col items-center"><i data-feather="box" class="h-10 w-10 text-indigo-600 mb-4"></i><h3 class="font-bold text-lg">Embalagem Premium</h3><p class="text-slate-600 text-sm mt-1 leading-relaxed">Uma experiência de luxo do início ao fim.</p></div>
-                        <div class="flex flex-col items-center"><i data-feather="truck" class="h-10 w-10 text-indigo-600 mb-4"></i><h3 class="font-bold text-lg">Envio Rápido</h3><p class="text-slate-600 text-sm mt-1 leading-relaxed">Receba seus decants com segurança e agilidade.</p></div>
+                        <div class="flex flex-col items-center"><i data-feather="award" class="h-10 w-10 text-black mb-4"></i><h3 class="font-bold text-lg">100% Originais</h3><p class="text-slate-600 text-sm mt-1 leading-relaxed">Decants extraídos diretamente do frasco original.</p></div>
+                        <div class="flex flex-col items-center"><i data-feather="box" class="h-10 w-10 text-black mb-4"></i><h3 class="font-bold text-lg">Embalagem Premium</h3><p class="text-slate-600 text-sm mt-1 leading-relaxed">Uma experiência de luxo do início ao fim.</p></div>
+                        <div class="flex flex-col items-center"><i data-feather="truck" class="h-10 w-10 text-black mb-4"></i><h3 class="font-bold text-lg">Envio Rápido</h3><p class="text-slate-600 text-sm mt-1 leading-relaxed">Receba seus decants com segurança e agilidade.</p></div>
                     </div>
                 </div>
             </section>
@@ -130,7 +128,7 @@
             <section class="bg-slate-50 py-20">
                 <div class="container mx-auto px-6">
                     <div class="text-center mb-12" data-aos="fade-up">
-                        <h2 class="font-heading text-4xl font-bold">Mais Desejados</h2>
+                        <h2 class="font-heading text-4xl font-bold">Best Sellers</h2>
                         <p class="text-slate-600 mt-2 leading-relaxed">Os favoritos dos nossos clientes.</p>
                     </div>
                     <!-- Horizontal scrollable product list for mobile -->
@@ -227,11 +225,11 @@
                                     <div>
                                         <h4 class="font-semibold mb-3">Categoria</h4>
                                         <div class="space-y-2">
-                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-perfume" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 filter-control" value="perfume"> <span class="ml-2 text-sm text-slate-700">Perfumes</span></label>
-                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-decant" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 filter-control" value="decant"> <span class="ml-2 text-sm text-slate-700">Decants</span></label>
-                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-masculino" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 filter-control" value="masculino"> <span class="ml-2 text-sm text-slate-700">Masculinos</span></label>
-                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-feminino" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 filter-control" value="feminino"> <span class="ml-2 text-sm text-slate-700">Femininos</span></label>
-                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-unissex" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 filter-control" value="unissex"> <span class="ml-2 text-sm text-slate-700">Unissex</span></label>
+                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-perfume" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="perfume"> <span class="ml-2 text-sm text-slate-700">Perfumes</span></label>
+                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-decant" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="decant"> <span class="ml-2 text-sm text-slate-700">Decants</span></label>
+                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-masculino" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="masculino"> <span class="ml-2 text-sm text-slate-700">Masculinos</span></label>
+                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-feminino" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="feminino"> <span class="ml-2 text-sm text-slate-700">Femininos</span></label>
+                                            <label class="flex items-center"><input type="checkbox" id="filter-cat-unissex" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="unissex"> <span class="ml-2 text-sm text-slate-700">Unissex</span></label>
                                         </div>
                                     </div>
                                     <div>
@@ -253,7 +251,7 @@
                                     <div>
                                         <h4 class="font-semibold mb-3">Ordenar Por</h4>
                                         <label for="sort-by" class="sr-only">Ordenar Produtos por</label>
-                                        <select id="sort-by" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 filter-control">
+                                        <select id="sort-by" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-black focus:ring-black filter-control">
                                             <option value="popularity">Popularidade</option>
                                             <option value="price-asc">Preço: Menor para Maior</option>
                                             <option value="price-desc">Preço: Maior para Menor</option>
@@ -302,7 +300,7 @@
                     <h1 class="font-heading text-5xl font-bold mb-4 text-slate-800" data-aos="fade-up">Nossa História</h1>
                 </div>
                 <div class="flex flex-col md:flex-row items-center gap-12" data-aos="fade-up">
-                    <div class="md:w-1/2"><img src="https://placehold.co/800x600/e2e8f0/334155?text=SANSEI+DECANTS" alt="Imagem sobre a Sansei Decants" class="rounded-lg shadow-xl" loading="lazy"></div>
+                    <div class="md:w-1/2"><img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="Imagem sobre a Sansei Decants" class="rounded-lg shadow-xl" loading="lazy"></div>
                     <div class="md:w-1/2">
                         <p class="text-slate-600 mb-4 leading-relaxed">A SANSEI DECANTS nasceu da paixão por fragrâncias que transcendem o comum. Acreditamos que um perfume é mais do que um aroma; é uma forma de expressão, uma assinatura pessoal que conta uma história. Nossa missão é democratizar o acesso à alta perfumaria, permitindo que você explore um universo de aromas de nicho e de luxo sem o compromisso de um frasco completo.</p>
                         <p class="text-slate-600 leading-relaxed">Cada decant é cuidadosamente preparado, extraído diretamente do frasco original para garantir 100% de autenticidade e qualidade. Nosso processo de curadoria é rigoroso, selecionando apenas as fragrâncias mais cativantes e memoráveis para fazer parte da nossa coleção. Bem-vindo ao nosso mundo, onde cada gota é uma nova descoberta.</p>
@@ -345,11 +343,11 @@
                         <div id="contact-form-message" class="hidden mb-6 p-4 rounded-md text-center" role="alert"></div>
                         <form id="contact-form">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div><label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nome</label><input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></div>
-                                <div><label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label><input type="email" id="email" name="email" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></div>
+                                <div><label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Nome</label><input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true"></div>
+                                <div><label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label><input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true"></div>
                             </div>
-                            <div class="mb-6"><label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Assunto</label><input type="text" id="subject" name="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></div>
-                            <div class="mb-6"><label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Mensagem</label><textarea id="message" name="message" rows="5" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true"></textarea></div>
+                            <div class="mb-6"><label for="subject" class="block text-sm font-semibold text-gray-700 mb-2">Assunto</label><input type="text" id="subject" name="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true"></div>
+                            <div class="mb-6"><label for="message" class="block text-sm font-semibold text-gray-700 mb-2">Mensagem</label><textarea id="message" name="message" rows="5" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black" aria-required="true"></textarea></div>
                             <div class="text-center"><button type="submit" class="btn btn-primary">Enviar Mensagem</button></div>
                         </form>
                     </div>
@@ -391,7 +389,7 @@
                 <p class="mt-3 text-slate-300 max-w-xl mx-auto leading-relaxed">Seja o primeiro a saber sobre lançamentos, coleções limitadas e eventos exclusivos.</p>
                 <form id="newsletter-form" class="mt-8 flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto">
                     <label for="newsletter-email" class="sr-only">Seu melhor e-mail</label>
-                    <input type="email" id="newsletter-email" placeholder="Seu melhor e-mail" required class="w-full flex-grow px-4 py-3 rounded-lg text-slate-800 bg-white border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-required="true">
+                    <input type="email" id="newsletter-email" placeholder="Seu melhor e-mail" required class="w-full flex-grow px-4 py-3 rounded-lg text-slate-800 bg-white border border-transparent focus:outline-none focus:ring-2 focus:ring-black" aria-required="true">
                     <button type="submit" class="btn btn-primary flex-shrink-0">Inscrever</button>
                 </form>
             </div>
@@ -477,7 +475,7 @@
                     <h3 class="font-semibold mb-2 text-lg">Calcular Frete</h3>
                     <div id="shipping-calculator" class="flex gap-2 mb-4">
                         <label for="cep-input" class="sr-only">Seu CEP</label>
-                        <input type="text" id="cep-input" placeholder="Seu CEP" class="w-full px-4 py-2 border rounded-md focus:ring-2 ring-indigo-500" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" title="Formato: 12345-678 ou 12345678" required aria-required="true">
+                        <input type="text" id="cep-input" placeholder="Seu CEP" class="w-full px-4 py-2 border rounded-md focus:ring-2 ring-black" maxlength="9" pattern="[0-9]{5}-?[0-9]{3}" title="Formato: 12345-678 ou 12345678" required aria-required="true">
                         <button id="calculate-shipping-btn" class="bg-slate-800 text-white px-4 rounded-md hover:bg-black disabled:bg-slate-400" aria-label="Calcular Frete">
                             <span class="loader-sm hidden"></span>
                             <span class="btn-text">Calcular</span>
@@ -491,7 +489,7 @@
             <div class="p-6 border-t bg-slate-50">
                 <form id="coupon-form" class="flex gap-2 mb-4">
                     <label for="coupon-input" class="sr-only">Código do cupom</label>
-                    <input type="text" id="coupon-input" placeholder="Código do cupom" class="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" id="coupon-input" placeholder="Código do cupom" class="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
                     <button type="submit" class="btn btn-secondary !py-2 !px-4 !rounded-md !shadow-none">Aplicar</button>
                 </form>
                 <div id="discount-info" class="text-sm text-green-600 mb-2" role="status" aria-live="polite"></div>
@@ -548,20 +546,20 @@
     <!-- Mobile Fixed Bottom Navigation Bar -->
     <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 lg:hidden shadow-lg" role="navigation" aria-label="Navegação Inferior Mobile">
         <div class="flex justify-around items-center h-16">
-            <a href="#" data-page="inicio" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 active" aria-label="Início" aria-current="page">
+            <a href="#" data-page="inicio" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-black transition-colors duration-300 active" aria-label="Início" aria-current="page">
                 <i data-feather="home" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Início</span>
             </a>
-            <button id="mobile-bottom-search-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300" aria-label="Buscar">
+            <button id="mobile-bottom-search-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-black transition-colors duration-300" aria-label="Buscar">
                 <i data-feather="search" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Buscar</span>
             </button>
-            <button id="mobile-bottom-cart-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300 relative" aria-label="Carrinho de compras">
+            <button id="mobile-bottom-cart-btn" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-black transition-colors duration-300 relative" aria-label="Carrinho de compras">
                 <i data-feather="shopping-cart" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Carrinho</span>
                 <span id="mobile-cart-count" class="cart-count-badge">0</span>
             </button>
-            <a href="#" id="mobile-bottom-user-link" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors duration-300" aria-label="Minha Conta">
+            <a href="#" id="mobile-bottom-user-link" class="mobile-bottom-nav-link flex flex-col items-center justify-center text-slate-600 hover:text-black transition-colors duration-300" aria-label="Minha Conta">
                 <i data-feather="user" class="w-5 h-5 mb-1"></i>
                 <span class="text-xs font-medium">Conta</span>
             </a>
