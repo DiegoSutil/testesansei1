@@ -12,8 +12,9 @@ export let state = {
     selectedShipping: null,
     // Estado da paginação da página de fragrâncias
     fragrancePage: 1,
-    productsPerPage: 12, // Define quantos produtos carregar por vez
 };
+
+export const productsPerPage = 12; // Define quantos produtos carregar por vez
 
 // Funções "setters" para atualizar o estado de forma controlada
 export function setAllProducts(products) {
