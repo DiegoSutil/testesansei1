@@ -5,7 +5,7 @@
  */
 
 // Módulos de UI e Autenticação
-import { DOMElements, switchView, hideAdminConfirmationModal } from './ui.js';
+import { DOMElements, switchView, showAdminConfirmationModal } from './ui.js';
 import { authStateObserver, handleLogin, handleLogout } from './auth.js';
 
 // Módulos de Gestão de Conteúdo
@@ -34,6 +34,19 @@ function initializeAdminPanel() {
     fetchAndRenderReviews();
     fetchAndRenderCoupons();
     fetchAndRenderReels();
+}
+
+/**
+ * Esconde o modal de confirmação do painel de administração.
+ */
+function hideAdminConfirmationModal() {
+    const modalOverlay = document.getElementById('admin-confirmation-modal-overlay');
+    const modal = document.getElementById('admin-confirmation-modal');
+    if (modalOverlay) modalOverlay.classList.add('hidden');
+    if (modal) {
+        modal.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
 }
 
 /**
