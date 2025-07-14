@@ -1,13 +1,23 @@
 /**
  * @fileoverview Ponto de Entrada Principal da Aplicação (Maestro).
  * Orquestra a inicialização dos módulos, navegação e gestão de eventos globais.
- * VERSÃO ATUALIZADA: Adiciona lógica para páginas de categoria dinâmicas.
+ * VERSÃO COMPLETA E CORRIGIDA: Adiciona páginas de categoria dinâmicas e preserva todo o conteúdo.
  */
 
-// ... (todas as suas importações existentes)
-import { state } from './js/state.js';
-import { renderProducts } from './js/product.js';
-// ... etc
+// Módulos do Firebase
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth, db } from './firebase-config.js';
+
+// Módulos da Aplicação
+import { state, setCurrentUserData, setCart, setAppliedCoupon, setSelectedShipping } from './js/state.js';
+import { showLoader, toggleModal, toggleMobileMenu, showToast } from './js/ui.js';
+import { fetchInitialData, fetchAndRenderReels } from './js/api.js';
+import { renderProducts, showProductDetails, handleReviewSubmit, createProductCardTemplate } from './js/product.js';
+import { addToCart, updateCartIcon, setupCartEventListeners, renderCart } from './js/cart.js';
+import { updateAuthUI, handleLogout, renderAuthForm, renderWishlist, renderOrders } from './js/auth.js';
+import { applyCoupon } from './js/coupons.js';
+import { calculateShipping } from './shipping.js';
 
 // Mapeia os nomes de filtro para os títulos das páginas
 const categoryTitles = {
@@ -16,7 +26,6 @@ const categoryTitles = {
     'body-splash': 'Body Splash',
     'decant': 'Decants'
 };
-
 
 // =================================================================================
 // FUNÇÕES DE NAVEGAÇÃO E RENDERIZAÇÃO (ATUALIZADAS)
@@ -38,11 +47,10 @@ function applyProductPageFilters(mainCategory) {
     // 1. Filtra primeiro pela categoria principal da página
     let filteredProducts = state.allProducts.filter(p => p.category.toLowerCase() === mainCategory.toLowerCase());
 
-    // 2. Aplica os sub-filtros de gênero
+    // 2. Aplica os sub-filtros de gênero.
+    // Esta parte assume que seus produtos no Firebase têm um campo 'gender' (ex: 'masculino', 'feminino', 'unissex')
+    // Se não tiver, este filtro não terá efeito.
     if (subCategories.length > 0) {
-        // A lógica de gênero precisa ser adaptada. Assumindo que produtos têm uma propriedade 'gender'
-        // Se não tiver, você precisará adicionar essa propriedade aos seus dados de produto.
-        // Ex: { name: '...', category: 'perfume', gender: 'masculino', ... }
         filteredProducts = filteredProducts.filter(p => p.gender && subCategories.includes(p.gender.toLowerCase()));
     }
 
@@ -84,48 +92,50 @@ function showPage(pageId, categoryFilter = null) {
     // Atualiza o estado ativo nos links de navegação
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
-        // Ativa o link se a página e a categoria corresponderem
-        if (link.dataset.page === pageId && link.dataset.categoryFilter === categoryFilter) {
-            link.classList.add('active');
-        } else if (link.dataset.page === pageId && !link.dataset.categoryFilter) {
-             // Ativa links como 'Início' e 'Sobre'
+        if (link.dataset.page === pageId && (link.dataset.categoryFilter === categoryFilter || !link.dataset.categoryFilter)) {
             link.classList.add('active');
         }
     });
-     // Garante que o link de Início fique ativo ao carregar a página
-    if (pageId === 'inicio') {
-        document.querySelector('.nav-link[data-page="inicio"]').classList.add('active');
-    }
 
+    // Garante que o link 'Início' fique ativo ao carregar a página
+    if (pageId === 'inicio') {
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        const homeLink = document.querySelector('.nav-link[data-page="inicio"]');
+        if (homeLink) homeLink.classList.add('active');
+    }
 
     // Lógica específica para cada página
     if (pageId === 'produtos' && categoryFilter) {
         const titleEl = document.getElementById('produtos-page-title');
         const subtitleEl = document.getElementById('produtos-page-subtitle');
         
-        // Atualiza o título da página dinamicamente
-        const title = categoryTitles[categoryFilter] || `Nossos ${categoryFilter}`;
+        const title = categoryTitles[categoryFilter.toLowerCase()] || `Nossos ${categoryFilter}`;
         if (titleEl) titleEl.textContent = title;
         if (subtitleEl) subtitleEl.textContent = `Explore nossa coleção de ${title.toLowerCase()}.`;
 
-        // Limpa os checkboxes de sub-categoria antes de aplicar o filtro principal
         document.querySelectorAll('#filter-sub-categories input').forEach(cb => cb.checked = false);
-        
-        // Aplica os filtros para a categoria principal
         applyProductPageFilters(categoryFilter);
 
-        // Atualiza o listener de filtros para a categoria atual
         const filterContainer = document.getElementById('page-produtos').querySelector('aside');
-        // Remove listeners antigos para evitar múltiplas execuções
-        filterContainer.replaceWith(filterContainer.cloneNode(true)); 
-        document.getElementById('page-produtos').querySelector('aside').addEventListener('input', () => {
+        const newFilterContainer = filterContainer.cloneNode(true);
+        filterContainer.parentNode.replaceChild(newFilterContainer, filterContainer);
+        
+        newFilterContainer.addEventListener('input', () => {
              applyProductPageFilters(categoryFilter);
         });
 
-    } else if (pageId === 'sobre') {
-        // Lógica para a página Sobre
+    } else if (pageId === 'profile') {
+        if (!state.currentUserData) {
+            showPage('inicio');
+            renderAuthForm();
+            toggleModal('auth-modal', true);
+            return;
+        }
+        const profileEmailEl = document.getElementById('profile-email');
+        if (profileEmailEl) profileEmailEl.textContent = `Bem-vindo(a), ${state.currentUserData.email}`;
+        renderWishlist();
+        renderOrders();
     }
-    // ... outras lógicas de página
     
     window.scrollTo(0, 0);
     if (window.AOS) {
@@ -133,3 +143,195 @@ function showPage(pageId, categoryFilter = null) {
     }
 }
 window.showPage = showPage;
+
+/**
+ * Atualiza a renderização de todos os produtos visíveis quando o estado muda (ex: login, wishlist).
+ */
+function refreshAllProductViews() {
+    const currentPage = document.querySelector('.page-content:not(.hidden)');
+    if (!currentPage) return;
+    const pageId = currentPage.id.replace('page-', '');
+
+    switch (pageId) {
+        case 'inicio':
+            renderProducts(state.allProducts.slice(0, 8), 'product-list-home');
+            break;
+        case 'produtos':
+            const currentCategory = document.getElementById('produtos-page-title').textContent;
+            const categoryKey = Object.keys(categoryTitles).find(key => categoryTitles[key] === currentCategory) || '';
+            if (categoryKey) {
+                applyProductPageFilters(categoryKey);
+            }
+            break;
+        case 'profile':
+            renderWishlist();
+            break;
+    }
+}
+
+
+async function toggleWishlist(productId) {
+    if (!state.currentUserData) {
+        showToast("Você precisa estar logado para usar a lista de desejos.", true);
+        renderAuthForm();
+        toggleModal('auth-modal', true);
+        return;
+    }
+
+    const userRef = doc(db, "users", state.currentUserData.uid);
+    const heartIcon = document.querySelector(`.wishlist-heart[data-id="${productId}"] i`);
+    
+    if (state.currentUserData.wishlist.includes(productId)) {
+        state.currentUserData.wishlist = state.currentUserData.wishlist.filter(id => id !== productId);
+        await updateDoc(userRef, { wishlist: arrayRemove(productId) });
+        showToast("Removido da lista de desejos.");
+        if(heartIcon) heartIcon.classList.remove('active');
+    } else {
+        state.currentUserData.wishlist.push(productId);
+        await updateDoc(userRef, { wishlist: arrayUnion(productId) });
+        showToast("Adicionado à lista de desejos!");
+        if(heartIcon) heartIcon.classList.add('active');
+    }
+    refreshAllProductViews();
+}
+
+function initializeEventListeners() {
+    document.body.addEventListener('click', (e) => {
+        const target = e.target;
+        const closest = (selector) => target.closest(selector);
+
+        const navLink = closest('.nav-link, .mobile-nav-link, .nav-link-button, #mobile-bottom-nav a, .category-card-link, .dropdown-menu a');
+        if (navLink && navLink.dataset.page) {
+            e.preventDefault();
+            showPage(navLink.dataset.page, navLink.dataset.categoryFilter);
+            if (closest('.mobile-nav-link') || closest('.dropdown-menu a')) toggleMobileMenu(false);
+            return;
+        }
+
+        const productLink = closest('.product-image-link, .product-name-link');
+        if (productLink) {
+            e.preventDefault();
+            showProductDetails(productLink.dataset.id);
+            return;
+        }
+
+        const addToCartBtn = closest('.add-to-cart-btn');
+        if (addToCartBtn) {
+            e.preventDefault();
+            addToCart(addToCartBtn.dataset.id, 1, e);
+            return;
+        }
+        
+        const wishlistBtn = closest('.wishlist-heart');
+        if(wishlistBtn) {
+            e.preventDefault();
+            toggleWishlist(wishlistBtn.dataset.id);
+            return;
+        }
+
+        if (closest('#mobile-menu-button')) toggleMobileMenu(true);
+        if (closest('#close-mobile-menu, #mobile-menu-overlay')) toggleMobileMenu(false);
+        if (closest('#cart-button, #mobile-bottom-cart-btn')) toggleModal('cart-modal', true);
+        if (closest('#close-cart-button, #cart-modal-overlay')) toggleModal('cart-modal', false);
+        if (closest('#close-product-details-modal, #product-details-modal-overlay')) toggleModal('product-details-modal', false);
+        if (closest('#close-auth-modal, #auth-modal-overlay')) toggleModal('auth-modal', false);
+        
+        const userAction = closest('#user-button, #mobile-user-link, #mobile-bottom-user-link');
+        if (userAction) {
+            e.preventDefault();
+            if (state.currentUserData) {
+                showPage('profile');
+            } else {
+                renderAuthForm();
+                toggleModal('auth-modal', true);
+            }
+            if (closest('#mobile-user-link')) toggleMobileMenu(false);
+            return;
+        }
+
+        if (closest('#logout-button')) handleLogout();
+
+        if (closest('#login-to-review')) {
+            e.preventDefault();
+            toggleModal('product-details-modal', false);
+            renderAuthForm();
+            toggleModal('auth-modal', true);
+        }
+
+        if (closest('#calculate-shipping-btn')) {
+            const cep = document.getElementById('cep-input').value;
+            calculateShipping(cep);
+        }
+    });
+
+    document.body.addEventListener('submit', (e) => {
+        if (e.target.id.startsWith('review-form-')) {
+            handleReviewSubmit(e, e.target.dataset.productId);
+        }
+        if (e.target.id === 'coupon-form') {
+            e.preventDefault();
+            applyCoupon(document.getElementById('coupon-input').value);
+        }
+    });
+    
+    const priceRange = document.getElementById('price-range-filter');
+    const priceValue = document.getElementById('price-range-value');
+    if(priceRange && priceValue) {
+        priceRange.addEventListener('input', (e) => {
+            priceValue.textContent = `R$ ${e.target.value}`;
+        });
+    }
+
+    setupCartEventListeners();
+}
+
+async function main() {
+    showLoader(true);
+
+    await fetchInitialData();
+    
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                setCurrentUserData({ uid: user.uid, ...userData });
+                const localCart = JSON.parse(localStorage.getItem('sanseiCart')) || [];
+                const firestoreCart = userData.cart || [];
+                const mergedCart = [...firestoreCart];
+                localCart.forEach(localItem => {
+                    const existingItem = mergedCart.find(ci => ci.id === localItem.id);
+                    if (existingItem) {
+                        existingItem.quantity = Math.min(existingItem.quantity + localItem.quantity, 10);
+                    } else {
+                        mergedCart.push(localItem);
+                    }
+                });
+                
+                setCart(mergedCart);
+                if (localCart.length > 0) {
+                    await setDoc(userDocRef, { cart: mergedCart }, { merge: true });
+                    localStorage.removeItem('sanseiCart');
+                }
+            }
+        } else {
+            setCurrentUserData(null);
+            setCart(JSON.parse(localStorage.getItem('sanseiCart')) || []);
+        }
+        updateAuthUI(user);
+        updateCartIcon();
+        refreshAllProductViews();
+        renderCart();
+    });
+
+    await fetchAndRenderReels();
+    
+    initializeEventListeners();
+    AOS.init({ duration: 800, once: true });
+    
+    showPage('inicio');
+    showLoader(false);
+}
+
+document.addEventListener('DOMContentLoaded', main);
