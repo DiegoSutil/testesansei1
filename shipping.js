@@ -1,11 +1,12 @@
 /**
  * @fileoverview Módulo de Cálculo de Frete.
  * Simula uma consulta de frete e exibe as opções para o usuário.
+ * VERSÃO CORRIGIDA: Caminhos de importação ajustados para a pasta /js/.
  */
 
-import { setSelectedShipping } from './state.js';
-import { renderCart } from './cart.js';
-import { showToast } from './ui.js';
+import { setSelectedShipping } from './js/state.js';
+import { renderCart } from './js/cart.js';
+import { showToast } from './js/ui.js';
 
 /**
  * Simula o cálculo de frete com base em um CEP e renderiza as opções.
