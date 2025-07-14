@@ -1,15 +1,12 @@
 /**
  * @fileoverview Módulo de Autenticação para o Painel de Admin.
+ * VERSÃO CORRIGIDA: Remove a dependência circular com main.js usando um callback.
  */
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { auth } from '../../firebase-config.js'; // Caminho corrigido
-import { DOMElements, showAuthMessage, switchView } from './ui.js';
-import { initializeAdminPanel } from './main.js';
+import { auth } from '../../firebase-config.js';
+import { DOMElements, showAuthMessage } from './ui.js';
 
-// IMPORTANT: Lista de emails de administradores autorizados.
-// Em um ambiente de produção, considere usar Firebase Custom Claims para maior segurança.
-// Exemplo de verificação de Custom Claim (requer configuração no backend do Firebase):
-// if (user && user.emailVerified && user.customClaims && user.customClaims.admin) { ... }
+// Lista de emails de administradores autorizados.
 const ADMIN_EMAILS = ["admin@sansei.com", "diego.sutil@gmail.com", "sanseiadmin@gmail.com"];
 
 /**
@@ -28,9 +25,8 @@ export async function handleLogin(e) {
 
     try {
         await signInWithEmailAndPassword(auth, email, password);
-        // showAuthMessage('Login bem-sucedido!', 'green'); // Feedback positivo
     } catch (error) {
-        console.error("Erro no Login:", error.code, error.message); // Log mais detalhado
+        console.error("Erro no Login:", error.code, error.message);
         let errorMessage = 'Email ou senha inválidos.';
         if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
             errorMessage = 'Email ou senha incorretos.';
@@ -47,38 +43,36 @@ export async function handleLogin(e) {
 export async function handleLogout() {
     try {
         await signOut(auth);
-        // showAuthMessage('Logout bem-sucedido.', 'green'); // Feedback positivo
     } catch (error) {
         console.error("Erro no Logout:", error);
-        showAuthMessage('Ocorreu um erro ao fazer logout.', 'red'); // Feedback de erro
+        showAuthMessage('Ocorreu um erro ao fazer logout.', 'red');
     }
 }
 
 /**
  * Observa mudanças no estado de autenticação e controla o acesso ao painel.
+ * @param {function} onAdminLogin - Callback a ser executado quando um admin faz login com sucesso.
  */
-export function authStateObserver() {
+export function authStateObserver(onAdminLogin) {
     onAuthStateChanged(auth, async (user) => {
         if (user && ADMIN_EMAILS.includes(user.email)) {
-            // Em um ambiente de produção, você também verificaria custom claims aqui:
-            // const idTokenResult = await user.getIdTokenResult();
-            // if (idTokenResult.claims.admin) { ... }
             DOMElements.authScreen.classList.add('hidden');
             DOMElements.adminPanel.classList.remove('hidden');
-            DOMElements.adminEmail.textContent = user.email;
+            if (DOMElements.adminEmail) DOMElements.adminEmail.textContent = user.email;
             
-            // Se o utilizador for um admin, inicializa o painel
-            initializeAdminPanel();
+            // Chama o callback de sucesso passado pelo main.js
+            if (onAdminLogin) {
+                onAdminLogin(user);
+            }
         } else {
             DOMElements.authScreen.classList.remove('hidden');
             DOMElements.adminPanel.classList.add('hidden');
             if (user) { 
-                // Se o utilizador está logado mas não é admin, faz logout
                 console.warn(`Usuário ${user.email} tentou acessar o painel de admin sem permissão. Fazendo logout.`);
                 await signOut(auth);
                 showAuthMessage('Acesso negado. Você não tem permissão de administrador.', 'red');
             } else {
-                showAuthMessage('Por favor, faça login para acessar o painel de administração.', 'blue'); // Mensagem padrão para não logados
+                showAuthMessage('Por favor, faça login para acessar o painel de administração.', 'blue');
             }
         }
     });
