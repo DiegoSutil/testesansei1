@@ -1,6 +1,7 @@
 /**
  * @fileoverview Ficheiro principal (entry point) do Painel de Admin.
  * Orquestra a inicialização dos módulos e a gestão de eventos.
+ * VERSÃO CORRIGIDA: Quebra a dependência circular com auth.js.
  */
 
 // Módulos de UI e Autenticação
@@ -15,11 +16,17 @@ import { fetchAndRenderCoupons, handleCouponFormSubmit, deleteCoupon } from './c
 import { fetchAndRenderReels, handleAddReelFormSubmit, deleteReel } from './reels.js';
 import { fetchStats } from './stats.js';
 
+// Flag para garantir que o painel seja inicializado apenas uma vez
+let isPanelInitialized = false;
 
 /**
  * Inicializa todas as funcionalidades do painel após o login do admin.
  */
-export function initializeAdminPanel() {
+function initializeAdminPanel() {
+    if (isPanelInitialized) return; // Previne múltiplas inicializações
+    isPanelInitialized = true;
+
+    console.log("Painel de Administração Inicializado.");
     switchView('dashboard');
     fetchStats();
     fetchAndRenderProducts('first');
@@ -52,7 +59,7 @@ function setupEventListeners() {
         const editBtn = e.target.closest('.edit-btn');
         const deleteBtn = e.target.closest('.delete-btn');
         if (editBtn) populateProductForm(editBtn.dataset.id);
-        if (deleteBtn) deleteProduct(deleteBtn.dataset.id); // Chama a função deleteProduct do módulo products.js
+        if (deleteBtn) deleteProduct(deleteBtn.dataset.id);
     });
     DOMElements.nextProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('next'));
     DOMElements.prevProductPageBtn.addEventListener('click', () => fetchAndRenderProducts('prev'));
@@ -70,7 +77,7 @@ function setupEventListeners() {
         if (deleteBtn) {
             const productId = deleteBtn.dataset.productId;
             const reviewIndex = parseInt(deleteBtn.dataset.reviewIndex, 10);
-            deleteReview(productId, reviewIndex); // Chama a função deleteReview do módulo reviews.js
+            deleteReview(productId, reviewIndex);
         }
     });
 
@@ -78,14 +85,14 @@ function setupEventListeners() {
     DOMElements.addCouponForm.addEventListener('submit', handleCouponFormSubmit);
     DOMElements.couponListBody.addEventListener('click', (e) => {
         const deleteBtn = e.target.closest('.delete-coupon-btn');
-        if (deleteBtn) deleteCoupon(deleteBtn.dataset.id); // Chama a função deleteCoupon do módulo coupons.js
+        if (deleteBtn) deleteCoupon(deleteBtn.dataset.id);
     });
 
     // Reels
     DOMElements.addReelForm.addEventListener('submit', handleAddReelFormSubmit);
     DOMElements.reelListBody.addEventListener('click', (e) => {
         const deleteBtn = e.target.closest('.delete-reel-btn');
-        if (deleteBtn) deleteReel(deleteBtn.dataset.id); // Chama a função deleteReel do módulo reels.js
+        if (deleteBtn) deleteReel(deleteBtn.dataset.id);
     });
 
     // Listener para fechar o modal de confirmação com a tecla Escape
@@ -98,7 +105,9 @@ function setupEventListeners() {
 
 // Ponto de entrada da aplicação do painel de admin
 document.addEventListener('DOMContentLoaded', () => {
-    feather.replace(); // Inicializa Feather Icons
-    setupEventListeners(); // Configura todos os event listeners
-    authStateObserver(); // Inicia a verificação de login e o fluxo do painel
+    feather.replace();
+    setupEventListeners();
+    // Passa a função de inicialização como um callback para o observador de auth.
+    // Isto quebra a dependência circular.
+    authStateObserver(initializeAdminPanel);
 });
