@@ -1,13 +1,13 @@
 /**
  * @fileoverview Módulo do Carrinho de Compras.
  * Contém toda a lógica para adicionar, remover e atualizar itens do carrinho.
+ * VERSÃO CORRIGIDA: Garante que renderCart() seja chamado em todas as modificações.
  */
 
-import { doc, updateDoc, addDoc, collection, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from '../firebase-config.js';
 import { state, setCart } from './state.js';
 import { showToast, showConfirmationModal } from './ui.js';
-// A importação de 'showPage' foi removida para corrigir o erro de referência circular.
 
 export function updateCartIcon() {
     const cartCountEl = document.getElementById('cart-count');
@@ -28,7 +28,8 @@ async function syncCartWithFirestore() {
     if (!state.currentUserData?.uid) return;
     const userRef = doc(db, "users", state.currentUserData.uid);
     try {
-        await updateDoc(userRef, { cart: state.cart });
+        // Usa setDoc com merge para evitar apagar outros campos do usuário
+        await setDoc(userRef, { cart: state.cart }, { merge: true });
     } catch (error) {
         console.error("Erro ao sincronizar carrinho:", error);
         showToast("Erro ao salvar o carrinho.", true);
@@ -44,7 +45,6 @@ export async function addToCart(productId, quantity = 1, event) {
         return;
     }
 
-    // Verificação de Stock
     if (product.stock <= 0) {
         showToast("Este produto está esgotado.", true);
         return;
@@ -57,7 +57,6 @@ export async function addToCart(productId, quantity = 1, event) {
 
     const cartItem = state.cart.find(item => item.id === productId);
     if (cartItem) {
-        // Verifica se a quantidade desejada excede o stock
         if (cartItem.quantity + quantity > product.stock) {
             showToast(`Stock insuficiente. Apenas ${product.stock} unidades disponíveis.`, true);
             if(button) {
@@ -79,11 +78,11 @@ export async function addToCart(productId, quantity = 1, event) {
         state.cart.push({ id: productId, quantity });
     }
     
-    setCart(state.cart);
-    localStorage.setItem('sanseiCart', JSON.stringify(state.cart));
+    setCart(state.cart); // Atualiza o estado e o localStorage
     await syncCartWithFirestore();
     updateCartIcon();
-    
+    renderCart(); // <-- CORREÇÃO ADICIONADA: Atualiza a UI do modal do carrinho
+
     setTimeout(() => {
         showToast(`${product.name} adicionado ao carrinho!`);
         if(button) {
@@ -98,7 +97,6 @@ async function removeFromCart(productId) {
     if (confirmed) {
         const newCart = state.cart.filter(item => item.id !== productId);
         setCart(newCart);
-        localStorage.setItem('sanseiCart', JSON.stringify(newCart));
         await syncCartWithFirestore();
         updateCartIcon();
         renderCart();
@@ -112,6 +110,8 @@ async function updateQuantity(productId, newQuantity) {
 
     if (newQuantity > product.stock) {
         showToast(`Stock insuficiente. Apenas ${product.stock} unidades disponíveis.`, true);
+        // Reseta a quantidade no input para o valor máximo de estoque
+        renderCart();
         return;
     }
 
@@ -123,7 +123,6 @@ async function updateQuantity(productId, newQuantity) {
     if (cartItem) {
         cartItem.quantity = newQuantity;
         setCart(state.cart);
-        localStorage.setItem('sanseiCart', JSON.stringify(state.cart));
         await syncCartWithFirestore();
         updateCartIcon();
         renderCart();
@@ -142,7 +141,7 @@ export function renderCart() {
     if (!cartItemsEl || !subtotalEl || !totalEl || !discountInfoEl) return;
 
     if (state.cart.length === 0) {
-        cartItemsEl.innerHTML = '<p class="text-gray-500 text-center">Seu carrinho está vazio.</p>';
+        cartItemsEl.innerHTML = '<p class="text-gray-500 text-center py-8">Seu carrinho está vazio.</p>';
         subtotalEl.textContent = 'R$ 0,00';
         totalEl.textContent = 'R$ 0,00';
         discountInfoEl.innerHTML = '';
@@ -190,7 +189,7 @@ export function renderCart() {
         if (!product) return '';
         return `
         <div class="flex items-center gap-4 py-4 border-b last:border-b-0">
-            <img src="${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded-md flex-shrink-0">
+            <img src="${product.image}" alt="${product.name}" class="w-16 h-20 object-cover rounded-md flex-shrink-0" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/64x80/cccccc/ffffff?text=Img';">
             <div class="flex-grow">
                 <h4 class="font-semibold text-sm">${product.name}</h4>
                 <p class="text-xs text-gray-600">R$ ${product.price.toFixed(2).replace('.',',')}</p>
