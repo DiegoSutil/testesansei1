@@ -97,7 +97,7 @@
         <p>✨ Envio para todo o Brasil e 5% de desconto no PIX</p>
     </div>
 
-    <!-- =========== Header / Barra de Navegação (NOVA VERSÃO) =========== -->
+    <!-- =========== Header / Barra de Navegação (ATUALIZADO) =========== -->
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-md border-b border-slate-100">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
@@ -108,20 +108,10 @@
                 <nav class="hidden lg:flex flex-grow justify-center" role="navigation" aria-label="Navegação Principal">
                     <ul class="flex items-center space-x-8">
                         <li><a href="#" data-page="inicio" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block active" aria-current="page">Início</a></li>
-                        
-                        <!-- Menu Dropdown de Fragrâncias -->
-                        <li class="group relative">
-                            <a href="#" data-page="fragrancias" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 flex items-center gap-1">
-                                Fragrâncias <i data-feather="chevron-down" class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"></i>
-                            </a>
-                            <div class="dropdown-menu absolute top-full left-1/2 -translate-x-1/2 w-48 bg-white shadow-lg rounded-md mt-2 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 z-10">
-                                <a href="#" data-page="fragrancias" data-category-filter="feminino" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">Feminino</a>
-                                <a href="#" data-page="fragrancias" data-category-filter="masculino" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">Masculino</a>
-                                <a href="#" data-page="fragrancias" data-category-filter="unissex" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">Unissex</a>
-                            </div>
-                        </li>
-                        
-                        <li><a href="#" data-page="decants" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Decants</a></li>
+                        <li><a href="#" data-page="produtos" data-category-filter="perfume" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Perfumes</a></li>
+                        <li><a href="#" data-page="produtos" data-category-filter="creme" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Cremes</a></li>
+                        <li><a href="#" data-page="produtos" data-category-filter="body-splash" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Body Splash</a></li>
+                        <li><a href="#" data-page="produtos" data-category-filter="decant" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Decants</a></li>
                         <li><a href="#" data-page="sobre" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Nossa História</a></li>
                     </ul>
                 </nav>
@@ -139,7 +129,7 @@
         </div>
     </header>
 
-    <!-- =========== Sobreposição de Pesquisa (NOVO) =========== -->
+    <!-- =========== Sobreposição de Pesquisa =========== -->
     <div id="search-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center pt-24 px-4 opacity-0" aria-hidden="true">
         <button id="close-search-overlay" class="absolute top-8 right-8 text-white/80 hover:text-white" aria-label="Fechar busca"><i data-feather="x" class="w-8 h-8"></i></button>
         <div class="relative w-full max-w-2xl">
@@ -162,7 +152,7 @@
                 <div class="container mx-auto px-6 h-full flex flex-col justify-center items-center text-center relative z-10" data-aos="fade-up">
                     <h1 class="font-heading text-4xl md:text-6xl font-bold text-white leading-tight mb-4">Perfumes que Contam Histórias</h1>
                     <p class="text-lg md:text-xl mb-10 max-w-2xl text-slate-200 leading-relaxed">Explore decants de perfumes de luxo e encontre a sua assinatura olfativa.</p>
-                    <a href="#" data-page="fragrancias" class="nav-link-button inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-900 text-white hover:bg-black shadow-lg hover:shadow-xl" aria-label="Descobrir Fragrâncias">Descobrir Fragrâncias</a>
+                    <a href="#" data-page="produtos" data-category-filter="perfume" class="nav-link-button inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-900 text-white hover:bg-black shadow-lg hover:shadow-xl" aria-label="Descobrir Fragrâncias">Descobrir Fragrâncias</a>
                 </div>
             </section>
             
@@ -188,7 +178,7 @@
                         <!-- Cards de produto serão carregados aqui -->
                     </div>
                     <div class="text-center mt-12" data-aos="fade-up">
-                        <a href="#" data-page="fragrancias" class="nav-link-button inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-200 text-slate-800 hover:bg-slate-300" aria-label="Ver todos os produtos">Ver todos os produtos</a>
+                        <a href="#" data-page="produtos" data-category-filter="perfume" class="nav-link-button inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-200 text-slate-800 hover:bg-slate-300" aria-label="Ver todos os produtos">Ver todos os produtos</a>
                     </div>
                 </div>
             </section>
@@ -200,25 +190,25 @@
                         <h2 class="font-heading text-4xl font-bold">Navegue por Categorias</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="100" data-page="fragrancias" data-category-filter="perfume">
+                        <a href="#" data-page="produtos" data-category-filter="perfume" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="100">
                             <img src="https://github.com/DiegoSutil/testesansei1/blob/main/images/Gemini_Generated_Image_gwdjlcgwdjlcgwdj.png?raw=true" alt="Frasco de perfume sobre uma superfície de mármore com flores." class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                                 <span class="text-white text-2xl font-bold">PERFUMES</span>
                             </div>
                         </a>
-                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="200" data-page="fragrancias" data-category-filter="cremes">
+                        <a href="#" data-page="produtos" data-category-filter="creme" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="200">
                             <img src="https://github.com/DiegoSutil/testesansei1/blob/main/images/Gemini_Generated_Image_nat6klnat6klnat6%20(1).png?raw=true" alt="Potes de creme corporal com ingredientes naturais." class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                                 <span class="text-white text-2xl font-bold">CREMES</span>
                             </div>
                         </a>
-                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="300" data-page="fragrancias" data-category-filter="body-splash">
+                        <a href="#" data-page="produtos" data-category-filter="body-splash" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="300">
                             <img src="https://github.com/DiegoSutil/testesansei1/blob/main/images/Gemini_Generated_Image_1sgr611sgr611sgr%20(1).png?raw=true" alt="Frasco de Body Splash com um fundo de praia e mar." class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                                 <span class="text-white text-2xl font-bold">BODY SPLASH</span>
                             </div>
                         </a>
-                        <a href="#" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="400" data-page="fragrancias" data-category-filter="decant">
+                        <a href="#" data-page="produtos" data-category-filter="decant" class="relative block overflow-hidden rounded-lg group aspect-w-4 aspect-h-3" data-aos="fade-up" data-aos-delay="400">
                             <img src="https://github.com/DiegoSutil/testesansei1/blob/main/images/Gemini_Generated_Image_u9vrl9u9vrl9u9vr%20(1).png?raw=true" alt="Vários frascos de decants de perfume em exibição." class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                                 <span class="text-white text-2xl font-bold">DECANTES</span>
@@ -239,7 +229,7 @@
                             <p class="text-sm text-slate-500 font-semibold mb-2">OS MELHORES AROMAS ESTÃO AQUI!</p>
                             <h2 class="font-heading text-4xl font-bold mb-6">CONHEÇA NOSSA LINHA MASCULINA</h2>
                             <p class="text-slate-600 mb-8 leading-relaxed">Apresentamos a você a nossa linha masculina exclusiva, com perfumes elaborados por meio das melhores matérias-primas do mercado. Cada aroma é uma expressão única de personalidade e estilo.</p>
-                            <a href="#" data-page="fragrancias" data-category-filter="masculino" class="nav-link-button inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-200 text-slate-800 hover:bg-slate-300">VER AGORA</a>
+                            <a href="#" data-page="produtos" data-category-filter="masculino" class="nav-link-button inline-flex items-center justify-center font-semibold py-3 px-8 rounded-full transition-all duration-300 ease-in-out bg-slate-200 text-slate-800 hover:bg-slate-300">VER AGORA</a>
                         </div>
                     </div>
                 </div>
@@ -260,13 +250,13 @@
             </section>
         </div>
 
-        <!-- =========== Página: FRAGRANCIAS =========== -->
-        <div id="page-fragrancias" class="page-content hidden">
+        <!-- =========== Página de Produtos (Genérica, era page-fragrancias) =========== -->
+        <div id="page-produtos" class="page-content hidden">
             <div class="bg-slate-50 py-12">
                 <div class="container mx-auto px-6">
                     <div class="text-left mb-8">
-                        <h1 class="font-heading text-4xl font-bold">Nossas Fragrâncias</h1>
-                        <p class="text-slate-600 mt-1 leading-relaxed">Explore a coleção completa.</p>
+                        <h1 id="produtos-page-title" class="font-heading text-4xl font-bold capitalize">Nossos Produtos</h1>
+                        <p id="produtos-page-subtitle" class="text-slate-600 mt-1 leading-relaxed">Explore a coleção completa.</p>
                     </div>
                     <div class="flex flex-col lg:flex-row gap-12">
                         <!-- Filtros -->
@@ -275,12 +265,11 @@
                                 <h3 class="text-xl font-bold mb-6">Filtros</h3>
                                 <div class="space-y-6">
                                     <div>
-                                        <h4 class="font-semibold mb-3">Categoria</h4>
-                                        <div id="filter-categories" class="space-y-2">
-                                            <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="masculino"> <span class="ml-2 text-sm text-slate-700">Masculinos</span></label>
-                                            <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="feminino"> <span class="ml-2 text-sm text-slate-700">Femininos</span></label>
+                                        <h4 class="font-semibold mb-3">Gênero</h4>
+                                        <div id="filter-sub-categories" class="space-y-2">
+                                            <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="masculino"> <span class="ml-2 text-sm text-slate-700">Masculino</span></label>
+                                            <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="feminino"> <span class="ml-2 text-sm text-slate-700">Feminino</span></label>
                                             <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="unissex"> <span class="ml-2 text-sm text-slate-700">Unissex</span></label>
-                                            <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-black focus:ring-black filter-control" value="decant"> <span class="ml-2 text-sm text-slate-700">Decants</span></label>
                                         </div>
                                     </div>
                                     <div>
@@ -308,7 +297,7 @@
                         </aside>
                         <!-- Grelha de Produtos -->
                         <div class="w-full lg:w-3/4">
-                            <div id="product-list-fragrancias" class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+                            <div id="product-list-produtos" class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
                                 <!-- Cards de produto serão carregados aqui -->
                             </div>
                             <p id="no-products-found" class="hidden text-center text-slate-500 mt-8">Nenhum produto encontrado com os filtros selecionados.</p>
@@ -318,20 +307,7 @@
             </div>
         </div>
 
-        <!-- =========== Página: DECANTS =========== -->
-        <div id="page-decants" class="page-content hidden">
-            <div class="bg-slate-50 py-12">
-                <div class="container mx-auto px-6">
-                    <div class="text-center mb-12">
-                        <h1 class="font-heading text-5xl font-bold mb-4 text-slate-800">Nossos Decants</h1>
-                        <p class="text-lg text-slate-600 leading-relaxed">A forma perfeita de experimentar antes de se comprometer.</p>
-                    </div>
-                    <div id="product-list-decants" class="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-                        <!-- Lista de decants será carregada aqui -->
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Removido o antigo page-decants pois agora é dinâmico -->
 
         <!-- =========== Página: SOBRE =========== -->
         <div id="page-sobre" class="page-content hidden">
