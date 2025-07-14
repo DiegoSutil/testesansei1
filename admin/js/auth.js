@@ -61,7 +61,7 @@ export function authStateObserver(onAdminLogin) {
             if (DOMElements.adminEmail) DOMElements.adminEmail.textContent = user.email;
             
             // Chama o callback de sucesso passado pelo main.js
-            if (onAdminLogin) {
+            if (typeof onAdminLogin === 'function') {
                 onAdminLogin(user);
             }
         } else {
