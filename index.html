@@ -84,6 +84,10 @@
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
+        /* Estilos para o dropdown e a sobreposição de pesquisa */
+        .dropdown-menu, #search-overlay {
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-white text-slate-800 antialiased">
@@ -93,8 +97,8 @@
         <p>✨ Envio para todo o Brasil e 5% de desconto no PIX</p>
     </div>
 
-    <!-- =========== Header / Barra de Navegação (RESTAURADO) =========== -->
-    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-md border-b border-slate-100">
+    <!-- =========== Header / Barra de Navegação (NOVA VERSÃO) =========== -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-md border-b border-slate-100">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="#" data-page="inicio" class="block h-20 md:h-24 transition-all flex-shrink-0" aria-label="Voltar para a página inicial">
@@ -104,15 +108,26 @@
                 <nav class="hidden lg:flex flex-grow justify-center" role="navigation" aria-label="Navegação Principal">
                     <ul class="flex items-center space-x-8">
                         <li><a href="#" data-page="inicio" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block active" aria-current="page">Início</a></li>
-                        <li><a href="#" data-page="fragrancias" data-category-filter="feminino" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Feminino</a></li>
-                        <li><a href="#" data-page="fragrancias" data-category-filter="masculino" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Masculino</a></li>
+                        
+                        <!-- Menu Dropdown de Fragrâncias -->
+                        <li class="group relative">
+                            <a href="#" data-page="fragrancias" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 flex items-center gap-1">
+                                Fragrâncias <i data-feather="chevron-down" class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"></i>
+                            </a>
+                            <div class="dropdown-menu absolute top-full left-1/2 -translate-x-1/2 w-48 bg-white shadow-lg rounded-md mt-2 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 z-10">
+                                <a href="#" data-page="fragrancias" data-category-filter="feminino" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">Feminino</a>
+                                <a href="#" data-page="fragrancias" data-category-filter="masculino" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">Masculino</a>
+                                <a href="#" data-page="fragrancias" data-category-filter="unissex" class="block px-4 py-2 text-slate-700 hover:bg-slate-100">Unissex</a>
+                            </div>
+                        </li>
+                        
                         <li><a href="#" data-page="decants" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Decants</a></li>
                         <li><a href="#" data-page="sobre" class="nav-link font-semibold text-slate-600 hover:text-black transition-colors duration-300 relative py-2 px-3 block">Nossa História</a></li>
                     </ul>
                 </nav>
 
                 <div class="flex items-center space-x-4">
-                    <button id="search-button-mobile" class="lg:hidden text-slate-500 hover:text-black transition-colors duration-300" aria-label="Abrir busca"><i data-feather="search"></i></button>
+                    <button id="desktop-search-button" class="hidden lg:flex text-slate-500 hover:text-black transition-colors duration-300" aria-label="Abrir busca"><i data-feather="search"></i></button>
                     <button id="cart-button" class="relative hidden lg:flex text-slate-500 hover:text-black transition-colors duration-300" aria-label="Abrir carrinho de compras" aria-haspopup="dialog">
                         <i data-feather="shopping-cart"></i>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
@@ -122,38 +137,22 @@
                 </div>
             </div>
         </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[55] hidden" aria-hidden="true"></div>
-        <div id="mobile-menu" class="fixed inset-y-0 left-0 w-3/4 max-w-xs bg-white shadow-xl z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
-            <div class="flex justify-between items-center p-4 border-b border-slate-200">
-                <h3 id="mobile-menu-title" class="font-bold text-lg">Menu</h3>
-                <button id="close-mobile-menu" class="text-slate-500 hover:text-slate-800" aria-label="Fechar menu mobile"><i data-feather="x" class="w-6 h-6"></i></button>
-            </div>
-            <div class="px-4 py-4 space-y-2">
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="inicio">Início</a>
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="fragrancias" data-category-filter="feminino">Feminino</a>
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="fragrancias" data-category-filter="masculino">Masculino</a>
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="decants">Decants</a>
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="sobre">Nossa História</a>
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="faq">FAQ</a>
-                 <a href="#" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200" data-page="contato">Contato</a>
-                 <a href="#" id="mobile-user-link" class="mobile-nav-link block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-md transition-colors duration-200">Minha Conta</a>
-            </div>
-        </div>
-        
-        <!-- Search Bar (Mobile) -->
-        <div id="search-bar" class="hidden lg:hidden bg-white border-t border-slate-200" role="search">
-            <div class="container mx-auto p-4 flex items-center gap-4">
-                <label for="search-input" class="sr-only">O que você procura?</label>
-                <input type="text" id="search-input" placeholder="O que você procura?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-                <button id="close-search-bar" class="text-slate-500 hover:text-slate-800" aria-label="Fechar barra de busca"><i data-feather="x"></i></button>
-            </div>
-            <div id="search-results" class="container mx-auto px-4 pb-4 max-h-96 overflow-y-auto"></div>
-        </div>
     </header>
 
-    <!-- =========== Conteúdo Principal =========== -->
+    <!-- =========== Sobreposição de Pesquisa (NOVO) =========== -->
+    <div id="search-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center pt-24 px-4 opacity-0" aria-hidden="true">
+        <button id="close-search-overlay" class="absolute top-8 right-8 text-white/80 hover:text-white" aria-label="Fechar busca"><i data-feather="x" class="w-8 h-8"></i></button>
+        <div class="relative w-full max-w-2xl">
+            <i data-feather="search" class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6"></i>
+            <input type="text" id="search-input-overlay" placeholder="O que você procura?" class="w-full bg-white/10 text-white placeholder:text-slate-300 text-2xl font-semibold pl-16 pr-6 py-4 rounded-full border-2 border-transparent focus:border-white focus:bg-white/20 focus:outline-none transition-all">
+        </div>
+        <div id="search-results-overlay" class="w-full max-w-2xl mt-6 bg-white rounded-lg shadow-xl max-h-[60vh] overflow-y-auto scrollbar-hide">
+            <!-- Resultados da pesquisa serão inseridos aqui -->
+        </div>
+    </div>
+
+
+    <!-- =========== Conteúdo Principal (PRESERVADO) =========== -->
     <main>
         <!-- =========== Página: INICIO =========== -->
         <div id="page-inicio" class="page-content">
@@ -422,7 +421,7 @@
         </div>
     </main>
 
-    <!-- =========== Footer =========== -->
+    <!-- =========== Footer (PRESERVADO) =========== -->
     <footer class="bg-gray-800 text-gray-300">
         <div class="container mx-auto px-6 py-16">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -495,7 +494,7 @@
         </div>
     </footer>
 
-    <!-- =========== Modais =========== -->
+    <!-- =========== Modais (PRESERVADOS) =========== -->
     <!-- Shopping Cart Modal -->
     <div id="cart-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden" aria-hidden="true"></div>
     <div id="cart-modal" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-[70] transform translate-x-full transition-transform duration-300" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
