@@ -10,13 +10,15 @@ import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc } from "https:/
 import { auth, db } from './firebase-config.js';
 
 // Módulos da Aplicação
-import { state, setCurrentUserData, setCart, setAppliedCoupon, setSelectedShipping, setFragrancePage, incrementFragrancePage, productsPerPage } from './js/state.js';
+import { state, setCurrentUserData, setCart, setAppliedCoupon, setSelectedShipping } from './js/state.js';
 import { showLoader, toggleModal, toggleMobileMenu, showToast } from './js/ui.js';
 import { fetchInitialData, fetchAndRenderReels } from './js/api.js';
 import { renderProducts, showProductDetails, handleReviewSubmit, createProductCardTemplate } from './js/product.js';
 import { addToCart, updateCartIcon, setupCartEventListeners, renderCart } from './js/cart.js';
 import { updateAuthUI, handleLogout, renderAuthForm, renderWishlist, renderOrders } from './js/auth.js';
 import { applyCoupon } from './js/coupons.js';
+import { calculateShipping } from './shipping.js';
+
 
 // =================================================================================
 // FUNÇÕES DE NAVEGAÇÃO E RENDERIZAÇÃO (Centralizadas aqui)
@@ -24,9 +26,8 @@ import { applyCoupon } from './js/coupons.js';
 
 /**
  * Filtra e renderiza os produtos na página de fragrâncias com base nos controlos do DOM.
- * @param {boolean} initialLoad - Se for o carregamento inicial, não mostra a mensagem "nenhum produto".
  */
-function applyFiltersAndRender(initialLoad = false) {
+function applyFiltersAndRender() {
     const productListEl = document.getElementById('product-list-fragrancias');
     if (!productListEl) return;
 
@@ -37,7 +38,7 @@ function applyFiltersAndRender(initialLoad = false) {
 
     // Filtrar produtos
     let filteredProducts = state.allProducts.filter(p => {
-        const categoryMatch = categories.length === 0 || categories.includes(p.category);
+        const categoryMatch = categories.length === 0 || categories.some(cat => p.category.toLowerCase().includes(cat.toLowerCase()));
         const priceMatch = p.price <= maxPrice;
         return categoryMatch && priceMatch;
     });
@@ -59,7 +60,7 @@ function applyFiltersAndRender(initialLoad = false) {
         // 'popularity' é o default, sem ordenação extra por enquanto
     }
     
-    renderProducts(filteredProducts, 'product-list-fragrancias', initialLoad);
+    renderProducts(filteredProducts, 'product-list-fragrancias', true);
 }
 
 
@@ -76,7 +77,7 @@ function refreshAllProductViews() {
             renderProducts(state.allProducts.slice(0, 8), 'product-list-home');
             break;
         case 'fragrancias':
-            applyFiltersAndRender(true);
+            applyFiltersAndRender();
             break;
         case 'decants':
             const decantProducts = state.allProducts.filter(p => p.category === 'decant');
@@ -101,15 +102,9 @@ function showPage(pageId, categoryFilter = null) {
     }
 
     // Atualiza o estado ativo nos links de navegação
-    document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link, #mobile-bottom-nav a').forEach(link => {
         link.classList.remove('active');
         if (link.dataset.page === pageId) {
-            link.classList.add('active');
-        }
-    });
-    document.querySelectorAll('#mobile-bottom-nav a').forEach(link => {
-        link.classList.remove('active');
-         if (link.dataset.page === pageId) {
             link.classList.add('active');
         }
     });
@@ -124,8 +119,7 @@ function showPage(pageId, categoryFilter = null) {
                     filterCheckbox.checked = true;
                 }
             }
-            // Chama a função de filtro diretamente em vez de disparar um evento
-            applyFiltersAndRender(true);
+            applyFiltersAndRender();
             break;
         case 'decants':
             const decantProducts = state.allProducts.filter(p => p.category === 'decant');
@@ -146,24 +140,12 @@ function showPage(pageId, categoryFilter = null) {
     }
     
     window.scrollTo(0, 0);
-    // Garante que as animações sejam recarregadas ao mudar de página
     if (window.AOS) {
         AOS.refresh();
     }
 }
-
-// Disponibiliza a função globalmente para ser usada no HTML inline (se necessário) e para simplificar chamadas
 window.showPage = showPage;
 
-
-// =================================================================================
-// INICIALIZAÇÃO E EVENT LISTENERS
-// =================================================================================
-
-/**
- * Adiciona um item à lista de desejos do usuário no estado e no Firestore.
- * @param {string} productId - O ID do produto a ser adicionado/removido.
- */
 async function toggleWishlist(productId) {
     if (!state.currentUserData) {
         showToast("Você precisa estar logado para usar a lista de desejos.", true);
@@ -176,35 +158,26 @@ async function toggleWishlist(productId) {
     const heartIcon = document.querySelector(`.wishlist-heart[data-id="${productId}"] i`);
     
     if (state.currentUserData.wishlist.includes(productId)) {
-        // Remover da lista de desejos
         state.currentUserData.wishlist = state.currentUserData.wishlist.filter(id => id !== productId);
         await updateDoc(userRef, { wishlist: arrayRemove(productId) });
         showToast("Removido da lista de desejos.");
         if(heartIcon) heartIcon.classList.remove('active');
 
     } else {
-        // Adicionar à lista de desejos
         state.currentUserData.wishlist.push(productId);
         await updateDoc(userRef, { wishlist: arrayUnion(productId) });
         showToast("Adicionado à lista de desejos!");
         if(heartIcon) heartIcon.classList.add('active');
     }
-    // Atualiza a visualização caso o usuário esteja na página de perfil
     refreshAllProductViews();
 }
 
-
-/**
- * Configura todos os event listeners globais da aplicação.
- */
 function initializeEventListeners() {
-    // Delegação de eventos no corpo do documento para performance
     document.body.addEventListener('click', (e) => {
         const target = e.target;
         const closest = (selector) => target.closest(selector);
 
-        // Navegação
-        const navLink = closest('.nav-link, .mobile-nav-link, .nav-link-button, #mobile-bottom-nav a');
+        const navLink = closest('.nav-link, .mobile-nav-link, .nav-link-button, #mobile-bottom-nav a, .category-card-link');
         if (navLink && navLink.dataset.page) {
             e.preventDefault();
             showPage(navLink.dataset.page, navLink.dataset.categoryFilter);
@@ -212,7 +185,6 @@ function initializeEventListeners() {
             return;
         }
 
-        // Ações de Produto
         const productLink = closest('.product-image-link, .product-name-link');
         if (productLink) {
             e.preventDefault();
@@ -220,7 +192,6 @@ function initializeEventListeners() {
             return;
         }
 
-        // Adicionar ao Carrinho
         const addToCartBtn = closest('.add-to-cart-btn');
         if (addToCartBtn) {
             e.preventDefault();
@@ -228,7 +199,6 @@ function initializeEventListeners() {
             return;
         }
         
-        // Lista de Desejos
         const wishlistBtn = closest('.wishlist-heart');
         if(wishlistBtn) {
             e.preventDefault();
@@ -236,7 +206,6 @@ function initializeEventListeners() {
             return;
         }
 
-        // UI: Modais e Menus
         if (closest('#mobile-menu-button')) toggleMobileMenu(true);
         if (closest('#close-mobile-menu, #mobile-menu-overlay')) toggleMobileMenu(false);
         if (closest('#cart-button, #mobile-bottom-cart-btn')) toggleModal('cart-modal', true);
@@ -244,7 +213,6 @@ function initializeEventListeners() {
         if (closest('#close-product-details-modal, #product-details-modal-overlay')) toggleModal('product-details-modal', false);
         if (closest('#close-auth-modal, #auth-modal-overlay')) toggleModal('auth-modal', false);
         
-        // UI: Autenticação / Perfil
         const userAction = closest('#user-button, #mobile-user-link, #mobile-bottom-user-link');
         if (userAction) {
             e.preventDefault();
@@ -258,19 +226,21 @@ function initializeEventListeners() {
             return;
         }
 
-        // Logout
         if (closest('#logout-button')) handleLogout();
 
-        // Link para login no formulário de avaliação
         if (closest('#login-to-review')) {
             e.preventDefault();
             toggleModal('product-details-modal', false);
             renderAuthForm();
             toggleModal('auth-modal', true);
         }
+
+        if (closest('#calculate-shipping-btn')) {
+            const cep = document.getElementById('cep-input').value;
+            calculateShipping(cep);
+        }
     });
 
-    // Listeners para formulários
     document.body.addEventListener('submit', (e) => {
         if (e.target.id.startsWith('review-form-')) {
             handleReviewSubmit(e, e.target.dataset.productId);
@@ -279,18 +249,18 @@ function initializeEventListeners() {
             e.preventDefault();
             applyCoupon(document.getElementById('coupon-input').value);
         }
-        if (e.target.id === 'auth-form') {
-            // A lógica de submit do auth-form é tratada em auth.js
-        }
     });
     
-    // Listeners para filtros da página de fragrâncias
-    const filterControls = document.querySelector('#page-fragrancias .sticky-top');
-    if(filterControls) {
-        filterControls.addEventListener('input', () => applyFiltersAndRender());
+    // CORREÇÃO DO LISTENER DOS FILTROS
+    const filterContainer = document.getElementById('page-fragrancias').querySelector('aside');
+    if (filterContainer) {
+        filterContainer.addEventListener('input', (e) => {
+            if(e.target.matches('input, select')) {
+                applyFiltersAndRender();
+            }
+        });
     }
     
-    // Atualiza o valor do range de preço
     const priceRange = document.getElementById('price-range-filter');
     const priceValue = document.getElementById('price-range-value');
     if(priceRange && priceValue) {
@@ -299,28 +269,14 @@ function initializeEventListeners() {
         });
     }
 
-    // Inicializa outros listeners de módulos específicos
     setupCartEventListeners();
 }
 
-/**
- * Função principal de inicialização da aplicação.
- */
 async function main() {
     showLoader(true);
 
-    // 1. Busca os dados essenciais primeiro
-    const products = await fetchInitialData();
+    await fetchInitialData();
     
-    // 2. Renderiza o conteúdo inicial que depende dos dados
-    if (products) {
-        renderProducts(products.slice(0, 8), 'product-list-home');
-        // Prepara a página de fragrâncias para quando for visitada
-        applyFiltersAndRender(true); 
-    }
-    fetchAndRenderReels();
-
-    // 3. Configura o observador de autenticação para lidar com login/logout
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDocRef = doc(db, "users", user.uid);
@@ -328,23 +284,23 @@ async function main() {
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 setCurrentUserData({ uid: user.uid, ...userData });
-                // Mescla carrinho do localStorage com o do Firestore se necessário
                 const localCart = JSON.parse(localStorage.getItem('sanseiCart')) || [];
                 const firestoreCart = userData.cart || [];
                 const mergedCart = [...firestoreCart];
                 localCart.forEach(localItem => {
                     const existingItem = mergedCart.find(ci => ci.id === localItem.id);
                     if (existingItem) {
-                        existingItem.quantity += localItem.quantity;
+                        existingItem.quantity = Math.min(existingItem.quantity + localItem.quantity, 10);
                     } else {
                         mergedCart.push(localItem);
                     }
                 });
                 
                 setCart(mergedCart);
-                const userRef = doc(db, "users", user.uid);
-                await setDoc(userRef, { cart: mergedCart }, { merge: true });
-                localStorage.removeItem('sanseiCart');
+                if (localCart.length > 0) {
+                    await setDoc(userDocRef, { cart: mergedCart }, { merge: true });
+                    localStorage.removeItem('sanseiCart');
+                }
             }
         } else {
             setCurrentUserData(null);
@@ -352,15 +308,17 @@ async function main() {
         }
         updateAuthUI(user);
         updateCartIcon();
-        refreshAllProductViews(); // Atualiza a UI com base no estado de login
+        refreshAllProductViews();
+        renderCart();
     });
 
-    // 4. Inicializa as animações e os event listeners DEPOIS que tudo está pronto
-    AOS.init({ duration: 800, once: true });
-    initializeEventListeners();
+    await fetchAndRenderReels();
     
+    initializeEventListeners();
+    AOS.init({ duration: 800, once: true });
+    
+    showPage('inicio');
     showLoader(false);
 }
 
-// Inicia a aplicação quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', main);
