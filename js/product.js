@@ -1,6 +1,7 @@
 /**
  * @fileoverview Módulo de Produtos.
  * Contém a lógica para renderizar, filtrar e interagir com produtos e avaliações.
+ * VERSÃO CORRIGIDA: Adiciona listener para as estrelas de avaliação.
  */
 
 import { doc, getDoc, updateDoc, arrayUnion, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -8,18 +9,15 @@ import { db } from '../firebase-config.js';
 import { state } from './state.js';
 import { showToast, renderStars, toggleModal } from './ui.js';
 
-// Template do Card de Produto com o novo layout minimalista
 export function createProductCardTemplate(product, delay = 0) {
     const isInWishlist = state.currentUserData && state.currentUserData.wishlist.includes(product.id);
-    
-    // Simplificando o HTML do preço
     const priceHtml = `<p class="text-sm font-semibold text-gray-800">R$ ${product.price.toFixed(2).replace('.',',')}</p>`;
 
     return `
         <div class="group text-center flex flex-col" data-aos="fade-up" data-aos-delay="${delay}" role="listitem">
-            <div class="relative overflow-hidden mb-4">
+            <div class="relative overflow-hidden rounded-lg mb-4">
                 <a href="#" class="product-image-link" data-id="${product.id}">
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover aspect-[4/5] group-hover:opacity-80 transition-opacity duration-300" loading="lazy">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover aspect-[4/5] group-hover:opacity-80 transition-opacity duration-300" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/ffffff?text=Img';">
                 </a>
                 <button class="wishlist-heart absolute top-3 right-3 p-2 bg-white/80 rounded-full text-gray-500 hover:text-red-500 transition-colors" data-id="${product.id}" aria-label="${isInWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}">
                     <i data-feather="heart" class="w-5 h-5 ${isInWishlist ? 'active' : ''}"></i>
@@ -42,22 +40,51 @@ export function createProductCardTemplate(product, delay = 0) {
     `;
 }
 
-
-export function renderProducts(productsToRender, containerId) {
+export function renderProducts(productsToRender, containerId, isFilterAction = false) {
     const productListEl = document.getElementById(containerId);
     if (!productListEl) return;
     
-    if (productsToRender.length === 0) {
-        const noProductsEl = document.getElementById('no-products-found');
+    const noProductsEl = document.getElementById('no-products-found');
+
+    if (productsToRender.length === 0 && !isFilterAction) {
         if (noProductsEl) noProductsEl.classList.remove('hidden');
         productListEl.innerHTML = '';
-    } else {
-        const noProductsEl = document.getElementById('no-products-found');
+    } else if (productsToRender.length === 0 && isFilterAction) {
+         productListEl.innerHTML = '<p class="text-center text-slate-500 col-span-full mt-8">Nenhum produto encontrado com os filtros selecionados.</p>';
+         if (noProductsEl) noProductsEl.classList.add('hidden');
+    }
+    else {
         if (noProductsEl) noProductsEl.classList.add('hidden');
         productListEl.innerHTML = productsToRender.map((product, index) => createProductCardTemplate(product, index * 100)).join('');
     }
-    AOS.refresh();
+    
+    if(window.AOS) AOS.refresh();
     feather.replace();
+}
+
+function setupReviewFormListeners() {
+    const reviewFormContainer = document.getElementById('product-review-form-container');
+    if (!reviewFormContainer) return;
+
+    // Listener para as estrelas
+    const starsContainer = reviewFormContainer.querySelector('#review-rating-stars');
+    if (starsContainer) {
+        starsContainer.addEventListener('click', e => {
+            const star = e.target.closest('i');
+            if (!star) return;
+
+            const ratingValue = parseInt(star.dataset.value);
+            const ratingInput = document.getElementById('review-rating-value');
+            ratingInput.value = ratingValue;
+
+            const allStars = starsContainer.querySelectorAll('i');
+            allStars.forEach(s => {
+                s.classList.toggle('filled', parseInt(s.dataset.value) <= ratingValue);
+            });
+        });
+    }
+
+    // Listener para o submit do formulário (já tratado globalmente em script.js)
 }
 
 export async function handleReviewSubmit(event, productId) {
@@ -89,14 +116,22 @@ export async function handleReviewSubmit(event, productId) {
 
     try {
         const productRef = doc(db, "products", productId);
-        await updateDoc(productRef, { reviews: arrayUnion(newReview) });
-
-        const updatedDoc = await getDoc(productRef);
-        const updatedReviews = updatedDoc.data().reviews || [];
-        const newAvgRating = updatedReviews.reduce((sum, r) => sum + r.rating, 0) / updatedReviews.length;
         
-        await updateDoc(productRef, { rating: newAvgRating });
+        // Primeiro, buscamos o documento para calcular a nova média
+        const productDoc = await getDoc(productRef);
+        if (!productDoc.exists()) throw new Error("Produto não encontrado");
+        
+        const existingReviews = productDoc.data().reviews || [];
+        const totalRating = existingReviews.reduce((sum, r) => sum + r.rating, 0) + newReview.rating;
+        const newAvgRating = totalRating / (existingReviews.length + 1);
 
+        // Atualiza o documento com a nova avaliação e a nova média de rating
+        await updateDoc(productRef, { 
+            reviews: arrayUnion(newReview),
+            rating: newAvgRating
+        });
+
+        // Atualiza o estado local para refletir a mudança imediatamente
         const productIndex = state.allProducts.findIndex(p => p.id === productId);
         if (productIndex !== -1) {
             state.allProducts[productIndex].reviews.push(newReview);
@@ -104,7 +139,8 @@ export async function handleReviewSubmit(event, productId) {
         }
 
         showToast("Sua avaliação foi enviada com sucesso!");
-        showProductDetails(productId);
+        // Re-renderiza os detalhes do produto para mostrar a nova avaliação
+        showProductDetails(productId); 
 
     } catch (error) {
         console.error("Erro ao enviar avaliação: ", error);
@@ -136,13 +172,13 @@ export function showProductDetails(productId) {
     }
 
     contentEl.innerHTML = `
-        <div class="w-full md:w-1/2 p-4 md:p-8"><img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover rounded-lg" loading="lazy"></div>
+        <div class="w-full md:w-1/2 p-4 md:p-8"><img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover rounded-lg" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/500x600/cccccc/ffffff?text=Img';"></div>
         <div class="w-full md:w-1/2 p-4 md:p-8 flex flex-col">
             <h2 id="product-details-title" class="text-3xl font-bold mb-2">${product.name}</h2>
             <p class="text-slate-600 text-md mb-2 capitalize">${product.category}</p>
             <div class="flex items-center gap-2 mb-4">
                 ${renderStars(product.rating)}
-                <span class="text-gray-500 text-sm">(${product.reviews ? product.reviews.length : 0} avaliações)</span>
+                <span class="text-gray-500 text-sm">(${(product.reviews || []).length} avaliações)</span>
             </div>
             <p class="text-gray-600 mb-6 text-base leading-relaxed whitespace-pre-wrap">${product.description}</p>
             ${notesHtml}
@@ -153,7 +189,7 @@ export function showProductDetails(productId) {
         </div>`;
 
     const reviewsHtml = (product.reviews && product.reviews.length > 0)
-        ? product.reviews.slice().sort((a,b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map(review => `
+        ? [...product.reviews].sort((a,b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map(review => `
             <div class="border-b border-gray-200 pb-4 mb-4 last:border-b-0 last:mb-0">
                 <div class="flex items-center mb-2">
                     <span class="font-semibold mr-2">${review.userName}</span>
@@ -197,4 +233,6 @@ export function showProductDetails(productId) {
 
     feather.replace();
     toggleModal('product-details-modal', true);
+    // Configura os listeners específicos do formulário de avaliação após ele ser renderizado
+    setupReviewFormListeners();
 }
