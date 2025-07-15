@@ -1,13 +1,14 @@
 /**
  * @fileoverview Módulo do Carrinho de Compras.
  * Contém toda a lógica para adicionar, remover e atualizar itens do carrinho.
- * VERSÃO CORRIGIDA: Garante que renderCart() seja chamado em todas as modificações.
+ * VERSÃO CORRIGIDA E ATUALIZADA
  */
 
-import { doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from '../firebase-config.js';
 import { state, setCart } from './state.js';
 import { showToast, showConfirmationModal } from './ui.js';
+import { renderCart } from './cart.js';
 
 export function updateCartIcon() {
     const cartCountEl = document.getElementById('cart-count');
@@ -24,7 +25,8 @@ export function updateCartIcon() {
     }
 }
 
-async function syncCartWithFirestore() {
+// FIX: A função agora é exportada para que possa ser usada em outros módulos (como script.js)
+export async function syncCartWithFirestore() {
     if (!state.currentUserData?.uid) return;
     const userRef = doc(db, "users", state.currentUserData.uid);
     try {
@@ -78,10 +80,10 @@ export async function addToCart(productId, quantity = 1, event) {
         state.cart.push({ id: productId, quantity });
     }
     
-    setCart(state.cart); // Atualiza o estado e o localStorage
+    setCart(state.cart);
     await syncCartWithFirestore();
     updateCartIcon();
-    renderCart(); // <-- CORREÇÃO ADICIONADA: Atualiza a UI do modal do carrinho
+    renderCart();
 
     setTimeout(() => {
         showToast(`${product.name} adicionado ao carrinho!`);
@@ -110,7 +112,6 @@ async function updateQuantity(productId, newQuantity) {
 
     if (newQuantity > product.stock) {
         showToast(`Stock insuficiente. Apenas ${product.stock} unidades disponíveis.`, true);
-        // Reseta a quantidade no input para o valor máximo de estoque
         renderCart();
         return;
     }
