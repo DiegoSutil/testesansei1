@@ -8,7 +8,9 @@ import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 import { db } from '../firebase-config.js';
 import { state, setCart } from './state.js';
 import { showToast, showConfirmationModal } from './ui.js';
-import { renderCart } from './cart.js';
+
+// FIX: Removida a linha abaixo que causava o erro de declaração duplicada.
+// import { renderCart } from './cart.js';
 
 export function updateCartIcon() {
     const cartCountEl = document.getElementById('cart-count');
@@ -25,12 +27,10 @@ export function updateCartIcon() {
     }
 }
 
-// FIX: A função agora é exportada para que possa ser usada em outros módulos (como script.js)
 export async function syncCartWithFirestore() {
     if (!state.currentUserData?.uid) return;
     const userRef = doc(db, "users", state.currentUserData.uid);
     try {
-        // Usa setDoc com merge para evitar apagar outros campos do usuário
         await setDoc(userRef, { cart: state.cart }, { merge: true });
     } catch (error) {
         console.error("Erro ao sincronizar carrinho:", error);
