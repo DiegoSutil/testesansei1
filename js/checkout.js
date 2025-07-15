@@ -1,6 +1,7 @@
 /**
  * @fileoverview Lógica da Página de Checkout de Luxo com Múltiplas Etapas.
  * Inclui API de CEP, validação em tempo real e outras melhorias de UX.
+ * VERSÃO CORRIGIDA E ATUALIZADA
  */
 
 // Estado do Checkout
@@ -8,6 +9,9 @@ let currentStep = 1;
 const checkoutData = {
     info: null,
     shipping: null,
+    coupon: null,
+    cart: [],
+    allProducts: []
 };
 
 // Elementos do DOM
@@ -150,9 +154,7 @@ async function handleCepInput() {
 const formatCurrency = (value) => `R$ ${value.toFixed(2).replace('.', ',')}`;
 
 function renderOrderSummary() {
-    const cart = JSON.parse(localStorage.getItem('sanseiCart')) || [];
-    const allProducts = JSON.parse(localStorage.getItem('sanseiAllProducts')) || [];
-    const coupon = JSON.parse(localStorage.getItem('sanseiCoupon')) || null;
+    const { cart, allProducts, coupon } = checkoutData;
     
     const selectedShippingRadio = document.querySelector('input[name="shipping-option"]:checked');
     checkoutData.shipping = selectedShippingRadio ? JSON.parse(selectedShippingRadio.value) : null;
@@ -166,7 +168,8 @@ function renderOrderSummary() {
 
     if (cart.length === 0) {
         summaryContainer.innerHTML = '<p>O seu carrinho está vazio.</p>';
-        window.location.href = './index.html';
+        // Opcional: redirecionar de volta para a loja
+        // window.location.href = './index.html';
         return;
     }
 
@@ -191,7 +194,7 @@ function renderOrderSummary() {
     });
 
     let discountAmount = 0;
-    if (coupon) {
+    if (coupon && coupon.discount) {
         discountAmount = subtotal * coupon.discount;
         discountEl.textContent = `- ${formatCurrency(discountAmount)}`;
         discountLineEl.classList.remove('hidden');
@@ -257,7 +260,7 @@ function simulateShippingCalculation() {
         container.querySelectorAll('input[name="shipping-option"]').forEach(radio => {
             radio.addEventListener('change', renderOrderSummary);
         });
-    }, 2000);
+    }, 1500);
 }
 
 function handleFormSubmit() {
@@ -266,9 +269,11 @@ function handleFormSubmit() {
     console.log("Formulário enviado! A iniciar o processo de pagamento...", checkoutData);
     setTimeout(() => {
         alert('Pagamento processado com sucesso! (Isto é uma simulação)');
+        // Limpa todos os dados relacionados ao pedido do localStorage
         localStorage.removeItem('sanseiCart');
         localStorage.removeItem('sanseiShipping');
         localStorage.removeItem('sanseiCoupon');
+        localStorage.removeItem('sanseiAllProducts'); // Limpa também os produtos
         window.location.href = './index.html'; 
     }, 2000);
 }
@@ -278,6 +283,18 @@ function handleFormSubmit() {
 // =================================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // FIX: Carrega todos os dados necessários do localStorage
+    checkoutData.cart = JSON.parse(localStorage.getItem('sanseiCart')) || [];
+    checkoutData.allProducts = JSON.parse(localStorage.getItem('sanseiAllProducts')) || [];
+    checkoutData.coupon = JSON.parse(localStorage.getItem('sanseiCoupon')) || null;
+    checkoutData.shipping = JSON.parse(localStorage.getItem('sanseiShipping')) || null;
+
+    if (checkoutData.cart.length === 0) {
+        alert("Seu carrinho está vazio. Redirecionando para a loja.");
+        window.location.href = './index.html';
+        return;
+    }
+
     goToStep(1);
     renderOrderSummary();
     simulateShippingCalculation();
