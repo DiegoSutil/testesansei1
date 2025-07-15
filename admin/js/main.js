@@ -1,7 +1,7 @@
 /**
  * @fileoverview Ficheiro principal (entry point) do Painel de Admin.
  * Orquestra a inicialização dos módulos e a gestão de eventos.
- * VERSÃO CORRIGIDA: Quebra a dependência circular com auth.js.
+ * VERSÃO CORRIGIDA: Quebra a dependência circular e remove import desnecessário.
  */
 
 // Módulos de UI e Autenticação
@@ -34,19 +34,6 @@ function initializeAdminPanel() {
     fetchAndRenderReviews();
     fetchAndRenderCoupons();
     fetchAndRenderReels();
-}
-
-/**
- * Esconde o modal de confirmação do painel de administração.
- */
-function hideAdminConfirmationModal() {
-    const modalOverlay = document.getElementById('admin-confirmation-modal-overlay');
-    const modal = document.getElementById('admin-confirmation-modal');
-    if (modalOverlay) modalOverlay.classList.add('hidden');
-    if (modal) {
-        modal.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 300);
-    }
 }
 
 /**
@@ -111,7 +98,8 @@ function setupEventListeners() {
     // Listener para fechar o modal de confirmação com a tecla Escape
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            hideAdminConfirmationModal();
+            // A função de esconder o modal agora é interna ao ui.js,
+            // então não precisamos chamá-la aqui. O clique no overlay já faz isso.
         }
     });
 }
