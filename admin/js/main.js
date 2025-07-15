@@ -1,11 +1,11 @@
 /**
  * @fileoverview Ficheiro principal (entry point) do Painel de Admin.
  * Orquestra a inicialização dos módulos e a gestão de eventos.
- * VERSÃO CORRIGIDA: Quebra a dependência circular e remove import desnecessário.
+ * VERSÃO CORRIGIDA E ATUALIZADA
  */
 
 // Módulos de UI e Autenticação
-import { DOMElements, switchView, showAdminConfirmationModal } from './ui.js';
+import { DOMElements, switchView } from './ui.js';
 import { authStateObserver, handleLogin, handleLogout } from './auth.js';
 
 // Módulos de Gestão de Conteúdo
@@ -23,7 +23,7 @@ let isPanelInitialized = false;
  * Inicializa todas as funcionalidades do painel após o login do admin.
  */
 function initializeAdminPanel() {
-    if (isPanelInitialized) return; // Previne múltiplas inicializações
+    if (isPanelInitialized) return;
     isPanelInitialized = true;
 
     console.log("Painel de Administração Inicializado.");
@@ -75,9 +75,10 @@ function setupEventListeners() {
     DOMElements.reviewListBody.addEventListener('click', (e) => {
         const deleteBtn = e.target.closest('.delete-review-btn');
         if (deleteBtn) {
+            // FIX: Passa o reviewId para a função de exclusão
             const productId = deleteBtn.dataset.productId;
-            const reviewIndex = parseInt(deleteBtn.dataset.reviewIndex, 10);
-            deleteReview(productId, reviewIndex);
+            const reviewId = deleteBtn.dataset.reviewId;
+            deleteReview(productId, reviewId);
         }
     });
 
@@ -94,21 +95,11 @@ function setupEventListeners() {
         const deleteBtn = e.target.closest('.delete-reel-btn');
         if (deleteBtn) deleteReel(deleteBtn.dataset.id);
     });
-
-    // Listener para fechar o modal de confirmação com a tecla Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            // A função de esconder o modal agora é interna ao ui.js,
-            // então não precisamos chamá-la aqui. O clique no overlay já faz isso.
-        }
-    });
 }
 
 // Ponto de entrada da aplicação do painel de admin
 document.addEventListener('DOMContentLoaded', () => {
     feather.replace();
     setupEventListeners();
-    // Passa a função de inicialização como um callback para o observador de auth.
-    // Isto quebra a dependência circular.
     authStateObserver(initializeAdminPanel);
 });
