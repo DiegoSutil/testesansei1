@@ -1,10 +1,10 @@
 /**
  * @fileoverview Módulo de Produtos.
  * Contém a lógica para renderizar, filtrar e interagir com produtos e avaliações.
- * VERSÃO CORRIGIDA: Adiciona listener para as estrelas de avaliação.
+ * VERSÃO CORRIGIDA E ATUALIZADA
  */
 
-import { doc, getDoc, updateDoc, arrayUnion, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, updateDoc, arrayUnion, Timestamp, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { db } from '../firebase-config.js';
 import { state } from './state.js';
 import { showToast, renderStars, toggleModal } from './ui.js';
@@ -33,7 +33,7 @@ export function createProductCardTemplate(product, delay = 0) {
                     ${priceHtml}
                 </div>
                 <div class="mt-4">
-                    <button class="add-to-cart-btn btn-secondary py-2 px-6 text-xs w-full" data-id="${product.id}">Adicionar ao Carrinho</button>
+                    <button class="add-to-cart-btn bg-slate-900 text-white py-2 px-6 text-xs w-full rounded-full hover:bg-black transition-colors" data-id="${product.id}">Adicionar ao Carrinho</button>
                 </div>
             </div>
         </div>
@@ -46,12 +46,9 @@ export function renderProducts(productsToRender, containerId, isFilterAction = f
     
     const noProductsEl = document.getElementById('no-products-found');
 
-    if (productsToRender.length === 0 && !isFilterAction) {
-        if (noProductsEl) noProductsEl.classList.remove('hidden');
-        productListEl.innerHTML = '';
-    } else if (productsToRender.length === 0 && isFilterAction) {
-         productListEl.innerHTML = '<p class="text-center text-slate-500 col-span-full mt-8">Nenhum produto encontrado com os filtros selecionados.</p>';
-         if (noProductsEl) noProductsEl.classList.add('hidden');
+    if (productsToRender.length === 0) {
+         productListEl.innerHTML = '<p class="text-center text-slate-500 col-span-full mt-8">Nenhum produto encontrado.</p>';
+         if (noProductsEl) noProductsEl.classList.remove('hidden');
     }
     else {
         if (noProductsEl) noProductsEl.classList.add('hidden');
@@ -66,7 +63,6 @@ function setupReviewFormListeners() {
     const reviewFormContainer = document.getElementById('product-review-form-container');
     if (!reviewFormContainer) return;
 
-    // Listener para as estrelas
     const starsContainer = reviewFormContainer.querySelector('#review-rating-stars');
     if (starsContainer) {
         starsContainer.addEventListener('click', e => {
@@ -83,8 +79,6 @@ function setupReviewFormListeners() {
             });
         });
     }
-
-    // Listener para o submit do formulário (já tratado globalmente em script.js)
 }
 
 export async function handleReviewSubmit(event, productId) {
@@ -106,7 +100,9 @@ export async function handleReviewSubmit(event, productId) {
     submitButton.disabled = true;
     submitButton.innerHTML = '<span class="loader-sm"></span> Enviando...';
 
+    // FIX: Adiciona um ID único para cada avaliação para exclusão segura
     const newReview = {
+        reviewId: `rev_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: state.currentUserData.uid,
         userName: state.currentUserData.email.split('@')[0],
         rating: rating,
@@ -117,7 +113,6 @@ export async function handleReviewSubmit(event, productId) {
     try {
         const productRef = doc(db, "products", productId);
         
-        // Primeiro, buscamos o documento para calcular a nova média
         const productDoc = await getDoc(productRef);
         if (!productDoc.exists()) throw new Error("Produto não encontrado");
         
@@ -125,13 +120,11 @@ export async function handleReviewSubmit(event, productId) {
         const totalRating = existingReviews.reduce((sum, r) => sum + r.rating, 0) + newReview.rating;
         const newAvgRating = totalRating / (existingReviews.length + 1);
 
-        // Atualiza o documento com a nova avaliação e a nova média de rating
         await updateDoc(productRef, { 
             reviews: arrayUnion(newReview),
             rating: newAvgRating
         });
 
-        // Atualiza o estado local para refletir a mudança imediatamente
         const productIndex = state.allProducts.findIndex(p => p.id === productId);
         if (productIndex !== -1) {
             state.allProducts[productIndex].reviews.push(newReview);
@@ -139,7 +132,6 @@ export async function handleReviewSubmit(event, productId) {
         }
 
         showToast("Sua avaliação foi enviada com sucesso!");
-        // Re-renderiza os detalhes do produto para mostrar a nova avaliação
         showProductDetails(productId); 
 
     } catch (error) {
@@ -184,7 +176,7 @@ export function showProductDetails(productId) {
             ${notesHtml}
             <div class="mt-auto">
                 <p class="text-black font-bold text-3xl mb-6">R$ ${product.price.toFixed(2).replace('.',',')}</p>
-                <button class="add-to-cart-btn btn-primary w-full py-3 text-sm" data-id="${product.id}">Adicionar ao Carrinho</button>
+                <button class="add-to-cart-btn bg-slate-900 text-white w-full py-3 text-sm rounded-full hover:bg-black transition-colors" data-id="${product.id}">Adicionar ao Carrinho</button>
             </div>
         </div>`;
 
@@ -214,7 +206,7 @@ export function showProductDetails(productId) {
                         <label for="review-text" class="block text-sm font-semibold text-gray-700 mb-2">Seu comentário:</label>
                         <textarea id="review-text" rows="4" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black" required></textarea>
                     </div>
-                    <button type="submit" class="btn-primary py-2 px-6 text-sm">Enviar Avaliação</button>
+                    <button type="submit" class="bg-slate-900 text-white py-2 px-6 rounded-full hover:bg-black transition-colors">Enviar Avaliação</button>
                 </form>
             </div>`
         : `<div class="mt-8 pt-6 border-t text-center"><p class="text-slate-600"><a href="#" id="login-to-review" class="font-semibold text-black underline">Faça login</a> para deixar sua avaliação.</p></div>`;
@@ -233,6 +225,5 @@ export function showProductDetails(productId) {
 
     feather.replace();
     toggleModal('product-details-modal', true);
-    // Configura os listeners específicos do formulário de avaliação após ele ser renderizado
     setupReviewFormListeners();
 }
