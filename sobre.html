@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós - SANSEI DECANTS</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .font-heading { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="bg-white text-slate-700 min-h-screen flex flex-col">
+
+    <!-- Header (Adaptado do index.html para consistência) -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="./index.html" class="flex-shrink-0">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="SANSEI DECANTS Logo" class="h-10 w-auto rounded-full">
+                </a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="./index.html" class="nav-link">Início</a>
+                <a href="#" class="nav-link">Fragrâncias</a>
+                <a href="#" class="nav-link">Novidades</a>
+                <a href="#" class="nav-link">Promoções</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="search-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Buscar">
+                    <i data-feather="search" class="w-5 h-5"></i>
+                </button>
+                <button id="user-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Minha Conta">
+                    <i data-feather="user" class="w-5 h-5"></i>
+                </button>
+                <div class="relative">
+                    <button id="cart-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Carrinho de compras">
+                        <i data-feather="shopping-cart" class="w-5 h-5"></i>
+                    </button>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-slate-600 hover:text-black transition-colors duration-300" aria-label="Menu móvel">
+                    <i data-feather="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-slate-900">Sobre a SANSEI DECANTS</h1>
+            <div class="prose max-w-none text-lg leading-relaxed">
+                <p>Bem-vindo à SANSEI DECANTS, o seu destino para fragrâncias exclusivas e decants de luxo. A nossa jornada começou com a paixão por descobrir e compartilhar a arte da perfumaria. Acreditamos que um perfume é mais do que uma fragrância; é uma expressão de identidade, uma memória encapsulada e uma forma de arte pessoal.</p>
+                
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">A Nossa Missão</h2>
+                <p>Nossa missão é tornar o mundo dos perfumes de nicho e de luxo acessível a todos. Oferecemos decants, pequenas amostras de perfumes originais, para que você possa explorar uma vasta gama de fragrâncias sem o compromisso de comprar o frasco inteiro. Isso permite que você encontre a sua assinatura olfativa perfeita, experimente as últimas novidades e construa uma coleção pessoal de perfumes.</p>
+
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">Qualidade e Autenticidade</h2>
+                <p>Na SANSEI DECANTS, a autenticidade é a nossa maior prioridade. Todos os nossos produtos são 100% originais, provenientes de revendedores e distribuidores autorizados. Cada decant é cuidadosamente transferido do frasco original para um recipiente de alta qualidade, garantindo que a integridade e a pureza da fragrância sejam mantidas.</p>
+
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">A Equipa</h2>
+                <p>Somos uma pequena equipa de entusiastas de perfumes, dedicados a fornecer um serviço excepcional e uma experiência de compra inesquecível. Estamos sempre disponíveis para ajudar com recomendações, tirar dúvidas e compartilhar o nosso conhecimento sobre o fascinante mundo da perfumaria. Junte-se à nossa comunidade e descubra a fragrância que conta a sua história.</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer (Adaptado do index.html para consistência) -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">SANSEI DECANTS</h3>
+                    <p class="text-sm text-slate-500">O seu destino para fragrâncias exclusivas e decants de luxo.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Links Úteis</h3>
+                    <ul>
+                        <li><a href="#" class="footer-link">Sobre Nós</a></li>
+                        <li><a href="#" class="footer-link">Contato</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Políticas</h3>
+                    <ul>
+                        <li><a href="#" class="footer-link">Política de Privacidade</a></li>
+                        <li><a href="#" class="footer-link">Trocas e Devoluções</a></li>
+                        <li><a href="#" class="footer-link">Termos de Serviço</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Social</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="footer-link" aria-label="Instagram"><i data-feather="instagram" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Facebook"><i data-feather="facebook" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Twitter"><i data-feather="twitter" class="w-6 h-6"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-slate-500">
+                <p>&copy; 2024 SANSEI DECANTS. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
