@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Trocas e Devoluções - SANSEI DECANTS</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .font-heading { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="bg-white text-slate-700 min-h-screen flex flex-col">
+
+    <!-- Header (Adaptado do index.html para consistência) -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="./index.html" class="flex-shrink-0">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="SANSEI DECANTS Logo" class="h-10 w-auto rounded-full">
+                </a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="./index.html" class="nav-link">Início</a>
+                <a href="#" class="nav-link">Fragrâncias</a>
+                <a href="#" class="nav-link">Novidades</a>
+                <a href="#" class="nav-link">Promoções</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="search-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Buscar">
+                    <i data-feather="search" class="w-5 h-5"></i>
+                </button>
+                <button id="user-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Minha Conta">
+                    <i data-feather="user" class="w-5 h-5"></i>
+                </button>
+                <div class="relative">
+                    <button id="cart-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Carrinho de compras">
+                        <i data-feather="shopping-cart" class="w-5 h-5"></i>
+                    </button>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-slate-600 hover:text-black transition-colors duration-300" aria-label="Menu móvel">
+                    <i data-feather="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-slate-900">Política de Trocas e Devoluções</h1>
+            <div class="prose max-w-none text-lg leading-relaxed">
+                <p>Na SANSEI DECANTS, a sua satisfação é a nossa prioridade. Criamos uma política de trocas e devoluções clara e simples para garantir uma experiência de compra tranquila. Os procedimentos a seguir estão em conformidade com o Código de Defesa do Consumidor.</p>
+                
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">Troca por Defeito</h2>
+                <p>Se o produto adquirido apresentar algum defeito de fabricação, você tem até 7 (sete) dias corridos, a partir da data de recebimento, para solicitar a troca. O produto deve ser devolvido na sua embalagem original, sem sinais de uso ou violação. Após a análise e confirmação do defeito, providenciaremos a troca por um novo produto ou o reembolso do valor total.</p>
+
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">Devolução por Arrependimento</h2>
+                <p>De acordo com o artigo 49 do Código de Defesa do Consumidor, você tem o direito de desistir da compra em até 7 (sete) dias corridos após o recebimento do produto. Para que a devolução seja aceita, o produto deve estar em perfeitas condições, sem indícios de uso, com a embalagem original intacta. O custo do envio para devolução é de nossa responsabilidade.</p>
+
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">Como Solicitar a Troca ou Devolução</h2>
+                <p>Para iniciar o processo de troca ou devolução, entre em contato com o nosso serviço de atendimento ao cliente através do e-mail [seu-email@exemplo.com] ou pelo nosso WhatsApp [seu-whatsapp]. Por favor, informe o número do seu pedido e o motivo da solicitação. Em breve, enviaremos as instruções para a devolução do produto.</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer (Adaptado do index.html para consistência) -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">SANSEI DECANTS</h3>
+                    <p class="text-sm text-slate-500">O seu destino para fragrâncias exclusivas e decants de luxo.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Links Úteis</h3>
+                    <ul>
+                        <li><a href="#" class="footer-link">Sobre Nós</a></li>
+                        <li><a href="#" class="footer-link">Contato</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Políticas</h3>
+                    <ul>
+                        <li><a href="#" class="footer-link">Política de Privacidade</a></li>
+                        <li><a href="#" class="footer-link">Trocas e Devoluções</a></li>
+                        <li><a href="#" class="footer-link">Termos de Serviço</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Social</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="footer-link" aria-label="Instagram"><i data-feather="instagram" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Facebook"><i data-feather="facebook" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Twitter"><i data-feather="twitter" class="w-6 h-6"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-slate-500">
+                <p>&copy; 2024 SANSEI DECANTS. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
