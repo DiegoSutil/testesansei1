@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formas de Pagamento - SANSEI DECANTS</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .font-heading { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="bg-white text-slate-700 min-h-screen flex flex-col">
+
+    <!-- Header (Adaptado do index.html para consistência) -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="./index.html" class="flex-shrink-0">
+                    <img src="https://raw.githubusercontent.com/DiegoSutil/TesteSansei/main/IMG_4164.JPG" alt="SANSEI DECANTS Logo" class="h-10 w-auto rounded-full">
+                </a>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="./index.html" class="nav-link">Início</a>
+                <a href="#" class="nav-link">Fragrâncias</a>
+                <a href="#" class="nav-link">Novidades</a>
+                <a href="#" class="nav-link">Promoções</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="search-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Buscar">
+                    <i data-feather="search" class="w-5 h-5"></i>
+                </button>
+                <button id="user-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Minha Conta">
+                    <i data-feather="user" class="w-5 h-5"></i>
+                </button>
+                <div class="relative">
+                    <button id="cart-button" class="text-slate-600 hover:text-black transition-colors duration-300" aria-label="Carrinho de compras">
+                        <i data-feather="shopping-cart" class="w-5 h-5"></i>
+                    </button>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden text-slate-600 hover:text-black transition-colors duration-300" aria-label="Menu móvel">
+                    <i data-feather="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-heading font-bold text-center mb-8 text-slate-900">Formas de Pagamento</h1>
+            <div class="prose max-w-none text-lg leading-relaxed">
+                <p>Na SANSEI DECANTS, oferecemos diversas opções de pagamento para que você possa escolher a que melhor se adapta às suas necessidades. Todas as transações são realizadas com total segurança.</p>
+                
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">Cartão de Crédito</h2>
+                <p>Aceitamos as principais bandeiras de cartão de crédito. Você pode parcelar suas compras em até 3x sem juros ou em até 12x com juros. O processamento do pagamento por cartão de crédito é feito de forma segura e a aprovação geralmente é instantânea.</p>
+
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">PIX</h2>
+                <p>O pagamento via Pix é uma opção rápida e segura. Ao selecionar essa forma de pagamento, um código QR ou um código de cópia e cola será gerado. A aprovação é imediata após o pagamento, e o envio é processado mais rapidamente.</p>
+                
+
+                <h2 class="text-3xl font-heading font-bold mt-10 mb-4 text-slate-800">Boleto Bancário</h2>
+                <p>Você pode optar por pagar com boleto bancário. O prazo para compensação do boleto é de até 3 (três) dias úteis. A sua compra só será enviada após a confirmação do pagamento. Lembre-se de que o prazo de entrega começa a contar a partir da confirmação do pagamento.</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer (Adaptado do index.html para consistência) -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">SANSEI DECANTS</h3>
+                    <p class="text-sm text-slate-500">O seu destino para fragrâncias exclusivas e decants de luxo.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Links Úteis</h3>
+                    <ul>
+                        <li><a href="#" class="footer-link">Sobre Nós</a></li>
+                        <li><a href="#" class="footer-link">Contato</a></li>
+                        <li><a href="#" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Políticas</h3>
+                    <ul>
+                        <li><a href="#" class="footer-link">Política de Privacidade</a></li>
+                        <li><a href="#" class="footer-link">Trocas e Devoluções</a></li>
+                        <li><a href="#" class="footer-link">Termos de Serviço</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4">Social</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="footer-link" aria-label="Instagram"><i data-feather="instagram" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Facebook"><i data-feather="facebook" class="w-6 h-6"></i></a>
+                        <a href="#" class="footer-link" aria-label="Twitter"><i data-feather="twitter" class="w-6 h-6"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-slate-500">
+                <p>&copy; 2024 SANSEI DECANTS. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
